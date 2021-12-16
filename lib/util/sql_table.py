@@ -1,5 +1,6 @@
 import lib.util.sql_command as sql_command
 import lib.util.db_util as db_util
+import math
 
 
 class SQLRef:
@@ -56,6 +57,14 @@ class SQLRefPivot(SQLRef):
             result.append(o2)
 
         return result
+
+class ResultPage:
+    def __init__(self, page_num:int, page_count:int, per_page:int, total_count:int, data:list):
+        self.page_num = page_num
+        self.page_count = page_count
+        self.per_page = per_page
+        self.total_count = total_count
+        self.data = data
 
 class SQLTable:
     _dbfile = ':memory:'
@@ -175,6 +184,35 @@ class SQLTable:
         return count
 
     @classmethod
+    def get_page(cls, page_num:int, per_page:int, where = None, order_by = None):
+        """ Note: page_num starts at 1 or it will set to 1 if lower"""
+        limit = per_page
+        if (page_num < 1): page_num = 1
+        offset = (page_num-1) * per_page
+        
+        batch = db_util.DBBatch(cls._dbfile)
+
+        if (per_page == 0):
+            sql = sql_command.select(cls._table_name, where=where, order_by=order_by)
+            batch.add_get_all(sql)
+        else:
+            sql = sql_command.select(cls._table_name, where=where, order_by=order_by, limit=limit, offset=offset)
+            batch.add_get_all(sql)
+        
+        sql = sql_command.select(cls._table_name, ['count(*)'], where=where)
+        batch.add_get_one_cell(sql)
+
+        lsres = batch.run()
+
+        data = [cls(row=r) for r in lsres[0]]
+        total_count = lsres[1]
+        page_count = math.ceil(total_count / per_page) if per_page > 0 else 1
+
+        page = ResultPage(page_num, page_count, per_page, total_count, data)
+
+        return page
+
+    @classmethod
     def insert(cls, o, or_ignore = False, force_primary = False, update_conflict = False, set_col:list = None, where = None):
         sql = ''
         if (type(o) == list):
@@ -253,4 +291,3 @@ class SQLTable:
         if (type(other) != SQLTable):
             return False
         return (self.cols == other.cols)
-

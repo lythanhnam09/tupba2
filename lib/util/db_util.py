@@ -81,3 +81,76 @@ def db_get_single_cell(dbfile, sql, param:tuple = ()):
     conn.commit()
     conn.close()
     return res
+
+class DBBatch:
+    def __init__(self, dbfile, constraint = False):
+        self.dbfile = dbfile
+        self.ls_query:list = []
+        self.ls_result:list = []
+        self.constraint = constraint
+        self.cur = None
+        self.conn = None
+
+    def _get_all(self, cur, sql, param):
+        cur.execute(sql, param)
+        ls = cur.fetchall()
+        return ls
+
+    def _get_one(self, cur, sql, param):
+        cur.execute(sql, param)
+        res = cur.fetchone()
+        return res
+
+    def _get_one_cell(self, cur, sql, param):
+        cur.execute(sql, param)
+        res = cur.fetchone()
+        return res[0] if res != None else None
+
+    def _exec(self, cur, sql, param):
+        cur.execute(sql, param)
+        return cur.lastrowid
+
+    def _exec_multi(self, cur, sql, param):
+        cur.executemany(sql, param)
+        return None
+
+    def add_get_all(self, sql:str, param:tuple = ()):
+        self.ls_query.append({'f': self._get_all, 'q': sql, 'p': param})
+
+    def add_get_one(self, sql:str, param:tuple = ()):
+        self.ls_query.append({'f': self._get_one, 'q': sql, 'p': param})
+
+    def add_get_one_cell(self, sql:str, param:tuple = ()):
+        self.ls_query.append({'f': self._get_one_cell, 'q': sql, 'p': param})
+
+    def add_exec(self, sql:str, param:tuple = (), contraint=False):
+        self.ls_query.append({'f': self._exec, 'q': sql, 'p': param})
+
+    def add_exec_multi(self, sql:str, param:list = [], contraint=False):
+        self.ls_query.append({'f': self._exec_multi, 'q': sql, 'p': param})
+
+    def run(self, commit = True, close = True, get_result = True) -> list:
+        self.conn = sqlite3.connect(self.dbfile)
+        self.cur = self.conn.cursor()
+        if (self.constraint):
+            logging.debug(f'DBBatch:{self.dbfile}: pragma foreign_keys = on')
+            self.cur.execute('pragma foreign_keys = on')
+        if (get_result):
+            result = []
+        for query in self.ls_query:
+            logging.debug(f'DBBatch:{self.dbfile}: {query["q"]} -> {query["p"]}')
+            res = query['f'](self.cur, query['q'], query['p'])
+            if (get_result): result.append(res)
+        
+        if (commit): self.conn.commit()
+        if (close): self.conn.close()
+        self.ls_query.clear()
+        if (get_result): return result
+
+    def commit(self):
+        self.cur.commit()
+
+    def close(self):
+        self.conn.close()
+    
+
