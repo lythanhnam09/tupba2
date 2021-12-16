@@ -32,18 +32,23 @@
                         <option value="desc">Descending</option>
                         <option value="asc">Ascending</option>
                     </select>
-                    <select class="form-control mr-1" name="limit" id="limit">
+                    <select class="form-control mr-1" name="perpage" id="perpage">
                         <option value="20">Show 20</option>
                         <option value="50">Show 50</option>
                         <option value="100">Show 100</option>
                         <option value="200">Show 200</option>
                         <option value="0">Show all</option>
                     </select>
+                    <select class="form-control mr-1" name="page" id="page">
+                        {% for i in range(1, ls_cyoa.page_count + 1) %}
+                        <option value="{{i}}" {% if i == ls_cyoa.page_num %} selected {% endif %}>Pg {{i}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </form>
             <hr class="mt-2">
             <div class="list-container m-1">
-                {% for cyoa in ls_cyoa %}
+                {% for cyoa in ls_cyoa.data %}
                 <div class="card bg-l15-darkblue">
                     <div class="card-image img-container">
                         <img src="{{cyoa['image_link']}}" alt="{{cyoa['name']}}">

@@ -24,7 +24,12 @@ def cyoa_nav():
 @cyoa.route('/')
 def root():
     ref = request.args.get('refresh', False, type=bool)
-    ls = anonpone.get_cyoa_list(ref)
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('perpage', 20, type=int)
+    sf = request.args.get('sf', 'last_post_time', type=str)
+    sd = request.args.get('sd', 'desc', type=str)
+
+    ls = anonpone.get_cyoa_list(ref, page, per_page, [sf, sd])
     if (ref):
         return redirect('/cyoa')
     return render_template('cyoa/index.html', nav=cyoa_nav(), ls_cyoa=ls)
