@@ -1,0 +1,675 @@
+$shadow: #00000069
+
+$primary: #2b83e7
+$secondary: #818181
+$warning: #e9a321
+$danger: #ce4848
+$success: #46b842
+$info: #22b979
+
+$pink: #d84dba
+$darkblue: #4b43b4
+
+$light: #cacaca
+$dark: #313131
+
+$size-xlarge: 1440px
+$size-large: 1120px
+$size-medium: 960px
+$size-small: 720px
+$size-portrait: 480px
+
+$hover-change: 10%
+$active-change: 20%
+$text-darken-change: 30%
+
+$space-gap: 0.5rem
+$space-step-count: 10
+
+$lightness-threshold: 72
+
+$colors: ("primary": $primary, "secondary": $secondary, "success": $success, "warning": $warning, "danger": $danger, "info": $info, "light": $light, "dark": $dark, "pink": $pink, "darkblue": $darkblue)
+
+@function highlight-overlay($color)
+    @if (lightness($color) < $lightness-threshold)
+        @return fade-out(white, 0.8)
+    @else
+        @return fade-out(black, 0.8)
+
+@function btn-hover-color($color)
+    @if (lightness($color) < $lightness-threshold)
+        @return lighten($color, $hover-change)
+    @else
+        @return darken($color, $hover-change)
+
+@function color-from-bg($color)
+    @if (lightness($color) > 72)
+        @return black
+    @else
+        @return white
+
+@font-face
+    font-family: Lato
+    src: url('../webfonts/font/lato_norm.woff2')
+
+@font-face
+    font-family: Lato
+    src: url('../webfonts/font/lato_italic.woff2')
+    font-style: italic
+
+@font-face
+    font-family: Lato
+    src: url('../webfonts/font/lato_bold.woff2')
+    font-weight: bold
+
+*
+    font-family: Lato, sans-serif
+    margin: 0
+    padding: 0
+    box-sizing: border-box
+
+body
+    line-height: 1.4
+    font-size: 0.9375rem
+
+// ---------------------------- Layout ---------------------------------
+// Text align
+.text-center
+    text-align: center !important
+.text-left
+    text-align: left !important
+.text-right
+    text-align: right !important
+.text-justify
+    text-align: justify !important
+
+// Flex row, column
+.row
+    display: flex
+    flex-flow: row wrap 
+
+.vflex-center
+    align-items: center 
+
+.flex-center
+    justify-content: center
+
+.flex-left
+    justify-content: start
+
+.flex-right
+    justify-content: end
+
+.flex-grow
+    flex-grow: 1
+
+.col
+    display: flex
+    flex-flow: column wrap 
+// Column 12
+@for $i from 1 through 12
+    .col-#{$i}
+        flex-basis: $i/12*100%
+    @media (min-width: $size-xlarge)
+        .col-xl-#{$i}
+            flex-basis: $i/12*100%
+    @media (min-width: $size-large)
+        .col-lg-#{$i}
+            flex-basis: $i/12*100%
+    @media (min-width: $size-medium)
+        .col-md-#{$i}
+            flex-basis: $i/12*100%
+    @media (min-width: $size-small)
+        .col-sm-#{$i}
+            flex-basis: $i/12*100%
+
+// Column 10
+@for $i from 1 through 10
+    .col-10-#{$i}
+        flex-basis: $i/10*100%
+    @media (min-width: $size-xlarge)
+        .col-xl-10-#{$i}
+            flex-basis: $i/10*100%
+    @media (min-width: $size-large)
+        .col-lg-10-#{$i}
+            flex-basis: $i/10*100%
+    @media (min-width: $size-medium)
+        .col-md-10-#{$i}
+            flex-basis: $i/10*100%
+    @media (min-width: $size-small)
+        .col-sm-10-#{$i}
+            flex-basis: $i/10*100%
+
+// Position
+.pos-sticky-top
+    position: sticky
+    top: 0
+    z-index: 999
+
+.pos-absolute
+    position: absolute
+
+.pos-fixed-top
+    position: fixed
+    top: 0
+    z-index: 999
+
+.pos-relative
+    position: relative
+
+// Display
+.d-none
+    display: block !important
+
+.d-block
+    display: block !important
+
+.d-inline
+    display: inline !important
+
+.d-iblock
+    display: inline-block !important
+
+.d-flex
+    display: flex !important
+    
+// Margin
+.mr-auto
+    margin-right: auto
+.ml-auto
+    margin-left: auto
+.mx-auto
+    margin-left: auto
+    margin-right: auto
+
+@for $i from 0 through $space-step-count
+    .m-#{$i}
+        margin: $i * $space-gap !important
+    .ml-#{$i}
+        margin-left: $i * $space-gap !important
+    .mr-#{$i}
+        margin-right: $i * $space-gap !important
+    .mt-#{$i}
+        margin-top: $i * $space-gap !important
+    .mb-#{$i}
+        margin-bottom: $i * $space-gap !important
+    .mx-#{$i}
+        margin-left: $i * $space-gap !important
+        margin-right: $i * $space-gap !important
+    .my-#{$i}
+        margin-top: $i * $space-gap !important
+        margin-bottom: $i * $space-gap !important
+
+// Padding
+@for $i from 0 through $space-step-count
+    .p-#{$i}
+        padding: $i * $space-gap !important
+    .pl-#{$i}
+        padding-left: $i * $space-gap !important
+    .pr-#{$i}
+        padding-right: $i * $space-gap !important
+    .pt-#{$i}
+        padding-top: $i * $space-gap !important
+    .pb-#{$i}
+        padding-bottom: $i * $space-gap !important
+    .px-#{$i}
+        padding-left: $i * $space-gap !important
+        padding-right: $i * $space-gap !important
+    .py-#{$i}
+        padding-top: $i * $space-gap !important
+        padding-bottom: $i * $space-gap !important
+
+// Float
+.float-left
+    float: left
+
+.float-right
+    float: right
+
+// Width
+@for $i from 1 through 10
+    .w-#{$i * 10}
+        width: $i * 10% !important
+.w-25
+    width: 25% !important
+.w-75
+    width: 75% !important
+
+// ------------------------- Color & decoration ----------------------
+.shadow
+    box-shadow: 0 0 0.75rem $shadow
+
+.shadow-md
+    box-shadow: 0 0 1.25rem opacify($shadow, 0.2)
+
+.shadow-lg
+    box-shadow: 0 0 2.5rem opacify($shadow, 0.4)
+
+// Background color
+@each $name, $color in $colors
+    .bg-#{$name}
+        background-color: $color !important
+        color: color-from-bg($color)
+
+    @for $p from 1 through 5
+        .bg-d#{$p*5}-#{$name}
+            background-color: darken($color, $p*5%) !important
+            color: color-from-bg(darken($color, $p*5%))
+
+    @for $p from 1 through 5
+        .bg-l#{$p*5}-#{$name}
+            background-color: lighten($color, $p*5%) !important
+            color: color-from-bg(lighten($color, $p*5%))
+    
+    .bg-body-#{$name}
+        background-color: lighten($color, 25%) !important
+        color: color-from-bg(lighten($color, 25%))
+
+// ------------------------- Component --------------------------
+// Button
+.btn
+    display: inline-block
+    padding: 0.5rem 0.8rem
+    border: none
+    background-color: $secondary
+    color: color-from-bg($secondary)
+    cursor: pointer
+    font-size: 1rem
+    text-decoration: none
+    vertical-align: middle
+
+    &:disabled
+        background-color: $secondary
+        color: color-from-bg($secondary)
+
+    &-outline
+        display: inline-block
+        padding: 0.375rem 0.675rem
+        background: none
+        color: darken($secondary, $text-darken-change)
+        cursor: pointer
+        border: 2px $secondary solid
+
+    &:hover
+        background-color: darken($secondary, $hover-change)
+
+    @each $name, $color in $colors
+        &-#{$name}
+            background-color: $color
+            color: color-from-bg($color)
+            &:hover, &:focus, &:focus-visible
+                background-color: darken($color, $hover-change)//btn-hover-color($color)
+                color: color-from-bg($color)
+            &:active, &:focus, &:focus-visible
+                outline: transparentize($color, 0.5) solid 0.2rem
+                z-index: 50
+            &:active
+                background-color: darken($color, $active-change)//btn-hover-color($color)
+            
+            &.btn-outline
+                border-color: $color
+                background: none
+                color: darken($color, $text-darken-change)
+
+                &:hover, &:focus, &:focus-visible
+                    background-color: $color//btn-hover-color($color)
+                    color: color-from-bg($color)
+                &:active, &:focus, &:focus-visible
+                    outline: transparentize($color, 0.5) solid 0.2rem
+                &:active
+                    background-color: darken($color, $hover-change)//btn-hover-color($color)
+
+// Form input stuff
+.form-control
+    border: 2px $secondary solid
+    padding: 0.4rem 0.5rem
+    font-size: 1rem
+
+    &:disabled, &:read-only
+        border: 2px $secondary solid
+        padding: 0.4rem 0.5rem
+        color: $dark
+        background-color: $light
+
+    &:hover
+        border: 2px $primary solid
+    
+    &:focus, &:active
+        border: 2px $primary solid
+        outline: transparentize($primary, 0.5) solid 0.2rem
+
+select.form-control
+    border: 2px $secondary solid
+    padding: 0.4rem 0.5rem
+    color: black !important
+    background-color: white !important
+
+input[type=file].form-control
+    border: 2px $secondary solid
+    padding: 0.2rem 0.3rem
+    color: black !important
+    background-color: white !important
+
+// Container
+.container
+    margin-right: 0rem
+    margin-left: 0rem
+    width: auto
+    min-height: 100vh
+    
+    @media (max-width: $size-xlarge)
+        margin-right: 6rem
+        margin-left: 6rem
+    @media (max-width: $size-large)
+        margin-right: 4rem
+        margin-left: 4rem
+    @media (max-width: $size-medium)
+        margin-right: 2rem
+        margin-left: 2rem
+    @media (max-width: $size-small)
+        margin-right: 1rem
+        margin-left: 1rem
+    @media (max-width: $size-small)
+        margin-right: 0rem
+        margin-left: 0rem
+
+.container-lg
+    margin-right: 0rem
+    margin-left: 0rem
+    width: auto
+    min-height: 100vh
+    
+    @media (max-width: $size-xlarge)
+        margin-right: 6rem
+        margin-left: 6rem
+    @media (max-width: $size-large)
+        margin-right: 0rem
+        margin-left: 0rem
+
+// Navbar
+.nav
+    display: flex
+    flex-flow: row nowrap
+    justify-content: space-between
+    background-color: white
+
+    &-title
+        color: black
+        padding: 0.5rem
+        display: inline-flex
+        align-items: center
+        text-decoration: none
+
+    &-title *
+        color: black
+        text-decoration: none
+
+    &-container-left, &-container-right
+        flex-basis: 0.5
+        display: flex
+        align-items: stretch
+        position: relative
+            
+
+    &-container-left
+        justify-content: start
+        // background-color: white
+
+    &-container-right
+        justify-content: end
+        // background-color: white
+
+    &-expandable
+        display: inline-flex
+        align-items: stretch
+    
+    &-item
+        display: inline-flex
+        align-items: center
+        color: black
+        padding: 0.5rem
+        text-decoration: none
+        position: relative
+
+        > .text
+            display: none
+
+        &.nav-expand-button
+            @media (min-width: $size-small + 1)
+                display: none
+            
+            & ~ .nav-expandable
+                background-color: white
+
+                @media (min-width: $size-small + 1)
+                    display: flex !important
+
+                &.right
+                    @media (max-width: $size-small)
+                        display: flex
+                        position: absolute
+                        top: 3rem
+                        right: 0px
+                        flex-flow: column nowrap
+                        box-shadow: 0 0 0.75rem $shadow
+                        overflow-y: scroll
+                        scrollbar-width: none
+                        min-width: 200px
+
+                        & .nav-item > .text
+                            display: block
+
+                        & .nav-item > .fas
+                            width: 2rem
+
+                &.left
+                    @media (max-width: $size-small)
+                        display: flex
+                        position: absolute
+                        top: 3rem
+                        left: 0px
+                        flex-flow: column nowrap
+                        box-shadow: 0 0 0.75rem $shadow
+                        overflow-y: scroll
+                        scrollbar-width: none
+                        min-width: 200px
+
+                        & .nav-item > .text
+                            display: block
+
+                        & .nav-item > .fas
+                            width: 2rem
+
+        &:hover
+            background-color: highlight-overlay(white)
+
+    @each $name, $color in $colors
+        &-#{$name}
+            background-color: $color !important
+            color: color-from-bg($color) !important
+            & .nav-expandable
+                background-color: $color !important
+            & .nav-title, & .nav-title *
+                color: color-from-bg($color) !important
+            & .nav-item
+                background-color: $color !important
+                color: color-from-bg($color) !important
+                cursor: pointer
+
+                &:hover
+                    background-color: highlight-overlay($color) !important
+                    color: color-from-bg($color) !important
+
+.nav-item.dropdown::after, .nav-item.dropdown::after
+    font-family: "Font Awesome 5 Pro"
+    content: "\f078"
+    margin-left: 0.5rem
+    postion: relative
+
+.nav-item.dropdown:hover>.dropdown-container-left
+    display: block
+
+.nav-item.dropdown:hover>.dropdown-container-right
+    display: block
+
+.dropdown-container-left
+    position: absolute
+    top: 48px
+    left: 0px
+    background-color: white
+    color: black
+    display: none
+
+    @media (max-width: $size-small)
+        width: 75vw !important
+
+.dropdown-container-right
+    position: absolute
+    top: 48px
+    right: 0px
+    background-color: white
+    color: black
+    display: none
+
+    @media (max-width: $size-small)
+        width: 75vw !important
+
+.dropdown-item
+    list-style: none
+    display: block
+    padding: 0.5rem
+    color: black
+    text-decoration: none
+    &:hover
+        background-color: darken(white, $hover-change)
+
+.dropdown-label
+    list-style: none
+    display: block
+    padding: 0.5rem
+
+
+// Card
+.card
+    display: block
+    //margin: 0.25rem
+    box-shadow: 0 0 0.75rem $shadow
+    width: 100%
+    background-color: white
+    color: black
+
+    &-header
+        padding: 0.5rem
+    
+    &-content
+        padding: 1rem
+
+    &-foldable
+        > .card-header
+            cursor: pointer
+
+// Card inline
+.card-inline
+    display: inline-block
+    margin: 0.25rem
+    box-shadow: 0 0 0.75rem $shadow
+    background-color: white
+    color: black
+
+    &-header
+        padding: 0.5rem
+    
+    &-content
+        padding: 1rem
+
+// Fold button for cardheader
+.foldbutton
+    float: right
+    position: relative
+    top: -20px
+    right: 5px
+
+// Image
+img
+    display: block
+
+.img-fwidth
+    width: 100%
+
+.img-container
+    width: 100%
+    display: flex
+    justify-content: center
+    align-items: center
+
+    &>img
+        max-width: 100%
+        max-height: 100%
+        object-fit: contain
+
+// Progressbar
+.progress-bar
+    height: 0.5rem
+    display: inline-block
+    width: 100%
+    position: relative
+    background: $light
+
+    &>.value
+        width: 50%
+        height: 100%
+        position: absolute
+        top: 0px
+        left: 0px
+        background: $primary
+        transition: width 0.2s
+
+.control-group
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
+    align-items: stretch
+
+
+// Foreground (text) color
+.fg-white
+    color: white !important
+
+@each $name, $color in $colors
+    .fg-#{$name}
+        color: $color !important
+
+    @for $p from 1 through 5
+        .fg-d#{$p*5}-#{$name}
+            color: darken($color, $p*5%) !important
+
+    @for $p from 1 through 5
+        .fg-l#{$p*5}-#{$name}
+            color: lighten($color, $p*5%) !important
+    
+    .fg-body-#{$name}
+        color: darken($color, $text-darken-change) !important
+
+// Text style
+.text-underline
+    text-decoration: underline !important
+
+.text-underline-dot
+    text-decoration: dotted !important
+
+.text-underline-dash
+    text-decoration: dashed !important
+
+.text-strike
+    text-decoration: line-through !important
+
+.text-bold
+    font-weight: bold !important
+
+.text-italic
+    font-style: italic !important
+
+.text-normal
+    font-weight: normal
+    font-style: normal
+    text-decoration: none !important

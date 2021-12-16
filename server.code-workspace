@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/__pycache__": true,
+			"**/.kdev4": true,
+			"**/*.kdev4": true,
+			"**/static": true,
+			"**/template": true,
+			"**/*.code-workspace": true
+		},
+		"explorer.compactFolders": false
+	}
+}

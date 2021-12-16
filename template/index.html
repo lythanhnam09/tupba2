@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}TUPBA II - Homepage{% endblock %}
+{% block extracss %}
+    <link rel="stylesheet" href="/static/css/main.css">
+{% endblock extracss %}
+{% block body %}
+    <div class="bg-darkblue">
+
+        <div class="container-lg bg-d10-darkblue">
+            <div class="row vflex-center">
+                <div class="col-sm-6 p-1">
+                    <a href="/rewatch">
+                        <div class="card m-0 pos-relative">
+                            <img src="/static/img/booru.png" alt="">
+                            <h1 class="bottom-right">Rewatch stream</h1>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 p-1">
+                    <a href="/cyoa">
+                        <div class="card m-0 pos-relative">
+                            <img src="/static/img/cyoa.png" alt="">
+                            <h1 class="bottom-right">CYOA browser</h1>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 p-1">
+                    <a href="/booru">
+                        <div class="card m-0 pos-relative">
+                            <img src="/static/img/rewatch.png" alt="">
+                            <h1 class="bottom-right">Booru browser</h1>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 p-1">
+                    <a href="/logger">
+                        <div class="card m-0 pos-relative">
+                            <img src="/static/img/logger.png" alt="">
+                            <h1 class="bottom-right">Logger</h1>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 p-1">
+                    <a href="/other">
+                        <div class="card m-0 pos-relative">
+                            <img src="/static/img/other.png" alt="">
+                            <h1 class="bottom-right">Other</h1>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 p-1">
+                    <a href="/setting">
+                        <div class="card m-0 pos-relative">
+                            <img src="/static/img/setting.png" alt="">
+                            <h1 class="bottom-right">Setting</h1>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

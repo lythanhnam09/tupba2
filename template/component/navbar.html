@@ -1,0 +1,40 @@
+<nav class="nav {{nav.theme}} shadow-md pos-sticky-top">
+    <div class="nav-container-left">
+        {% if nav.show_menu_button %}
+        <div id="btn-menu" class="nav-item px-2" title="Menu" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </div>
+        {% endif %}
+        {% if nav.left_buttons|length > 0 %}
+            <div id="btn-exp-left" class="nav-item nav-expand-button px-2" title="Navigation option" onclick="toggleExpandable('exp-left', 'btn-exp-left')">
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        {% endif %}
+        <div id="exp-left" class="nav-expandable left" style="display: none">
+            {% for button in nav.left_buttons %}
+                <a class="nav-item px-2" title="{{button.text}}" {{ button.show_href() }} {{ button.show_on_click() }}>
+                    <i class="{{button.icon}}"></i>
+                    <div class="text">{{button.text}}</div>
+                </a>
+            {% endfor %}
+        </div>
+        <a class="nav-title" {{nav.show_title_href()}}>
+            <h2 class="fg-warning">{{nav.title}}</h2>
+        </a>
+    </div>
+    <div class="nav-container-right">
+        {% if nav.left_buttons|length > 0 %}
+            <div id="btn-exp-right" class="nav-item nav-expand-button px-2" title="Navigation option" onclick="toggleExpandable('exp-right', 'btn-exp-right', false)">
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        {% endif %}
+        <div id="exp-right" class="nav-expandable right" style="display: none">
+            {% for button in nav.right_buttons %}
+                <a class="nav-item px-2" title="{{button.text}}" {{ button.show_href() }} {{ button.show_on_click() }}>
+                    <i class="{{button.icon}}"></i>
+                    <div class="text">{{button.text}}</div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,120 @@
+.galery-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0.5rem;
+    row-gap: 0.5rem;
+}
+
+.img-container {
+    position: relative;
+}
+
+.webm-overlay {
+    position: absolute;
+    padding: 0.25rem;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    top: 0px;
+    width: 100%;
+    font-weight: bold;
+}
+
+.galery-image > .card-header {
+    padding: 0.25rem;
+}
+
+.up-arrow {
+    color: rgb(130, 253, 106);
+}
+
+.down-arrow {
+    color: rgb(255, 111, 111);
+}
+
+.mdropdown {
+    display: inline-block;
+}
+
+.mdropdown:hover, .mdropdown:active {
+    background-color: #0c396d;
+}
+
+.mdropdown-container {
+    position: absolute;
+    left: 0px;
+    top: 29px;
+    z-index: 999;
+
+    display: flex;
+    flex-flow: column nowrap;
+    /* height: 0px; */
+    width: 100%;
+    background: #2d72c0e3;
+    backdrop-filter: blur(10%);
+    overflow: hidden;
+    /* transition: height 0.2s; */
+}
+
+.mdropdown-container > .item {
+    padding: 4px;
+    display: block;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.mdropdown-container > .item:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.booru-tag {
+    display: inline-block;
+    padding: 0.25rem;
+    border: 2px grey solid;
+    font-weight: bold;
+    margin-top: 0.125rem;
+    text-decoration: none;
+    color: #0c396d;
+}
+
+.tag-001 {
+    background-color: rgb(66, 66, 190);
+    color: white;
+    border-color: rgb(11, 11, 170);
+}
+
+.tag-002 {
+    background-color: rgb(101, 168, 38);
+    color: white;
+    border-color: rgb(5, 138, 0);
+}
+
+.tag-003 {
+    background-color: rgb(141, 64, 165);
+    color: white;
+    border-color: rgb(180, 0, 156);
+}
+
+.tag-004 {
+    background-color: rgb(211, 161, 25);
+    color: white;
+    border-color: rgb(214, 198, 51);
+}
+
+@media screen and (min-width: 720px) {
+    .galery-container {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media screen and (min-width: 960px) {
+    .galery-container {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .galery-container {
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    }
+}

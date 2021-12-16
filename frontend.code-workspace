@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "../UPBA/server/tupba/templates"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/__pycache__": true,
+			"**/.kdev4": true,
+			"**/*.kdev4": true,
+			"**/config": true,
+			"**/data": true,
+            "**/lib": true,
+            "**/upload": true,
+			"**/*.code-workspace": true
+		},
+		"explorer.compactFolders": false
+	}
+}
