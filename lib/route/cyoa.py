@@ -26,9 +26,12 @@ def cyoa_nav():
 def root():
     form = WebForm(data={'refresh':False, 'page':1, 'perpage':20, 'sf':'last_post_time', 'sd':'desc', 'q':''})
     form.get_arg_value(request.args)
-
-    ls = anonpone.get_cyoa_list(form['refresh'], form['page'], form['perpage'], [form['sf'], form['sd']])
+    
     if (form['refresh']):
+        anonpone.refresh_cyoa_list()
         return redirect('/cyoa')
+    else:
+        ls = anonpone.get_cyoa_list(form['page'], form['perpage'], [form['sf'], form['sd']])
+    
     return render_template('cyoa/index.html', nav=cyoa_nav(), form=form, ls_cyoa=ls)
 
