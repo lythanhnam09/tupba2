@@ -20,7 +20,7 @@ def get_cyoa_list(refresh = False, page = 1, per_page = 20, order_by:list = ['la
             result.append(cy)
         cyoa.Cyoa.insert(result, update_conflict=True, set_col=cyoa.Cyoa.get_props_name(no_id=True, blacklist=['image_path']))
     if (order_by[0] == 'ratio'):
-        result = cyoa.Cyoa.get_page(page, per_page, order_by=['(cast(total_image as real) / total_post)', order_by[1]])
+        result = cyoa.Cyoa.get_page(page, per_page, order_by=[['(cast(total_image as real) / total_post)', order_by[1]], ['total_image', order_by[1]]])
     else:
         result = cyoa.Cyoa.get_page(page, per_page, order_by=order_by)
     return result
