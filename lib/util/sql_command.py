@@ -36,8 +36,7 @@ def _parse_expr_list(arg:list) -> str:
                             ls_expr.append(f'{expr[0]} = {expr[1][0]}')
                 elif (len(expr) == 3):
                     if (type(expr[2]) in [int, float, str]):
-                        expr[2] = f'{expr[2]!r}'
-                        ls_expr.append(' '.join(expr))
+                        ls_expr.append(' '.join([expr[0], expr[1], repr(expr[2])]))
                     elif (type(expr[2]) == list):
                         ls_expr.append(' '.join([expr[0], expr[1], expr[2][0]]))
                     
