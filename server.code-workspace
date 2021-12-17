@@ -2,6 +2,12 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../cyoa_downloader2"
+		},
+		{
+			"path": "../UPBA/server/tupba"
 		}
 	],
 	"settings": {

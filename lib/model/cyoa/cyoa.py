@@ -42,6 +42,14 @@ class Cyoa(SQLTable):
         self.cols['description'] = h.handle(self.cols['description'])
 
     @classmethod
+    def find_shortmame(cls, shortname):
+        sql = sql_command.select(cls._table_name, where=['short_name'])
+        r = db_util.db_get_single_row(cls._dbfile, sql, (shortname, ))
+        if (r != None):
+            return cls(row = r)
+        return None
+
+    @classmethod
     def from_json(cls, json:dict):
         rdict = {
             'id': json['_cid'],
@@ -112,3 +120,11 @@ class Cyoa(SQLTable):
         page = ResultPage(page, page_count, per_page, total_count, data)
 
         return page
+
+    def check_steath_lewd(self, save_tag_data = True):
+        have_lewd_tag = False
+        for t in self.get_ref('tags', order_by=['sort_index', 'asc'], save_result=save_tag_data):
+            if (t.cols['tag'].cols['name'] in ['lewd', 'lewd quest']):
+                have_lewd_tag = True
+                break
+        self.cols['steath_lewd'] = (not have_lewd_tag) and (self.cols['lewd_exist'] == 1)

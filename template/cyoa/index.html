@@ -53,20 +53,33 @@
             <div class="list-container m-1">
                 {% for cyoa in ls_cyoa.data %}
                 <div class="card bg-l15-darkblue">
-                    <div class="card-image img-container">
+                    <a class="card-image img-container" href="/cyoa/{{cyoa['short_name']}}">
                         <img src="{{cyoa['image_link']}}" alt="{{cyoa['name']}}">
-                    </div>
+                    </a>
                     <div class="card-content p-1">
-                        <h3 class="title">{{cyoa['name']}}</h3>
-                        <div class="description">
+                        <h3 class="title">
+                            {% if cyoa['is_live'] == 1 %}
+                            <a class="tag-item bg-l5-danger" href="?{{form.get_form_query({'q': 'is_live=1'}, ['page', 'refresh'])}}">LIVE</a>
+                            {% endif %}
+                            
+                            <a class="name" href="/cyoa/{{cyoa['short_name']}}">{{cyoa['name']}}</a>
+                        </h3>
+                        <div class="description mb-1">
                             {{cyoa['description']}}
                         </div>
                         <div class="status">
+                            <div class="stat">
+                                <i class="fas fa-link fg-l10-warning"></i> {{cyoa['chan']}} - {{cyoa['board']}}
+                                <i class="fas fa-link fg-l10-warning ml-1"></i> <a class="fg-white" href="https://www.anonpone.com/quest/{{cyoa['short_name']}}" target="_blank">{{cyoa['short_name']}}</a>
+                            </div>
                             <div class="date">
                                 <i class="fas fa-calendar-alt fg-l10-warning"></i> {{cyoa['first_post_date_str']}} <i class="fas fa-arrow-right fg-l10-warning"></i> {{cyoa['last_post_date_str']}}
                             </div>
-                            <div class="stat ">
+                            <div class="stat mb-1">
                                 <i class="fas fa-book fg-l10-warning"></i> {{cyoa['total_thread']}}
+                                <i class="fas fa-file fg-l10-warning ml-1"></i> {{cyoa['total_post']}}
+                                <i class="fas fa-align-left fg-l10-warning ml-1"></i> {{cyoa['word_count']}}
+                                <i class="fas fa-image fg-l10-warning ml-1"></i> {{cyoa['total_fanart']}}
                             </div>
                             <div class="ratio" title="Image / Text ratio">
                                 <div class="image" style="width:{{cyoa['total_image_per']}}"></div>
@@ -74,9 +87,14 @@
                             </div>
                         </div>
                         <div class="tag">
-                            {% for tag in cyoa.get_ref('tags', order_by=['sort_index', 'asc']) %}
+                            {% set lsstat = [['error', 'bg-danger'], ['active', 'bg-d5-info'], ['complete', 'bg-d5-success'], ['hiatus', 'bg-d5-warning'], ['cancelled', 'bg-danger'], ['hidden', 'bg-d15-danger']] %}
+                            <a class="tag-item {{lsstat[cyoa['status']][1]}}" href="?{{form.get_form_query({'q': 'status=%d' % cyoa['status']}, ['page', 'refresh'])}}">{{lsstat[cyoa['status']][0]}}</a>
+                            {% for tag in cyoa['tags'] %}
                             <a class="tag-item {{tag['tag']['color']}}" href="?{{form.get_form_query({'q': tag['tag']['name']}, ['page', 'refresh'])}}">{{tag['tag']['name']}}</a>
                             {% endfor %}
+                            {% if cyoa['steath_lewd'] %}
+                            <a class="tag-item bg-pink" href="?{{form.get_form_query({'q': 'lewd_exist=1'}, ['page', 'refresh'])}}">lewd exist</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

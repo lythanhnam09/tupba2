@@ -30,4 +30,6 @@ def get_cyoa_list(q:str = '', page = 1, per_page = 20, order_by:list = ['last_po
         result = cyoa.Cyoa.filter_tags(q, page, per_page, order_by=[['(cast(total_image as real) / total_post)', order_by[1]], ['total_image', order_by[1]]])
     else:
         result = cyoa.Cyoa.filter_tags(q, page, per_page, order_by=order_by)
+    for cy in result.data:
+        cy.check_steath_lewd()
     return result

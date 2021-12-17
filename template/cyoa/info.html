@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}CYOA Browser - {{cyoa['name']}}{% endblock %}
+{% block extracss %}
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/cyoa.css">
+{% endblock extracss %}
+{% block extrajs %}
+    <script src="/static/js/cyoa.js"></script>
+{% endblock extrajs %}
+{% block body %}
+    <div class="bg-darkblue">
+        <div class="container-lg bg-d10-darkblue py-2">
+            <div class="cyoa-info">
+                <div class="image img-container {{'' if cyoa['image_path'] == None else 'saved'}}">
+                    <img src="{{cyoa['image_link']}}" alt="{{cyoa['short_name']}}">
+                </div>
+                <div class="info">
+                    <h1 class="title">
+                        {% if cyoa['is_live'] == 1 %}
+                        <a class="tag-item bg-l5-danger" href="/cyoa?q=is_live=1">LIVE</a>
+                        {% endif %}
+                        {{cyoa['name']}}
+                    </h1>
+                    <hr>
+                    <div class="tag">
+                        {% set lsstat = [['error', 'bg-danger'], ['active', 'bg-d5-info'], ['complete', 'bg-d5-success'], ['hiatus', 'bg-d5-warning'], ['cancelled', 'bg-danger'], ['hidden', 'bg-d15-danger']] %}
+                        {% set have_lewd_tag = False %}
+                        <a class="tag-item {{lsstat[cyoa['status']][1]}}" href="/cyoa?q=status={{cyoa['status']}}">{{lsstat[cyoa['status']][0]}}</a>
+                        {% for tag in cyoa['tags'] %}
+                        <a class="tag-item {{tag['tag']['color']}}" href="/cyoa?q={{tag['tag']['name']}}">{{tag['tag']['name']}}</a>
+                        {% endfor %}
+                        {% if cyoa['steath_lewd'] %}
+                        <a class="tag-item bg-pink" href="/cyoa?q=lewd_exist=1">lewd exist</a>
+                        {% endif %}
+                    </div>
+                    <div class="ratio mt-1" title="Image / Text ratio">
+                        <div class="image" style="width:{{cyoa['total_image_per']}}"></div>
+                        <div class="value"><i class="fas fa-image"></i> {{cyoa['total_image']}} Images / Texts {{cyoa['total_post'] - cyoa['total_image']}} <i class="fas fa-align-left"></i></div>
+                    </div>
+                    <div class="stat mt-1">
+                        <i class="fas fa-calendar-alt fg-l10-warning"></i> <span class="fg-l10-warning">Date: </span> {{cyoa['first_post_date_str']}}
+                        <i class="fas fa-arrow-right fg-l10-warning"></i> {{cyoa['last_post_date_str']}}
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-link fg-l10-warning"></i> <span class="fg-l10-warning">Link: </span> <a class="fg-white" href="https://www.anonpone.com/quest/{{cyoa['short_name']}}" target="_blank">anonpone.com/{{cyoa['short_name']}}</a>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-link fg-l10-warning"></i> <span class="fg-l10-warning">Chan: </span> {{cyoa['chan']}} - {{cyoa['board']}}
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-book fg-l10-warning"></i> <span class="fg-l10-warning">Thread count: </span> {{cyoa['total_thread']}}
+                        <i class="fas fa-file fg-l10-warning ml-1"></i> <span class="fg-l10-warning">Post count: </span> {{cyoa['total_post']}}
+                    </div>
+                    <div class="stat mb-1">
+                        <i class="fas fa-align-left fg-l10-warning"></i> <span class="fg-l10-warning">Word count: </span> {{cyoa['word_count']}}
+                        <i class="fas fa-image fg-l10-warning ml-1"></i> <span class="fg-l10-warning">Fanart count: </span> {{cyoa['total_fanart']}}
+                    </div>
+                    <hr>
+                    <div class="description mt-1">
+                        {{cyoa['description']}}
+                    </div>
+                </div>
+            </div>
+            <hr class="mb-2">
+        </div>
+    </div>
+{% endblock %}
+

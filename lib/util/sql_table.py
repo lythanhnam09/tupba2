@@ -293,10 +293,12 @@ class SQLTable:
             sql = sql_command.delete(cls._table_name, cls._primary)
             db_util.db_exec(cls._dbfile, sql, o.id_value_tuple(), constraint)
 
-    def get_ref(self, ref_name:str, where = None, order_by = None, limit = None, offset = None):
+    def get_ref(self, ref_name:str, where = None, order_by = None, limit = None, offset = None, save_result = False):
         if (not ref_name in self._reference):
             raise Exception(f'Reference {ref_name!r} not found')
-        return self._reference[ref_name].get(self, where, order_by, limit, offset)
+        result = self._reference[ref_name].get(self, where, order_by, limit, offset)
+        if (save_result): self.cols[ref_name] = result
+        return result
 
     def __repr__(self):
         return f'[{self._table_name}{self.cols}]'
