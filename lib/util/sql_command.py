@@ -77,7 +77,11 @@ def select(table:list, columns:list = None, where:list = None, group_by:list = N
     if (order_by != None):
         result += ('\n' if line_break else ' ') + 'order by '
         if (type(order_by) == list):
-            result += ' '.join(order_by)
+            if (type(order_by[0] == list)):
+                lsorder = [' '.join(o) for o in order_by]
+                result += ', '.join(lsorder)
+            else:
+                result += ' '.join(order_by)
         else:
             result += order_by
 
