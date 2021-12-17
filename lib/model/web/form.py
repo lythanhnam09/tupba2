@@ -1,4 +1,4 @@
-
+import urllib
 
 class WebForm:
     def __init__(self, data:dict = None):
@@ -21,3 +21,11 @@ class WebForm:
         if (self.param[name] == value):
             return 'selected'
         return ''
+
+    def get_form_query(self, set_value:dict = {}, blacklist:list = []):
+        d = self.param.copy()
+        for k in set_value:
+            d[k] = set_value[k]
+        for k in blacklist:
+            d.pop(k)
+        return urllib.parse.urlencode(d)

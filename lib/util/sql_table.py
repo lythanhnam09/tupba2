@@ -76,6 +76,9 @@ class ResultPage:
         self.per_page = per_page
         self.total_count = total_count
         self.data = data
+    
+    def __repr__(self):
+        return f'ResultPage({self.page_num=}, {self.page_count=}, {self.per_page=}, {self.total_count=}, data[{len(self.data)}])'
 
 class SQLTable:
     _dbfile = ':memory:'

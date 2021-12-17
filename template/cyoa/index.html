@@ -4,6 +4,9 @@
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/cyoa.css">
 {% endblock extracss %}
+{% block extrajs %}
+    <script src="/static/js/cyoa.js"></script>
+{% endblock extrajs %}
 {% block body %}
     <div class="bg-darkblue">
         <div class="container-lg bg-d10-darkblue py-2">
@@ -13,7 +16,7 @@
                 <h2>Filter</h2>
                 <input class="form-control w-100" name="q" type="text" placeholder="Search tag, title" value="{{form['q']}}">
                 <div class="control-group mt-1">
-                    <a href="/cyoa?refresh=True" class="btn btn-primary mr-1" title="Refresh"><i class="fas fa-sync"></i></a>
+                    <a id="btn-refresh" class="btn btn-primary mr-1" title="Refresh" onclick="refreshCyoaData()"><i class="fas fa-sync"></i></a>
                     <button class="btn btn-success mr-1" type="submit"><i class="fas fa-filter"></i> Filter</button>
                     <select class="form-control mr-1" name="sf" id="sf">
                         <option value="last_post_time" {{form.option_selected('sf', 'last_post_time')}}>Sort by Last post time</option>
@@ -72,7 +75,7 @@
                         </div>
                         <div class="tag">
                             {% for tag in cyoa.get_ref('tags', order_by=['sort_index', 'asc']) %}
-                            <a class="tag-item {{tag['tag']['color']}}">{{tag['tag']['name']}}</a>
+                            <a class="tag-item {{tag['tag']['color']}}" href="?{{form.get_form_query({'q': tag['tag']['name']}, ['page', 'refresh'])}}">{{tag['tag']['name']}}</a>
                             {% endfor %}
                         </div>
                     </div>

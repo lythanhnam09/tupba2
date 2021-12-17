@@ -87,10 +87,6 @@ class Cyoa(SQLTable):
                         ls[2] = f'%{ls[2]}%'
                     lswhere.append(ls)
 
-            print(lswhere)
-
-        [['image', '=', ['(select t.name from cyoa_tag ct join tag t on ct.tag_id = t.id where ct.cyoa_id = c.id)']]]
-
         limit = per_page
         if (page < 1): page = 1
         offset = (page-1) * per_page

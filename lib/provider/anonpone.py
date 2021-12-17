@@ -18,6 +18,7 @@ def refresh_cyoa_list():
         tag.CyoaTag.insert(lsct, or_ignore=True)
         result.append(cy)
     cyoa.Cyoa.insert(result, update_conflict=True, set_col=cyoa.Cyoa.get_props_name(no_id=True, blacklist=['image_path']))
+    return result
 
 def parse_query(query) -> list:
     pass

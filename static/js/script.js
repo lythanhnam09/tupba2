@@ -42,6 +42,10 @@ function connectSocket() {
     socket.on('task_data', function(data) {
         updateTask(data);
     });
+
+    socket.on('refresh_page', function(data) {
+        location.reload();
+    });
 }
 
 function updateTask(data) {

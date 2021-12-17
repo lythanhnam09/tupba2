@@ -35,3 +35,8 @@ def root():
     
     return render_template('cyoa/index.html', nav=cyoa_nav(), form=form, ls_cyoa=ls)
 
+@cyoa.route('/api/cyoa/refresh')
+def api_refresh_cyoa():
+    anonpone.refresh_cyoa_list()
+    return 'OK', 200
+

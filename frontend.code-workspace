@@ -18,6 +18,11 @@
             "**/upload": true,
 			"**/*.code-workspace": true
 		},
-		"explorer.compactFolders": false
+		"explorer.compactFolders": false,
+		"liveSassCompile.settings.formats": [{
+			"format": "expanded",
+			"extensionName": ".css",
+			"savePath": "~"
+		}]
 	}
 }
