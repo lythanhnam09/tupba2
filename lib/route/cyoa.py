@@ -8,6 +8,7 @@ import lib.model.cyoa._ref
 import lib.provider.anonpone as anonpone
 from lib.model.web.navbar import NavOption, NavButton
 from lib.model.cyoa.cyoa import *
+from lib.model.web.form import WebForm
 
 
 cyoa = Blueprint('cyoa', __name__, template_folder='template', root_path='.')
@@ -23,14 +24,11 @@ def cyoa_nav():
 
 @cyoa.route('/')
 def root():
-    ref = request.args.get('refresh', False, type=bool)
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('perpage', 20, type=int)
-    sf = request.args.get('sf', 'last_post_time', type=str)
-    sd = request.args.get('sd', 'desc', type=str)
+    form = WebForm(data={'refresh':False, 'page':1, 'perpage':20, 'sf':'last_post_time', 'sd':'desc', 'q':''})
+    form.get_arg_value(request.args)
 
-    ls = anonpone.get_cyoa_list(ref, page, per_page, [sf, sd])
-    if (ref):
+    ls = anonpone.get_cyoa_list(form['refresh'], form['page'], form['perpage'], [form['sf'], form['sd']])
+    if (form['refresh']):
         return redirect('/cyoa')
-    return render_template('cyoa/index.html', nav=cyoa_nav(), ls_cyoa=ls)
+    return render_template('cyoa/index.html', nav=cyoa_nav(), form=form, ls_cyoa=ls)
 

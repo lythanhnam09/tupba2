@@ -11,37 +11,37 @@
             <hr class="mb-2">
             <form class="d-block mx-2" action="/cyoa">
                 <h2>Filter</h2>
-                <input class="form-control w-100" name="q" type="text" placeholder="Search tag, title">
+                <input class="form-control w-100" name="q" type="text" placeholder="Search tag, title" value="{{form['q']}}">
                 <div class="control-group mt-1">
                     <a href="/cyoa?refresh=True" class="btn btn-primary mr-1"><i class="fas fa-sync"></i> Refresh</a>
                     <button class="btn btn-success mr-1" type="submit"><i class="fas fa-filter"></i> Filter</button>
                     <select class="form-control mr-1" name="sf" id="sf">
-                        <option value="last_post_time">Sort by Last post time</option>
-                        <option value="first_post_time">Sort by First post time</option>
-                        <option value="quest_time">Sort by Quest time</option>
-                        <option value="total_thread">Sort by Thread count</option>
-                        <option value="total_image">Sort by Image count</option>
-                        <option value="total_post">Sort by Post count</option>
-                        <option value="total_fanart">Sort by Fanart count</option>
-                        <option value="ratio">Sort by Image / Text ratio</option>
-                        <option value="name">Sort by Title</option>
-                        <option value="short_name">Sort by Short name</option>
-                        <option value="id">Sort by ID</option>
+                        <option value="last_post_time" {{form.option_selected('sf', 'last_post_time')}}>Sort by Last post time</option>
+                        <option value="first_post_time" {{form.option_selected('sf', 'first_post_time')}}>Sort by First post time</option>
+                        <option value="quest_time" {{form.option_selected('sf', 'quest_time')}}>Sort by Quest time</option>
+                        <option value="total_thread" {{form.option_selected('sf', 'total_thread')}}>Sort by Thread count</option>
+                        <option value="total_image" {{form.option_selected('sf', 'total_image')}}>Sort by Image count</option>
+                        <option value="total_post" {{form.option_selected('sf', 'total_post')}}>Sort by Post count</option>
+                        <option value="total_fanart" {{form.option_selected('sf', 'total_fanart')}}>Sort by Fanart count</option>
+                        <option value="ratio" {{form.option_selected('sf', 'ratio')}}>Sort by Image / Text ratio</option>
+                        <option value="name" {{form.option_selected('sf', 'name')}}>Sort by Title</option>
+                        <option value="short_name" {{form.option_selected('sf', 'short_name')}}>Sort by Short name</option>
+                        <option value="id" {{form.option_selected('sf', 'id')}}>Sort by ID</option>
                     </select>
                     <select class="form-control mr-1" name="sd" id="sd">
-                        <option value="desc">Descending</option>
-                        <option value="asc">Ascending</option>
+                        <option value="desc" {{form.option_selected('sd', 'desc')}}>Descending</option>
+                        <option value="asc" {{form.option_selected('sd', 'asc')}}>Ascending</option>
                     </select>
                     <select class="form-control mr-1" name="perpage" id="perpage">
-                        <option value="20">Show 20</option>
-                        <option value="50">Show 50</option>
-                        <option value="100">Show 100</option>
-                        <option value="200">Show 200</option>
-                        <option value="0">Show all</option>
+                        <option value="20" {{form.option_selected('perpage', 20)}}>Show 20</option>
+                        <option value="50" {{form.option_selected('perpage', 50)}}>Show 50</option>
+                        <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>
+                        <option value="200" {{form.option_selected('perpage', 200)}}>Show 200</option>
+                        <option value="0" {{form.option_selected('perpage', 0)}}>Show all</option>
                     </select>
                     <select class="form-control mr-1" name="page" id="page">
                         {% for i in range(1, ls_cyoa.page_count + 1) %}
-                        <option value="{{i}}" {% if i == ls_cyoa.page_num %} selected {% endif %}>Pg {{i}}</option>
+                        <option value="{{i}}" {{form.option_selected('page', i)}}>Pg {{i}}</option>
                         {% endfor %}
                     </select>
                 </div>
