@@ -3,7 +3,7 @@ import logging
 
 
 #logging = logging.Logger('db_util', logging.INFO)
-#logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 def db_close(conn):
     conn.commit()

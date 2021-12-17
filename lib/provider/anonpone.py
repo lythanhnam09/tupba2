@@ -19,11 +19,14 @@ def refresh_cyoa_list():
         result.append(cy)
     cyoa.Cyoa.insert(result, update_conflict=True, set_col=cyoa.Cyoa.get_props_name(no_id=True, blacklist=['image_path']))
 
-def get_cyoa_list(page = 1, per_page = 20, order_by:list = ['last_post_time', 'desc'], refresh = False) -> list:
+def parse_query(query) -> list:
+    pass
+
+def get_cyoa_list(q:str = '', page = 1, per_page = 20, order_by:list = ['last_post_time', 'desc'], refresh = False) -> list:
     if (refresh):
         refresh_cyoa_list()
     if (order_by[0] == 'ratio'):
-        result = cyoa.Cyoa.get_page(page, per_page, order_by=[['(cast(total_image as real) / total_post)', order_by[1]], ['total_image', order_by[1]]])
+        result = cyoa.Cyoa.filter_tags(q, page, per_page, order_by=[['(cast(total_image as real) / total_post)', order_by[1]], ['total_image', order_by[1]]])
     else:
-        result = cyoa.Cyoa.get_page(page, per_page, order_by=order_by)
+        result = cyoa.Cyoa.filter_tags(q, page, per_page, order_by=order_by)
     return result

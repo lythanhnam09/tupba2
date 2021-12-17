@@ -31,7 +31,7 @@ def root():
         anonpone.refresh_cyoa_list()
         return redirect('/cyoa')
     else:
-        ls = anonpone.get_cyoa_list(form['page'], form['perpage'], [form['sf'], form['sd']])
+        ls = anonpone.get_cyoa_list(form['q'], form['page'], form['perpage'], [form['sf'], form['sd']])
     
     return render_template('cyoa/index.html', nav=cyoa_nav(), form=form, ls_cyoa=ls)
 

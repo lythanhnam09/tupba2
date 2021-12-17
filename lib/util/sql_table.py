@@ -1,6 +1,7 @@
 import lib.util.sql_command as sql_command
 import lib.util.db_util as db_util
 import math
+import logging
 
 
 class SQLRef:
@@ -10,6 +11,10 @@ class SQLRef:
         self.ref_table = ref_table
 
     def get(self, table, where = None, order_by = None, limit = None, offset = None):
+        return None
+
+    def filter(self, table, where = None, order_by = None, limit = None, offset = None):
+        logging.warning(f'{self.__class__.__name__}.filter(): {self.__class__.__name__} does not have filter()')
         return None
 
 class SQLRefOne(SQLRef):
@@ -28,6 +33,12 @@ class SQLRefMany(SQLRef):
             where = []
         where.append([self.ref_col, table.cols[self.col]])
         return self.ref_table.select(where=where, order_by=order_by, limit=limit, offset=offset)
+
+    # def filter(self, table, where = None, order_by = None, limit = None, offset = None):
+    #     if (where == None):
+    #         where = []
+    #     where.append([self.ref_col, table.cols[self.col]])
+    #     return self.ref_table.select(where=where, order_by=order_by, limit=limit, offset=offset)
 
 class SQLRefPivot(SQLRef):
     def __init__(self, col, ref_table, ref_col, pivot_ref):

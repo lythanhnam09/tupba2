@@ -2,6 +2,7 @@ from lib.util.sql_table import *
 import lib.provider.anonpone as anonpone
 import lib.util.util as util
 import html2text
+import re
 
 class Cyoa(SQLTable):
     _dbfile = 'data/cyoa.db'
@@ -66,3 +67,52 @@ class Cyoa(SQLTable):
         }
         o = cls(data=rdict)
         return o
+
+    @classmethod
+    def filter_tags(cls, query:str = '', page:int = 1, per_page:int = 20, order_by = ['last_post_time', 'desc']):
+        lswhere = []
+        if (query.strip(' ') == ''):
+            lswhere = None
+        else:
+            lstag = [s.strip(' ') for s in query.split(',')]
+            for tag in lstag:
+                ls = re.split('[=:<>]', tag, maxsplit=1)
+                # re.findall(pattern, string)
+                if (len(ls) < 2):
+                    lswhere.append([f'{tag!r}', 'in', ['(select t.name from cyoa_tag ct join tag t on ct.tag_id = t.id where ct.cyoa_id = c.id)']])
+                else:
+                    ls = list(re.findall('(\w+)([:<>=]*)([\w ]+)', tag)[0])
+                    if (ls[1] == ':'):
+                        ls[1] = 'like'
+                        ls[2] = f'%{ls[2]}%'
+                    lswhere.append(ls)
+
+            print(lswhere)
+
+        [['image', '=', ['(select t.name from cyoa_tag ct join tag t on ct.tag_id = t.id where ct.cyoa_id = c.id)']]]
+
+        limit = per_page
+        if (page < 1): page = 1
+        offset = (page-1) * per_page
+        
+        batch = db_util.DBBatch(cls._dbfile)
+
+        if (per_page == 0):
+            sql = sql_command.select(cls._table_name + ' c', where=lswhere, order_by=order_by)
+            batch.add_get_all(sql)
+        else:
+            sql = sql_command.select(cls._table_name + ' c', where=lswhere, order_by=order_by, limit=limit, offset=offset)
+            batch.add_get_all(sql)
+        
+        sql = sql_command.select(cls._table_name + ' c', ['count(*)'], where=lswhere)
+        batch.add_get_one_cell(sql)
+
+        lsres = batch.run()
+
+        data = [cls(row=r) for r in lsres[0]]
+        total_count = lsres[1]
+        page_count = math.ceil(total_count / per_page) if per_page > 0 else 1
+
+        page = ResultPage(page, page_count, per_page, total_count, data)
+
+        return page
