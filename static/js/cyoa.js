@@ -38,3 +38,9 @@ function showPageDialog(page, pagecount) {
         ]);
     dialog.show();
 }
+
+function changePerpage() {
+    $('input[name=perpage]').val($('#select-perpage').val());
+    $('input[name=page]').val('1');
+    $('#form-filter').submit();
+}
