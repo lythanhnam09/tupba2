@@ -16,8 +16,7 @@
                 <h2>Filter</h2>
                 <input class="form-control w-100" name="q" type="text" placeholder="Search tag, title" value="{{form['q']}}">
                 <div class="control-group mt-1">
-                    <a id="btn-refresh" class="btn btn-primary mr-1" title="Refresh" onclick="refreshCyoaData()"><i class="fas fa-sync"></i></a>
-                    <button class="btn btn-success mr-1" type="submit"><i class="fas fa-filter"></i> Filter</button>
+                    <button class="btn btn-success mr-1 order-xsm-last" type="submit"><i class="fas fa-filter"></i> Filter</button>
                     <select class="form-control mr-1" name="sf" id="sf">
                         <option value="last_post_time" {{form.option_selected('sf', 'last_post_time')}}>Sort by Last post time</option>
                         <option value="first_post_time" {{form.option_selected('sf', 'first_post_time')}}>Sort by First post time</option>
@@ -35,20 +34,29 @@
                         <option value="desc" {{form.option_selected('sd', 'desc')}}>Descending</option>
                         <option value="asc" {{form.option_selected('sd', 'asc')}}>Ascending</option>
                     </select>
-                    <select class="form-control mr-1" name="perpage" id="perpage">
-                        <option value="20" {{form.option_selected('perpage', 20)}}>Show 20</option>
-                        <option value="50" {{form.option_selected('perpage', 50)}}>Show 50</option>
-                        <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>
-                        <option value="200" {{form.option_selected('perpage', 200)}}>Show 200</option>
-                        <option value="0" {{form.option_selected('perpage', 0)}}>Show all</option>
-                    </select>
-                    <select class="form-control mr-1" name="page" id="page">
-                        {% for i in range(1, ls_cyoa.page_count + 1) %}
-                        <option value="{{i}}" {{form.option_selected('page', i)}}>Pg {{i}}</option>
-                        {% endfor %}
-                    </select>
+                    <input type="hidden" name="perpage" value="{{form['perpage']}}">
+                    <input type="hidden" name="page" value="{{form['page']}}">
                 </div>
             </form>
+            <hr class="my-2">
+            <div class="control-group px-2">
+                <button id="btn-refresh" class="btn btn-primary mr-1" title="Refresh" onclick="refreshCyoaData()"><i class="fas fa-sync"></i></button>
+                <div class="control-group-round">
+                    <button class="btn btn-primary"><i class="fas fa-chevron-double-left"></i></button>
+                    <button class="btn btn-primary"><i class="fas fa-chevron-left"></i></button>
+                    <button class="btn btn-primary">Page 1 of 999</button>
+                    <button class="btn btn-primary"><i class="fas fa-chevron-right"></i></button>
+                    <button class="btn btn-primary"><i class="fas fa-chevron-double-right"></i></button>
+                </div>
+                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage">
+                    <option value="20" {{form.option_selected('perpage', 20)}}>Show 20</option>
+                    <option value="50" {{form.option_selected('perpage', 50)}}>Show 50</option>
+                    <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>
+                    <option value="200" {{form.option_selected('perpage', 200)}}>Show 200</option>
+                    <option value="0" {{form.option_selected('perpage', 0)}}>Show all</option>
+                </select>
+                <div id="page-stat" class="pl-2">Showing 20 of 9001</div>
+            </div>
             <hr class="mt-2">
             <div class="list-container m-1">
                 {% for cyoa in ls_cyoa.data %}

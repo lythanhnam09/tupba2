@@ -187,3 +187,31 @@ $size-portrait: 480px;
         }
     }
 }
+
+#page-stat {
+    display: flex;
+    align-items: center;
+
+    @media (max-width: $size-portrait) {
+        flex-grow: 1;
+        padding-left: 0 !important;
+        margin-top: .5rem;
+        justify-content: center;
+    }
+}
+
+#select-perpage {
+    @media (max-width: $size-portrait) {
+        margin-left: 0 !important;
+        margin-top: .5rem;
+    }
+}
+
+.order-xsm-last {
+    @media (max-width: $size-portrait) {
+        order: 5;
+        flex-grow: 1;
+        margin-top: 0.5rem;
+        margin-right: 0 !important;
+    }
+}

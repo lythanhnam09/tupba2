@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "."
+		},
+		{
+			"path": "../UPBA/server/tupba/static"
 		}
 	],
 	"settings": {

@@ -28,7 +28,15 @@ $space-step-count: 10
 
 $lightness-threshold: 72
 
+$btn-round: 0.25rem
+$card-round: 0.25rem
+$input-round: 0.25rem
+$group-round: 0.25rem
+$nav-popup-round: 0.25rem
+
 $colors: ("primary": $primary, "secondary": $secondary, "success": $success, "warning": $warning, "danger": $danger, "info": $info, "light": $light, "dark": $dark, "pink": $pink, "darkblue": $darkblue)
+
+$dev-size: ("xsm": $size-portrait, "sm": $size-small, "md": $size-medium, "lg": $size-large, "xlg": $size-xlarge)
 
 @function highlight-overlay($color)
     @if (lightness($color) < $lightness-threshold)
@@ -76,6 +84,8 @@ body
 // Text align
 .text-center
     text-align: center !important
+.text-vcenter
+    vertical-align: middle !important
 .text-left
     text-align: left !important
 .text-right
@@ -89,7 +99,16 @@ body
     flex-flow: row wrap 
 
 .vflex-center
-    align-items: center 
+    align-items: center
+
+.vflex-stretch
+    align-items: stretch
+
+.vflex-self-center
+    align-self: center
+
+.vflex-self-stretch
+    align-self: stretch
 
 .flex-center
     justify-content: center
@@ -110,35 +129,21 @@ body
 @for $i from 1 through 12
     .col-#{$i}
         flex-basis: $i/12*100%
-    @media (min-width: $size-xlarge)
-        .col-xl-#{$i}
-            flex-basis: $i/12*100%
-    @media (min-width: $size-large)
-        .col-lg-#{$i}
-            flex-basis: $i/12*100%
-    @media (min-width: $size-medium)
-        .col-md-#{$i}
-            flex-basis: $i/12*100%
-    @media (min-width: $size-small)
-        .col-sm-#{$i}
-            flex-basis: $i/12*100%
+
+    @each $name, $size in $dev-size
+        @media (min-width: $size)
+            .col-#{$name}-#{$i}
+                flex-basis: $i/12*100%
 
 // Column 10
 @for $i from 1 through 10
     .col-10-#{$i}
         flex-basis: $i/10*100%
-    @media (min-width: $size-xlarge)
-        .col-xl-10-#{$i}
-            flex-basis: $i/10*100%
-    @media (min-width: $size-large)
-        .col-lg-10-#{$i}
-            flex-basis: $i/10*100%
-    @media (min-width: $size-medium)
-        .col-md-10-#{$i}
-            flex-basis: $i/10*100%
-    @media (min-width: $size-small)
-        .col-sm-10-#{$i}
-            flex-basis: $i/10*100%
+
+    @each $name, $size in $dev-size
+        @media (min-width: $size)
+            .col-#{$name}-10-#{$i}
+                flex-basis: $i/10*100%
 
 // Position
 .pos-sticky-top
@@ -183,6 +188,24 @@ body
     margin-right: auto
 
 @for $i from 0 through $space-step-count
+    @each $name, $size in $dev-size
+        @media (min-width: $size)
+            .m-#{$name}-#{$i}
+                margin: $i * $space-gap !important
+            .ml-#{$name}-#{$i}
+                margin-left: $i * $space-gap !important
+            .mr-#{$name}-#{$i}
+                margin-right: $i * $space-gap !important
+            .mt-#{$name}-#{$i}
+                margin-top: $i * $space-gap !important
+            .mb-#{$name}-#{$i}
+                margin-bottom: $i * $space-gap !important
+            .mx-#{$name}-#{$i}
+                margin-left: $i * $space-gap !important
+                margin-right: $i * $space-gap !important
+            .my-#{$name}-#{$i}
+                margin-top: $i * $space-gap !important
+                margin-bottom: $i * $space-gap !important
     .m-#{$i}
         margin: $i * $space-gap !important
     .ml-#{$i}
@@ -277,6 +300,7 @@ body
     font-size: 1rem
     text-decoration: none
     vertical-align: middle
+    border-radius: $btn-round
 
     &:disabled
         background-color: $secondary
@@ -286,6 +310,7 @@ body
         background-color: $secondary
         color: darken(color-from-bg($secondary), 15%)
         cursor: default
+        border-radius: $btn-round
 
     &-outline
         display: inline-block
@@ -294,6 +319,7 @@ body
         color: darken($secondary, $text-darken-change)
         cursor: pointer
         border: 2px $secondary solid
+        border-radius: $btn-round
 
     &:hover
         background-color: darken($secondary, $hover-change)
@@ -329,6 +355,8 @@ body
     border: 2px $secondary solid
     padding: 0.4rem 0.5rem
     font-size: 1rem
+    border-radius: $input-round
+    overflow: hidden
 
     &:disabled, &:read-only
         border: 2px $secondary solid
@@ -398,6 +426,15 @@ input[type=file].form-control
     justify-content: space-between
     background-color: white
 
+    .btn 
+        margin: 0.5rem 0.25rem
+
+    .form-control
+        margin: 0.4rem 0.25rem
+    
+    .control-group, .control-group-round
+        margin: 0.5rem 0.25rem
+
     &-title
         color: black
         padding: 0.5rem
@@ -460,6 +497,7 @@ input[type=file].form-control
                         overflow-y: scroll
                         scrollbar-width: none
                         min-width: 200px
+                        border-radius: $nav-popup-round
 
                         & .nav-item > .text
                             display: block
@@ -478,6 +516,7 @@ input[type=file].form-control
                         overflow-y: scroll
                         scrollbar-width: none
                         min-width: 200px
+                        border-radius: $nav-popup-round
 
                         & .nav-item > .text
                             display: block
@@ -562,6 +601,17 @@ input[type=file].form-control
     width: 100%
     background-color: white
     color: black
+    border-radius: $card-round
+    overflow: hidden
+
+    &-inline
+        display: inline-block
+        margin: 0.25rem
+        box-shadow: 0 0 0.75rem $shadow
+        background-color: white
+        color: black
+        border-radius: $card-round
+        overflow: hidden
 
     &-header
         padding: 0.5rem
@@ -574,18 +624,7 @@ input[type=file].form-control
             cursor: pointer
 
 // Card inline
-.card-inline
-    display: inline-block
-    margin: 0.25rem
-    box-shadow: 0 0 0.75rem $shadow
-    background-color: white
-    color: black
 
-    &-header
-        padding: 0.5rem
-    
-    &-content
-        padding: 1rem
 
 // Fold button for cardheader
 .foldbutton
@@ -635,6 +674,21 @@ img
     flex-wrap: wrap
     align-items: stretch
 
+    &-round
+        display: flex
+        flex-direction: row
+        flex-wrap: wrap
+        align-items: stretch
+
+        :first-child
+            border-radius: $group-round 0 0 $group-round
+        
+        :last-child
+            border-radius: 0 $group-round $group-round 0
+
+        :not(:first-child):not(:last-child)
+            border-radius: 0
+
 
 // Foreground (text) color
 .fg-white
@@ -678,3 +732,10 @@ img
     font-weight: normal
     font-style: normal
     text-decoration: none !important
+
+// Round stuff
+.round
+    border-radius: .25rem !important
+
+.no-round
+    border-radius: 0 !important

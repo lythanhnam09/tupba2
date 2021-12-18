@@ -152,4 +152,33 @@
 .cyoa-info > .info > .ratio {
   font-size: 11pt;
   padding: 0.1rem;
+}
+
+#page-stat {
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 480px) {
+  #page-stat {
+    flex-grow: 1;
+    padding-left: 0 !important;
+    margin-top: 0.5rem;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  #select-perpage {
+    margin-left: 0 !important;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-xsm-last {
+    order: 5;
+    flex-grow: 1;
+    margin-top: 0.5rem;
+    margin-right: 0 !important;
+  }
 }/*# sourceMappingURL=cyoa.css.map */

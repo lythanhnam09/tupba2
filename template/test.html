@@ -58,7 +58,7 @@
         <!-- Plain card -->
         <div class="card mb-2">
             <div class="card-content">
-                <p>Plain card content</p>
+                <p>Everything looks better when rounded</p>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure repellat commodi quidem est mollitia dolorem quibusdam nihil incidunt cumque doloremque quisquam sequi fuga ipsam libero, magnam sint dolore alias perspiciatis obcaecati. Impedit maiores blanditiis, qui ratione et reiciendis veniam harum nemo odit, doloremque aliquam amet quae facilis explicabo iure quisquam accusantium molestiae distinctio repudiandae quia. Laborum illum amet incidunt inventore? Omnis debitis voluptatibus doloribus, inventore soluta eum, aperiam tempora iste illo nihil nulla ratione nemo et deleniti, sequi iusto doloremque? Cumque tenetur beatae suscipit quam excepturi. Nulla eaque blanditiis quae, voluptatem fugiat aut veniam ipsum dolor voluptas deserunt, sequi esse.</p>
             </div>
         </div>
@@ -165,19 +165,22 @@
                 <h3><i class="fas fa-cog"></i> Flex grid control</h3>
             </div>
             <div class="card-content">
-                <select class="form-control" name="" id="select-col">
-                    <option value="-10">Col-10</option>
-                    <option value="">Col-12</option>
-                </select> -
-                <select class="form-control" name="" id="select-size">
-                    <option value="">&lt;None&gt;</option>
-                    <option value="-sm">sm</option>
-                    <option value="-md">md</option>
-                    <option value="-lg">lg</option>
-                    <option value="-xl">xl</option>
-                </select> -
-                <input class="form-control" style="width:50px" type="number" name="" id="input-colnum" min="1" max="10" value="2">
-                <button class="btn btn-primary" id="btn-col-10" onclick="changeCol()">Set</button>
+                <div class="control-group">
+                    <select class="form-control ml-1" name="" id="select-col">
+                        <option value="-10">Col-10</option>
+                        <option value="">Col-12</option>
+                    </select> <div class="ml-1 d-flex vflex-center text-bold">-</div>
+                    <select class="form-control ml-1" name="" id="select-size">
+                        <option value="">&lt;None&gt;</option>
+                        <option value="-xsm">xsm</option>
+                        <option value="-sm">sm</option>
+                        <option value="-md">md</option>
+                        <option value="-lg">lg</option>
+                        <option value="-xlg">xlg</option>
+                    </select> <div class="ml-1 d-flex vflex-center text-bold">-</div>
+                    <input class="form-control ml-1" style="width:50px" type="number" name="" id="input-colnum" min="1" max="10" value="2">
+                    <button class="btn btn-primary ml-1" id="btn-col-10" onclick="changeCol()">Set</button>
+                </div>
             </div>
         </div>
         <!-- Card header colors (also col-10 or col-12 test) -->
@@ -492,10 +495,34 @@
                         <button class="btn btn-primary">6</button>
                         <button class="btn btn-primary">7</button>
                     </div>
-
                     <div class="control-group mt-1">
-                        <input class="form-control" type="text" placeholder="Text value">
-                        <button class="btn btn-primary">Send</button>
+                        <input type="text" class="w-50 form-control" placeholder="Useful when putting stuff in straight line">
+                        <select class="form-control ml-1" name="" id="">
+                            <option value="">Like this</option>
+                        </select>
+                        <button class="btn btn-primary ml-1">Submit</button>
+                    </div>
+                    <h3 class="mt-1">Grouping Rounded</h3>
+                    <div class="control-group-round mt-1">
+                        <button class="btn btn-primary">1</button>
+                        <button class="btn btn-primary">2</button>
+                        <button class="btn btn-primary">3</button>
+                        <button class="btn btn-primary">4</button>
+                        <button class="btn btn-primary">5</button>
+                        <button class="btn btn-primary">6</button>
+                        <button class="btn btn-primary">7</button>
+                    </div>
+                    <div class="control-group-round mt-1">
+                        <input type="text" class="form-control" placeholder="Better stick them together">
+                        <button class="btn btn-primary">Submit</button>
+                    </div>
+
+                    <div class="control-group-round mt-1">
+                        <input class="form-control" type="text" placeholder="Or it look like this">
+                        <select class="form-control ml-1" name="" id="">
+                            <option value="">Still look fine tho</option>
+                        </select>
+                        <button class="btn btn-primary ml-1">Send</button>
                     </div>
                 </div>
                 <!-- Progress bar -->
