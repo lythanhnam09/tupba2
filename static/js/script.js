@@ -131,3 +131,55 @@ $(document).mouseup(function(e)
     registerMenuDismiss(e, $('#exp-left'), $('#btn-exp-left'), (con) => con.slideUp(300));
     registerMenuDismiss(e, $('#exp-right'), $('#btn-exp-right'), (con) => con.slideUp(300));
 });
+
+class Dialog {
+    constructor(
+        title = 'Dialog title', content = 'Some random message', 
+        buttons = [
+            {
+                html: '<button id="btn-dialog-ok" class="btn btn-primary">OK</button>',
+                selector: '#btn-dialog-ok',
+                onclick: function() {
+                    console.log('Dialog ok');
+                }
+            }
+        ]) {
+        
+        this.title = title;
+        this.content = content;
+        this.buttons = buttons;
+
+    }
+
+    show() {
+        let buttonHtml = '';
+        for (let btn of this.buttons) {
+            buttonHtml += btn.html;
+        }
+        $(`
+        <div class="dialog-container">
+            <div class="dialog">
+                <div class="title">
+                    ${this.title}
+                </div>
+                <div class="content">
+                    ${this.content}
+                </div>
+                <div class="dialog-button">
+                    ${buttonHtml}
+                </div>
+            </div>
+        </div>
+        `).insertBefore('body');
+        for (let btn of this.buttons) {
+            let dialog = this;
+            $(btn.selector).click(function(el) {
+                btn.onclick(dialog, el);
+            });
+        }
+    }
+
+    hide() {
+        $('.dialog-container').remove();
+    }
+}

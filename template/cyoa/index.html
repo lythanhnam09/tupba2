@@ -5,6 +5,11 @@
     <link rel="stylesheet" href="/static/css/cyoa.css">
 {% endblock extracss %}
 {% block extrajs %}
+    <script>
+        // var form = {
+        //     page: {{form['page']}}
+        // };
+    </script>
     <script src="/static/js/cyoa.js"></script>
 {% endblock extrajs %}
 {% block body %}
@@ -12,7 +17,7 @@
         <div class="container-lg bg-d10-darkblue py-2">
             <h1 class="text-center">CYOA List</h1>
             <hr class="mb-2">
-            <form class="d-block mx-2" action="/cyoa">
+            <form id="form-filter" class="d-block mx-2" action="/cyoa">
                 <h2>Filter</h2>
                 <input class="form-control w-100" name="q" type="text" placeholder="Search tag, title" value="{{form['q']}}">
                 <div class="control-group mt-1">
@@ -44,18 +49,18 @@
                 <div class="control-group-round">
                     <button class="btn btn-primary"><i class="fas fa-chevron-double-left"></i></button>
                     <button class="btn btn-primary"><i class="fas fa-chevron-left"></i></button>
-                    <button class="btn btn-primary">Page 1 of 999</button>
+                    <button id="btn-goto-page" class="btn btn-primary" onclick="showPageDialog({{ls_cyoa.page_num}}, {{ls_cyoa.page_count}})">Page {{ls_cyoa.page_num}} of {{ls_cyoa.page_count}}</button>
                     <button class="btn btn-primary"><i class="fas fa-chevron-right"></i></button>
                     <button class="btn btn-primary"><i class="fas fa-chevron-double-right"></i></button>
                 </div>
-                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage">
+                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage()">
                     <option value="20" {{form.option_selected('perpage', 20)}}>Show 20</option>
                     <option value="50" {{form.option_selected('perpage', 50)}}>Show 50</option>
                     <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>
                     <option value="200" {{form.option_selected('perpage', 200)}}>Show 200</option>
                     <option value="0" {{form.option_selected('perpage', 0)}}>Show all</option>
                 </select>
-                <div id="page-stat" class="pl-2">Showing 20 of 9001</div>
+                <div id="page-stat" class="pl-2">Showing {{ls_cyoa.data|length}} of {{ls_cyoa.total_count}}</div>
             </div>
             <hr class="mt-2">
             <div class="list-container m-1">
