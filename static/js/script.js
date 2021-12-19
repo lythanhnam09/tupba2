@@ -149,12 +149,13 @@ class Dialog {
                     console.log('Dialog ok');
                 }
             }
-        ]) {
+        ], dismissOutside = true, dismissButton = true) {
         
         this.title = title;
         this.content = content;
         this.buttons = buttons;
-
+        this.dismissOutside = dismissOutside;
+        this.dismissButton = dismissButton;
     }
 
     show() {
@@ -177,10 +178,19 @@ class Dialog {
             </div>
         </div>
         `).insertBefore('body');
+        let dialog = this;
         for (let btn of this.buttons) {
-            let dialog = this;
             $(btn.selector).click(function(el) {
                 btn.onclick(dialog, el);
+                if (dialog.dismissButton) dialog.hide();
+            });
+        }
+        if (this.dismissOutside) {
+            $('.dialog').click(function(el) {
+                return false;
+            });
+            $('.dialog-container').click(function(el) {
+                dialog.hide();
             });
         }
     }

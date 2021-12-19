@@ -24,7 +24,6 @@ function showPageDialog(page, pagecount, formid='form-filter') {
                     $('#btn-goto-page').prop('disabled', false);
                     $('input[name=page]').val($('#select-goto-page').val());
                     $(`#${formid}`).submit();
-                    dialog.hide();
                 }
             },
             {
@@ -32,7 +31,6 @@ function showPageDialog(page, pagecount, formid='form-filter') {
                 selector: '#btn-dialog-cancel',
                 onclick: function(dialog, button) {
                     $('#btn-goto-page').prop('disabled', false);
-                    dialog.hide();
                 }
             }
         ]);
