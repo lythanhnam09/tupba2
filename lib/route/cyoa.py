@@ -9,6 +9,7 @@ import lib.provider.anonpone as anonpone
 from lib.model.web.navbar import NavOption, NavButton
 from lib.model.cyoa.cyoa import *
 from lib.model.web.form import WebForm
+from lib.model.web.page import SimplePageNav
 
 
 cyoa = Blueprint('cyoa', __name__, template_folder='template', root_path='.')
@@ -33,7 +34,7 @@ def root():
     else:
         ls = anonpone.get_cyoa_list(form['q'], form['page'], form['perpage'], [form['sf'], form['sd']])
     
-    return render_template('cyoa/index.html', nav=cyoa_nav(), form=form, ls_cyoa=ls)
+    return render_template('cyoa/index.html', nav=cyoa_nav(), form=form, ls_cyoa=ls, page_nav=SimplePageNav(ls, 'form-filter'))
 
 @cyoa.route('/quest/<sname>')
 def cyoa_info(sname):

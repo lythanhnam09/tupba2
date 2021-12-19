@@ -302,15 +302,10 @@ body
     vertical-align: middle
     border-radius: $btn-round
 
-    &:disabled
-        background-color: $secondary
-        color: color-from-bg($secondary)
-
-    &-disabled
-        background-color: $secondary
-        color: darken(color-from-bg($secondary), 15%)
+    &:disabled, &-disabled
+        background-color: darken($secondary, $hover-change)
+        color: darken(color-from-bg($secondary), 30%)
         cursor: default
-        border-radius: $btn-round
 
     &-outline
         display: inline-block
@@ -321,20 +316,20 @@ body
         border: 2px $secondary solid
         border-radius: $btn-round
 
-    &:hover
+    &:hover:not(:disabled)
         background-color: darken($secondary, $hover-change)
 
     @each $name, $color in $colors
         &-#{$name}
             background-color: $color
             color: color-from-bg($color)
-            &:hover, &:focus, &:focus-visible
+            &:hover:not(:disabled), &:focus:not(:disabled), &:focus-visible:not(:disabled)
                 background-color: darken($color, $hover-change)//btn-hover-color($color)
                 color: color-from-bg($color)
-            &:active, &:focus, &:focus-visible
+            &:active:not(:disabled), &:focus:not(:disabled), &:focus-visible:not(:disabled)
                 outline: transparentize($color, 0.5) solid 0.2rem
                 z-index: 50
-            &:active
+            &:active:not(:disabled)
                 background-color: darken($color, $active-change)//btn-hover-color($color)
             
             &.btn-outline

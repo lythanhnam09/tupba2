@@ -113,8 +113,7 @@ def get_page_link(page, page_count, template):
 def get_file_size_str(num, round = 2, threshold = 1024):
     lsu = ['B', 'KB', 'MB', 'GB', 'TB']
     ui = 0
-    i = num
-    while (i >= threshold) and (ui < len(lsu)):
+    while (num >= threshold) and (ui < len(lsu)):
         ui += 1
-        i = i / 1024
-    return '{num:.{round}f}{unit}'.format(num=i,round=round,unit=lsu[ui])
+        num /= 1024
+    return f'{num:.{round}f}{lsu[ui]}'

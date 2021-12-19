@@ -46,13 +46,14 @@
             <hr class="my-2">
             <div class="control-group px-2">
                 <button id="btn-refresh" class="btn btn-primary mr-1" title="Refresh" onclick="refreshCyoaData()"><i class="fas fa-sync"></i></button>
-                <div class="control-group-round">
+                {# <div class="control-group-round">
                     <button class="btn btn-primary"><i class="fas fa-chevron-double-left"></i></button>
                     <button class="btn btn-primary"><i class="fas fa-chevron-left"></i></button>
                     <button id="btn-goto-page" class="btn btn-primary" onclick="showPageDialog({{ls_cyoa.page_num}}, {{ls_cyoa.page_count}})">Page {{ls_cyoa.page_num}} of {{ls_cyoa.page_count}}</button>
                     <button class="btn btn-primary"><i class="fas fa-chevron-right"></i></button>
                     <button class="btn btn-primary"><i class="fas fa-chevron-double-right"></i></button>
-                </div>
+                </div> #}
+                {{page_nav.html().markup()}}
                 <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage()">
                     <option value="20" {{form.option_selected('perpage', 20)}}>Show 20</option>
                     <option value="50" {{form.option_selected('perpage', 50)}}>Show 50</option>
@@ -63,6 +64,7 @@
                 <div id="page-stat" class="pl-2">Showing {{ls_cyoa.data|length}} of {{ls_cyoa.total_count}}</div>
             </div>
             <hr class="mt-2">
+
             <div class="list-container m-1">
                 {% for cyoa in ls_cyoa.data %}
                 <div class="card bg-l15-darkblue">
@@ -112,6 +114,27 @@
                     </div>
                 </div>
                 {% endfor %}
+            </div>
+
+            <hr class="my-2">
+            <div class="control-group px-2">
+                <button id="btn-top" class="btn btn-primary mr-1" title="To page top" onclick="scrollToEl('#btn-refresh', 1000)"><i class="fas fa-arrow-to-top"></i></button>
+                {# <div class="control-group-round">
+                    <button class="btn btn-primary"><i class="fas fa-chevron-double-left"></i></button>
+                    <button class="btn btn-primary"><i class="fas fa-chevron-left"></i></button>
+                    <button id="btn-goto-page" class="btn btn-primary" onclick="showPageDialog({{ls_cyoa.page_num}}, {{ls_cyoa.page_count}})">Page {{ls_cyoa.page_num}} of {{ls_cyoa.page_count}}</button>
+                    <button class="btn btn-primary"><i class="fas fa-chevron-right"></i></button>
+                    <button class="btn btn-primary"><i class="fas fa-chevron-double-right"></i></button>
+                </div> #}
+                {{page_nav.html().markup()}}
+                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage()">
+                    <option value="20" {{form.option_selected('perpage', 20)}}>Show 20</option>
+                    <option value="50" {{form.option_selected('perpage', 50)}}>Show 50</option>
+                    <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>
+                    <option value="200" {{form.option_selected('perpage', 200)}}>Show 200</option>
+                    <option value="0" {{form.option_selected('perpage', 0)}}>Show all</option>
+                </select>
+                <div id="page-stat" class="pl-2">Showing {{ls_cyoa.data|length}} of {{ls_cyoa.total_count}}</div>
             </div>
         </div>
     </div>

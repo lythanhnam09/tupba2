@@ -7,7 +7,7 @@ function refreshCyoaData() {
     $('#btn-refresh').prop('onclick', false);
 }
 
-function showPageDialog(page, pagecount) {
+function showPageDialog(page, pagecount, formid='form-filter') {
     $('#btn-goto-page').prop('disabled', true);
     let pageHtml = '';
     for (let i=1;i<=pagecount;i++) {
@@ -23,7 +23,7 @@ function showPageDialog(page, pagecount) {
                 onclick: function(dialog, button) {
                     $('#btn-goto-page').prop('disabled', false);
                     $('input[name=page]').val($('#select-goto-page').val());
-                    $('#form-filter').submit();
+                    $(`#${formid}`).submit();
                     dialog.hide();
                 }
             },
@@ -39,8 +39,13 @@ function showPageDialog(page, pagecount) {
     dialog.show();
 }
 
-function changePerpage() {
+function changePerpage(formid = 'form-filter') {
     $('input[name=perpage]').val($('#select-perpage').val());
     $('input[name=page]').val('1');
-    $('#form-filter').submit();
+    $(`#${formid}`).submit();
+}
+
+function gotoPage(num, formid = 'form-filter') {
+    $('input[name=page]').val(num);
+    $(`#${formid}`).submit();
 }

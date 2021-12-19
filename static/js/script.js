@@ -132,6 +132,12 @@ $(document).mouseup(function(e)
     registerMenuDismiss(e, $('#exp-right'), $('#btn-exp-right'), (con) => con.slideUp(300));
 });
 
+function scrollToEl(selector, time = 2000) {
+    $([document.documentElement, document.body]).animate({
+        scrollTop: $(selector).offset().top
+    }, time);
+}
+
 class Dialog {
     constructor(
         title = 'Dialog title', content = 'Some random message', 
