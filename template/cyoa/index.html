@@ -66,7 +66,7 @@
             <div class="list-container m-1">
                 {% for cyoa in ls_cyoa.data %}
                 <div class="card bg-l15-darkblue">
-                    <a class="card-image img-container" href="/cyoa/{{cyoa['short_name']}}">
+                    <a class="card-image img-container" href="/cyoa/quest/{{cyoa['short_name']}}">
                         <img src="{{cyoa['image_link']}}" alt="{{cyoa['name']}}">
                     </a>
                     <div class="card-content p-1">
@@ -75,7 +75,7 @@
                             <a class="tag-item bg-l5-danger" href="?{{form.get_form_query({'q': 'is_live=1'}, ['page', 'refresh'])}}">LIVE</a>
                             {% endif %}
                             
-                            <a class="name" href="/cyoa/{{cyoa['short_name']}}">{{cyoa['name']}}</a>
+                            <a class="name" href="/cyoa/quest/{{cyoa['short_name']}}">{{cyoa['name']}}</a>
                         </h3>
                         <div class="description mb-1">
                             {{cyoa['description']}}

@@ -35,7 +35,7 @@ def root():
     
     return render_template('cyoa/index.html', nav=cyoa_nav(), form=form, ls_cyoa=ls)
 
-@cyoa.route('/<sname>')
+@cyoa.route('/quest/<sname>')
 def cyoa_info(sname):
     cy = Cyoa.find_shortmame(sname)
     if (cy is None): abort(404)
