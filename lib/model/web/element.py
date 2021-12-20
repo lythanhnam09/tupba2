@@ -23,5 +23,5 @@ class WebElement:
     def __html__(self):
         return self.render_html()
     
-def fa_icon(name):
-    return f'<i class="{name}"></i>'
+def fa_icon(name, style='fas', extra_cls=''):
+    return f'<i class="{style} fa-{name} {extra_cls}"></i>'

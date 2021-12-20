@@ -22,11 +22,11 @@ class SimplePageNav:
         self.form_id = form_id
         self.button = []
 
-        self.button.append(Button(text=fa_icon('fas fa-chevron-double-left'), disabled=self.page_data.page_num <= 1, on_click=f'gotoPage(1, {self.form_id!r})', style_cls=f'btn btn-{self.color}'))
-        self.button.append(Button(text=fa_icon('fas fa-chevron-left'), disabled=self.page_data.page_num <= 1, on_click=f'gotoPage({self.page_data.page_num - 1}, {self.form_id!r})', style_cls=f'btn btn-{self.color}'))
+        self.button.append(Button(text=fa_icon('chevron-double-left'), disabled=self.page_data.page_num <= 1, on_click=f'gotoPage(1, {self.form_id!r})', style_cls=f'btn btn-{self.color}'))
+        self.button.append(Button(text=fa_icon('chevron-left'), disabled=self.page_data.page_num <= 1, on_click=f'gotoPage({self.page_data.page_num - 1}, {self.form_id!r})', style_cls=f'btn btn-{self.color}'))
         self.button.append(Button(text=f'Page {self.page_data.page_num} of {self.page_data.page_count}', on_click=f'showPageDialog({self.page_data.page_num}, {self.page_data.page_count}, {self.form_id!r})', style_cls=f'btn btn-{self.color}'))
-        self.button.append(Button(text=fa_icon('fas fa-chevron-right'), disabled=self.page_data.page_num >= self.page_data.page_count, on_click=f'gotoPage({self.page_data.page_num + 1}, {self.form_id!r})', style_cls=f'btn btn-{self.color}'))
-        self.button.append(Button(text=fa_icon('fas fa-chevron-double-right'), disabled=self.page_data.page_num >= self.page_data.page_count, on_click=f'gotoPage({self.page_data.page_count}, {self.form_id!r})', style_cls=f'btn btn-{self.color}'))
+        self.button.append(Button(text=fa_icon('chevron-right'), disabled=self.page_data.page_num >= self.page_data.page_count, on_click=f'gotoPage({self.page_data.page_num + 1}, {self.form_id!r})', style_cls=f'btn btn-{self.color}'))
+        self.button.append(Button(text=fa_icon('chevron-double-right'), disabled=self.page_data.page_num >= self.page_data.page_count, on_click=f'gotoPage({self.page_data.page_count}, {self.form_id!r})', style_cls=f'btn btn-{self.color}'))
     
     def html(self):
         child = [x.html() for x in self.button]
