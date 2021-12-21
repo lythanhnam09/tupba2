@@ -22,7 +22,7 @@
                 <input class="form-control w-100" name="q" type="text" placeholder="Search tag, title" value="{{form['q']}}">
                 <div class="control-group mt-1">
                     <button class="btn btn-success mr-1 order-xsm-last" type="submit"><i class="fas fa-filter"></i> Filter</button>
-                    <select class="form-control mr-1" name="sf" id="sf">
+                    <select class="form-control mr-1 fs-xsm" name="sf" id="sf">
                         <option value="last_post_time" {{form.option_selected('sf', 'last_post_time')}}>Sort by Last post time</option>
                         <option value="first_post_time" {{form.option_selected('sf', 'first_post_time')}}>Sort by First post time</option>
                         <option value="quest_time" {{form.option_selected('sf', 'quest_time')}}>Sort by Quest time</option>
@@ -35,7 +35,7 @@
                         <option value="short_name" {{form.option_selected('sf', 'short_name')}}>Sort by Short name</option>
                         <option value="id" {{form.option_selected('sf', 'id')}}>Sort by ID</option>
                     </select>
-                    <select class="form-control mr-1" name="sd" id="sd">
+                    <select class="form-control mr-1 fs-xsm" name="sd" id="sd">
                         <option value="desc" {{form.option_selected('sd', 'desc')}}>Descending</option>
                         <option value="asc" {{form.option_selected('sd', 'asc')}}>Ascending</option>
                     </select>
@@ -67,11 +67,11 @@
 
             <div class="list-container m-1">
                 {% for cyoa in ls_cyoa.data %}
-                <div class="card bg-l15-darkblue">
-                    <a class="card-image img-container" href="/cyoa/quest/{{cyoa['short_name']}}">
+                <div class="cyoa card bg-l15-darkblue">
+                    <a class="cyoa card-image img-container" href="/cyoa/quest/{{cyoa['short_name']}}">
                         <img src="{{cyoa['image_link']}}" alt="{{cyoa['name']}}">
                     </a>
-                    <div class="card-content p-1">
+                    <div class="cyoa card-content p-1">
                         <h3 class="title">
                             {% if cyoa['is_live'] == 1 %}
                             <a class="tag-item bg-l5-danger" href="?{{form.get_form_query({'q': 'is_live=1'}, ['page', 'refresh'])}}">LIVE</a>

@@ -13,6 +13,10 @@ class SQLRef:
     def get(self, table, where = None, order_by = None, limit = None, offset = None):
         return None
 
+    def get_page(self, table, page, per_page, where = None, order_by = None):
+        logging.warning(f'{self.__class__.__name__}.filter(): {self.__class__.__name__} does not have filter()')
+        return None
+
     def filter(self, table, where = None, order_by = None, limit = None, offset = None):
         logging.warning(f'{self.__class__.__name__}.filter(): {self.__class__.__name__} does not have filter()')
         return None
@@ -33,6 +37,12 @@ class SQLRefMany(SQLRef):
             where = []
         where.append([self.ref_col, table.cols[self.col]])
         return self.ref_table.select(where=where, order_by=order_by, limit=limit, offset=offset)
+
+    def get_page(self, table, page, per_page, where = None, order_by = None):
+        if (where == None):
+            where = []
+        where.append([self.ref_col, table.cols[self.col]])
+        return self.ref_table.get_page(page, per_page, where=where, order_by=order_by)
 
     # def filter(self, table, where = None, order_by = None, limit = None, offset = None):
     #     if (where == None):
@@ -69,6 +79,108 @@ class SQLRefPivot(SQLRef):
 
         return result
 
+    def get_many(self, table, where = None, order_by = None, limit = None, offset = None):
+        name_t1 = 't1'
+        name_t2 = 't2'
+
+        ref_pivot:SQLRef = self.ref_table._reference[self.pivot_ref]
+        t1 = f'{self.ref_table._table_name} {name_t1}'
+        t2 = f'{ref_pivot.ref_table._table_name} {name_t2}'
+        join_on = f'{name_t1}.{ref_pivot.col} = {name_t2}.{ref_pivot.ref_col}'
+        if (where == None): where = []
+        where.append([f't1.{self.ref_col}', table.cols[self.col]])
+        sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by, limit=limit, offset=offset)
+
+        qresult = db_util.db_get_all(table._dbfile, sql)
+        result = []
+
+        for row in qresult:
+            pos = len(ref_pivot.ref_table._props.keys())
+            result.append(ref_pivot.ref_table(row=row[:pos]))
+
+        return result
+
+    def get_page(self, table, page_num, per_page, where = None, order_by = None):
+        limit = per_page
+        if (page_num < 1): page_num = 1
+        offset = (page_num-1) * per_page
+
+        name_t1 = 't1'
+        name_t2 = 't2'
+
+        ref_pivot:SQLRef = self.ref_table._reference[self.pivot_ref]
+        t1 = f'{self.ref_table._table_name} {name_t1}'
+        t2 = f'{ref_pivot.ref_table._table_name} {name_t2}'
+        join_on = f'{name_t1}.{ref_pivot.col} = {name_t2}.{ref_pivot.ref_col}'
+        if (where == None): where = []
+        where.append([f't1.{self.ref_col}', table.cols[self.col]])
+
+        batch = db_util.DBBatch(table._dbfile)
+        if (per_page == 0):
+            sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by)
+            batch.add_get_all(sql)
+        else:
+            sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by, limit=limit, offset=offset)
+            batch.add_get_all(sql)
+        sql = sql_command.select_join([t1, t2], join_on, columns=['count(*)'], where=where)
+        batch.add_get_one_cell(sql)
+        qresult = batch.run()
+        
+        data = []
+
+        for row in qresult[0]:
+            pos = len(ref_pivot.ref_table._props.keys())
+            o2 = self.ref_table(row=row[pos:])
+            o2.cols[self.pivot_ref] = ref_pivot.ref_table(row=row[:pos])
+
+            data.append(o2)
+
+        total_count = qresult[1]
+        page_count = math.ceil(total_count / per_page) if per_page > 0 and math.ceil(total_count / per_page) > 0 else 1
+
+        page = ResultPage(page_num, page_count, per_page, total_count, data)
+
+        return page
+
+    def get_many_page(self, table, page_num, per_page, where = None, order_by = None):
+        limit = per_page
+        if (page_num < 1): page_num = 1
+        offset = (page_num-1) * per_page
+
+        name_t1 = 't1'
+        name_t2 = 't2'
+
+        ref_pivot:SQLRef = self.ref_table._reference[self.pivot_ref]
+        t1 = f'{self.ref_table._table_name} {name_t1}'
+        t2 = f'{ref_pivot.ref_table._table_name} {name_t2}'
+        join_on = f'{name_t1}.{ref_pivot.col} = {name_t2}.{ref_pivot.ref_col}'
+        if (where == None): where = []
+        where.append([f't1.{self.ref_col}', table.cols[self.col]])
+
+        batch = db_util.DBBatch(table._dbfile)
+        if (per_page == 0):
+            sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by)
+            batch.add_get_all(sql)
+        else:
+            sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by, limit=limit, offset=offset)
+            batch.add_get_all(sql)
+        sql = sql_command.select_join([t1, t2], join_on, columns=['count(*)'], where=where)
+        batch.add_get_one_cell(sql)
+        qresult = batch.run()
+        
+        data = []
+
+        for row in qresult[0]:
+            pos = len(ref_pivot.ref_table._props.keys())
+            data.append(ref_pivot.ref_table(row=row[:pos]))
+
+        total_count = qresult[1]
+        page_count = math.ceil(total_count / per_page) if per_page > 0 and math.ceil(total_count / per_page) > 0 else 1
+
+        page = ResultPage(page_num, page_count, per_page, total_count, data)
+
+        return page
+
 class ResultPage:
     def __init__(self, page_num:int, page_count:int, per_page:int, total_count:int, data:list):
         self.page_num = page_num
@@ -96,9 +208,9 @@ class SQLTable:
         else:
             if (data != None):
                 self.cols = data.copy()
+                self.extra_col()
             else:
                 self.cols = self._props.copy()
-
 
     def __getitem__(self, key):
         if (not key in self.cols):
@@ -107,6 +219,11 @@ class SQLTable:
 
     def __setitem__(self, key, value):
         self.cols[key] = value
+
+    def get(self, col, default_none = None):
+        if (not col in self.cols):
+            return self.get_ref(col)
+        return self.cols[col] if self.cols[col] is not None else default_none
 
     def extra_col(self):
         pass
@@ -220,7 +337,7 @@ class SQLTable:
 
         data = [cls(row=r) for r in lsres[0]]
         total_count = lsres[1]
-        page_count = math.ceil(total_count / per_page) if per_page > 0 else 1
+        page_count = math.ceil(total_count / per_page) if per_page > 0 and math.ceil(total_count / per_page) > 0 else 1
 
         page = ResultPage(page_num, page_count, per_page, total_count, data)
 
@@ -249,7 +366,7 @@ class SQLTable:
 
                         sql = sql_command.insert(cls._table_name, cls.get_props_name(no_id=cls._auto_primary and not force_primary), or_ignore=or_ignore, update_conflict=update_conflict, set_value=cls.get_props_name(no_id=True), where=cls._primary)
 
-                    lsarg.append(arg)
+                lsarg.append(arg)
             db_util.db_exec_multi(cls._dbfile, sql, lsarg)
         else:
             if (update_conflict):
@@ -293,15 +410,33 @@ class SQLTable:
             sql = sql_command.delete(cls._table_name, cls._primary)
             db_util.db_exec(cls._dbfile, sql, o.id_value_tuple(), constraint)
 
-    def get_ref(self, ref_name:str, where = None, order_by = None, limit = None, offset = None, save_result = False):
+    def get_ref(self, ref_name:str, where = None, order_by = None, limit = None, offset = None, save_result = False, get_many = False):
         if (not ref_name in self._reference):
             raise Exception(f'Reference {ref_name!r} not found')
-        result = self._reference[ref_name].get(self, where, order_by, limit, offset)
+        if (get_many):
+            if (not isinstance(self._reference[ref_name], SQLRefPivot)):
+                raise Exception(f'Reference {ref_name!r} is not a pivot reference but {type(self._reference[ref_name])}')
+            result = self._reference[ref_name].get_many(self, where, order_by, limit, offset)
+        else:
+            result = self._reference[ref_name].get(self, where, order_by, limit, offset)
+        if (save_result): self.cols[ref_name] = result
+        return result
+
+    def get_ref_page(self, ref_name:str, page_num:int, per_page:int, where = None, order_by = None, save_result = False, get_many = False):
+        if (not ref_name in self._reference):
+            raise Exception(f'Reference {ref_name!r} not found')
+        if (get_many):
+            if (not isinstance(self._reference[ref_name], SQLRefPivot)):
+                raise Exception(f'Reference {ref_name!r} is not a pivot reference but {type(self._reference[ref_name])}')
+            result = self._reference[ref_name].get_many_page(self, page_num, per_page, where, order_by)
+        else:
+            result = self._reference[ref_name].get_page(self, page_num, per_page, where, order_by)
+        
         if (save_result): self.cols[ref_name] = result
         return result
 
     def __repr__(self):
-        return f'[{self._table_name}{self.cols}]'
+        return f'{self._table_name}{self.cols}'
 
     def __eq__(self, other):
         if (type(other) != SQLTable):

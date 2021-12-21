@@ -39,7 +39,7 @@ $size-portrait: 480px;
     }
 }
 
-.card {
+.cyoa.card {
     display: grid;
     grid-template-rows: 200px 1fr;
     align-items: stretch;
@@ -72,6 +72,46 @@ $size-portrait: 480px;
         > .description {
             font-size: 10pt;
             color: rgb(228, 228, 228);
+        }
+
+        > .status {
+    
+            > .date {
+                color: white;
+                font-size: 10pt;
+            }
+    
+            > .stat {
+                color: white;
+                font-size: 10pt;
+            }
+        }
+    }
+}
+
+.thread.card {
+    display: grid;
+    grid-template-rows: 200px 1fr;
+    align-items: stretch;
+
+    &-image {
+        overflow: hidden;
+        background-color: $darkblue;
+    }
+
+    &-content {
+        display: grid;
+        grid-template-rows: auto 1fr;
+
+        > .title {
+            color: lighten($warning, 10%);
+            line-height: 1.05;
+            text-decoration: none;
+
+            > .name {
+                color: lighten($warning, 10%);
+                text-decoration: none;
+            }
         }
 
         > .status {
@@ -213,5 +253,17 @@ $size-portrait: 480px;
         flex-grow: 1;
         margin-top: 0.5rem;
         margin-right: 0 !important;
+    }
+}
+
+.fs-xsm {
+    @media (max-width: $size-portrait) {
+        font-size: 11pt;
+    }
+}
+
+.grow-xsm {
+    @media (max-width: $size-portrait) {
+        flex-grow: 1;
     }
 }

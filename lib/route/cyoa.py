@@ -27,6 +27,10 @@ def cyoa_nav():
 def root():
     form = WebForm(data={'refresh':False, 'page':1, 'perpage':20, 'sf':'last_post_time', 'sd':'desc', 'q':''})
     form.get_arg_value(request.args)
+
+    cnt = Cyoa.get_count()
+    if (cnt == 0):
+        anonpone.refresh_cyoa_list()
     
     if (form['refresh']):
         anonpone.refresh_cyoa_list()
@@ -38,13 +42,13 @@ def root():
 
 @cyoa.route('/quest/<sname>')
 def cyoa_info(sname):
-    cy = Cyoa.find_shortmame(sname)
+    form = WebForm(data={'page':1, 'perpage':40})
+    form.get_arg_value(request.args)
+    cy = Cyoa.find_shortname(sname)
     if (cy is None): abort(404)
     cy.check_steath_lewd()
-    return render_template('cyoa/info.html', nav=cyoa_nav(), cyoa=cy)
+    ls_th = anonpone.get_thread_list(cy, form['page'], form['perpage'])
+    return render_template('cyoa/info.html', nav=cyoa_nav(), form=form, cyoa=cy, thread_page=ls_th, page_nav=SimplePageNav(ls_th, 'form-page'))
 
-@cyoa.route('/api/cyoa/refresh')
-def api_refresh_cyoa():
-    anonpone.refresh_cyoa_list()
-    return 'OK', 200
+
 

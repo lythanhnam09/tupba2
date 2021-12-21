@@ -1,4 +1,5 @@
 from lib.util.sql_table import *
+from lib.model.cyoa.cyoa_thread import Thread
 import lib.provider.anonpone as anonpone
 import lib.util.util as util
 import html2text
@@ -27,7 +28,8 @@ class Cyoa(SQLTable):
         'total_fanart': 0,
         'word_count': 0,
         'lewd_exist': 0,
-        'image_path': ''
+        'image_path': '',
+        'save_status': 0
     }
     _primary = ['id']
     _auto_primary = False
@@ -42,7 +44,7 @@ class Cyoa(SQLTable):
         self.cols['description'] = h.handle(self.cols['description'])
 
     @classmethod
-    def find_shortmame(cls, shortname):
+    def find_shortname(cls, shortname):
         sql = sql_command.select(cls._table_name, where=['short_name'])
         r = db_util.db_get_single_row(cls._dbfile, sql, (shortname, ))
         if (r != None):
@@ -62,8 +64,8 @@ class Cyoa(SQLTable):
             'chan': json['_channame'],
             'is_live': int(json['_live']),
             'status': int(json['_status']),
-            'last_post_time': json['_lastPost']['_date'],
-            'first_post_time': json['_firstPost']['_date'],
+            'last_post_time': int(json['_lastPost']['_date']),
+            'first_post_time': int(json['_firstPost']['_date']),
             'quest_time': json['_stats']['questTime'],
             'total_image': json['_stats']['totalImages'],
             'total_post': json['_stats']['totalPosts'],
@@ -71,7 +73,8 @@ class Cyoa(SQLTable):
             'total_fanart': 0 if json['_stats']['totalFanart'] is None else json['_stats']['totalFanart'],
             'word_count':json['_stats']['totalWordCount'],
             'lewd_exist':json['_stats']['lewdExists'],
-            'image_path':None
+            'image_path':None,
+            'save_status': 0
         }
         o = cls(data=rdict)
         return o
@@ -128,3 +131,9 @@ class Cyoa(SQLTable):
                 have_lewd_tag = True
                 break
         self.cols['steath_lewd'] = (not have_lewd_tag) and (self.cols['lewd_exist'] == 1)
+
+    def get_list_emty(self):
+        sql = 'select t.* from thread t join cyoa_thread ct on t.id = ct.thread_id where ct.cyoa_id = ? and (select count(*) from post p where p.thread_id = t.id) = 0'
+        ls = db_util.db_get_all(self._dbfile, sql, (self.cols['id'], ))
+        result = [Thread(row=x) for x in ls]
+        return result

@@ -1,21 +1,29 @@
 import threading
 import time
+import traceback
 
 
 class WorkerTask:
-    def __init__(self, task, callback = None, **kargs):
+    def __init__(self, task, callback = None, error_callback = None, **kargs):
         self.task = task
         self.kargs = kargs
         self.done = False
         self.callback = callback
+        self.error_callback = error_callback
 
     def exec(self):
-        self.task(**self.kargs)
+        try:
+            self.task(**self.kargs)
+            if (self.callback != None): self.callback(self)
+        except Exception as e:
+            if (self.callback != None): self.error_callback(self, e , traceback.format_exc())
+            else: 
+                print('Unhadled error: ')
+                print(traceback.format_exc())
         self.done = True
-        if (self.callback != None): self.callback(self)
 
 class QueueWorker:
-    def __init__(self, limit = 4, name='<task>', dequeue_on_done = False, all_done_callback = None, task_done_callback = None, meta = {}):
+    def __init__(self, limit = 4, name='<task>', dequeue_on_done = False, all_done_callback = None, task_done_callback = None, error_callback = None, meta = {}):
         self.current = []
         self.queue = []
         self.limit = limit
@@ -25,6 +33,7 @@ class QueueWorker:
         self.dequeue_on_done = dequeue_on_done
         self.all_done_callback = all_done_callback
         self.task_done_callback = task_done_callback
+        self.error_callback = error_callback
         self.name = name
         self.meta = meta
 
@@ -35,6 +44,15 @@ class QueueWorker:
         if (len(self.queue) == 0 and len(self.current) == 0):
             self.done = True
             if (self.all_done_callback != None): self.all_done_callback(self)
+
+    def taskerror(self, task, e, trc):
+        self.queue.clear()
+        self.current.clear()
+        self.done = True
+        if (self.error_callback != None): self.error_callback(self, e, trc)
+        else:
+            print(f'Unhandled error in task {self.name!r}:')
+            print(trc)
 
     def dequeue(self):
         if len(self.queue) > 0:
@@ -51,6 +69,7 @@ class QueueWorker:
         if (self.started):
             raise Exception('Queue already started')
         if (self.dequeue_on_done): task.callback = self.taskdone
+        task.error_callback = self.taskerror
         self.queue.append(task)
 
     def get_total_task(self):
@@ -72,9 +91,11 @@ class QueueWorker:
             time.sleep(0.1)
 
 class TaskQueue:
-    def __init__(self, on_task_update = None):
+    def __init__(self, on_task_update = None, on_task_done = None, on_task_error = None):
         self.queue = []
         self.on_task_update = on_task_update
+        self.on_task_done = on_task_done
+        self.on_task_error = on_task_error
 
     def enqueue(self, o:QueueWorker):
         print(f'[QueueWorker] {o.name}: Enqueued')
@@ -84,16 +105,35 @@ class TaskQueue:
             # len == 1 because this one only wanted to startup the first one in queue if emty (otherwise it would call start on the first one again and fuck thing up) and the next one will start automatically
             self.queue[0].all_done_callback = self.dequeue
             self.queue[0].task_done_callback = self.task_done
+            self.queue[0].error_callback = self.task_error
             self.queue[0].start()
+            if (self.on_task_update != None): self.on_task_update()
 
     def task_done(self, task):
         if (self.on_task_update != None): self.on_task_update()
 
-    def dequeue(self, worker):
+    def task_error(self, worker, e, trace):
+        res = self.queue[0]
+        self.queue.remove(res)
+        print(f'[QueueWorker] {res.name}: Error: {e}')
+        print(trace)
+        if (len(self.queue) > 0):
+            self.queue[0].all_done_callback = self.dequeue
+            self.queue[0].task_done_callback = self.task_done
+            self.queue[0].error_callback = self.task_error
+            self.queue[0].start()
+            print(f'[QueueWorker] {self.queue[0].name}: Started')
+        else:
+            print(f'[QueueWorker]: All done')
+            if (self.on_task_update != None): self.on_task_update()
+        if (self.on_task_error != None): self.on_task_error(worker, e, trace)
+
+
+    def dequeue(self, worker = None):
         if (len(self.queue) <= 0): return None
         res = self.queue[0]
-        print(f'[QueueWorker] {res.name}: Done')
         self.queue.remove(res)
+        print(f'[QueueWorker] {res.name}: Done')
         if (len(self.queue) > 0):
             self.queue[0].all_done_callback = self.dequeue
             self.queue[0].task_done_callback = self.task_done
@@ -101,6 +141,8 @@ class TaskQueue:
             print(f'[QueueWorker] {self.queue[0].name}: Started')
         else:
             print(f'[QueueWorker]: All done')
+            if (self.on_task_update != None): self.on_task_update()
+        if (self.on_task_done != None): self.on_task_done()
         return res
 
 task_queue = TaskQueue()
@@ -111,8 +153,7 @@ def get_queue_stat() -> dict:
     res['tasks'] = []
     for q in task_queue.queue:
         dt = {}
-        mid = q.meta['id']
-        dt['id'] = f'process-{mid}'
+        dt['id'] = f'{q.meta["category"]}-{q.meta["id"]}'
         dt['category'] = q.meta['category']
         dt['name'] = q.name
         dt['count'] = q.get_total_task()

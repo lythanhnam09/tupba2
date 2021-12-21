@@ -7,6 +7,13 @@ function refreshCyoaData() {
     $('#btn-refresh').prop('onclick', false);
 }
 
+function refreshThreadData(cyoaId) {
+    socket.emit('cyoa_thread_refresh', {id: cyoaId});
+    $('#btn-refresh').html('<i class="fas fa-ellipsis-h"></i>');
+    $('#btn-refresh').attr('class', 'btn btn-disabled mr-1')
+    $('#btn-refresh').prop('onclick', false);
+}
+
 function showPageDialog(page, pagecount, formid='form-filter') {
     $('#btn-goto-page').prop('disabled', true);
     let pageHtml = '';

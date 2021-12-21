@@ -34,10 +34,20 @@ Fanart._reference = {
 
 Post._reference = {
     'thread': SQLRefOne('thread_id', Thread, 'id'),
-    'images': SQLRefMany('id', PostImage, 'post_id')
+    'images': SQLRefMany('id', PostImage, 'post_id'),
+    'reply_to': SQLRefPivot('id', PostReplyTo, 'post_id', 'reply'),
+    'reply_by': SQLRefPivot('id', PostReplyBy, 'post_id', 'reply')
 }
 PostImage._reference = {
     'post': SQLRefOne('post_id', Post, 'id')
+}
+PostReplyTo._reference = {
+    'post': SQLRefOne('post_id', Post, 'id'),
+    'reply': SQLRefOne('reply_id', Post, 'id')
+}
+PostReplyBy._reference = {
+    'post': SQLRefOne('post_id', Post, 'id'),
+    'reply': SQLRefOne('reply_id', Post, 'id')
 }
 
 #print('cyoa table db referenced')

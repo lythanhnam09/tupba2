@@ -1,6 +1,8 @@
 -- Run this every time you connect to it (even when you using DBeaver):
 --PRAGMA foreign_keys = ON;
 
+drop table if exists post_reply_by;
+drop table if exists post_reply_to;
 drop table if exists post_image;
 drop table if exists post;
 drop table if exists cyoa_thread;
@@ -29,7 +31,8 @@ create table if not exists cyoa (
 	total_fanart integer,
 	word_count integer,
 	lewd_exist integer,
-	image_path text
+	image_path text,
+	save_status integer
 );
 
 create table if not exists fanart (
@@ -60,15 +63,17 @@ create table if not exists cyoa_tag (
 
 create table if not exists thread (
 	id integer primary key,
-	total_reply integer,
+	title text,
+	is_canon integer,
+	thread_date integer,
+	thread_image text,
+	op_name text,
+	chan text,
+	board text,
+	total_op_post integer,
 	total_post integer,
 	total_word integer,
 	thread_time integer,
-	title text,
-	board text,
-	chan text,
-	is_canon integer,
-	thread_date integer,
 	current_page integer
 );
 
@@ -104,5 +109,23 @@ create table if not exists post_image (
 	primary key (post_id, alt_id),
 	foreign key (post_id) references post(id) on delete cascade
 );
+
+create table if not exists post_reply_to (
+	post_id integer,
+	reply_id integer,
+	primary key (post_id, alt_id),
+	foreign key (post_id) references post(id) on delete cascade,
+	foreign key (reply_id) references post(id) on delete cascade
+)
+
+create table if not exists post_reply_by (
+	post_id integer,
+	reply_id integer,
+	primary key (post_id, alt_id),
+	foreign key (post_id) references post(id) on delete cascade,
+	foreign key (reply_id) references post(id) on delete cascade
+)
+
+
 
 

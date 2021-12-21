@@ -40,11 +40,22 @@ function connectSocket() {
     socket.on('disconnect', err => setSocketStat('Disconnected', 'fg-danger'));
 
     socket.on('task_data', function(data) {
+        console.log(`Task data:`);
+        console.log(data);
         updateTask(data);
     });
 
     socket.on('refresh_page', function(data) {
-        location.reload();
+        console.log(`Refresh page: ${data.context}`);
+        if (data.context == null) location.reload();
+        else {
+            if (data.context == location.pathname) location.reload();
+        }
+    });
+
+    socket.on('throw_error', function(data) {
+        console.log(data.message);
+
     });
 }
 
@@ -54,13 +65,17 @@ function updateTask(data) {
         $('#task-list').html('');
     } else {
         $('#task-count').html(`${data.count} tasks`);
+
         let thtml = '';
         let cnt = 0;
         for (let task of data.tasks) {
             let per = (task.progress / task.count * 100).toFixed(2);
             let prog = cnt == 0 ? `${per}% (${task.progress}/${task.count})`:`Awaiting (${task.count})`;
+            // if (`#task-${task.id}`) {
+
+            // }
             thtml += `
-            <div class="task-item card bg-l10-darkblue mb-1">
+            <div id="task-${task.id}" class="task-item card bg-l10-darkblue mb-1">
                 <div class="card-content">
                     <div class="task-stat">
                         <div class="task-tag tag-${task.category.toLowerCase()}">${task.category}</div>
@@ -74,6 +89,7 @@ function updateTask(data) {
                 </div>
             </div>
             `;
+            cnt++;
         }
         $('#task-list').html(thtml);
     }
