@@ -48,6 +48,9 @@ class Thread(SQLTable):
     def extra_col(self):
         self.cols['thread_date_str'] = util.date_str_from_timestamp(self.cols['thread_date'], '%d-%m-%Y(%a) %H:%M:%S')
 
+    def get_op_image(self, save = True):
+        return self.get_ref_one('posts', save_result=save, save_name='op_post').get_ref_one('images', save_result=save, save_name='op_image')
+
 class CyoaThread(SQLTable):
     _dbfile = 'data/cyoa.db'
     _table_name = 'cyoa_thread'

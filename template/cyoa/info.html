@@ -90,7 +90,7 @@
                 {% for thread in thread_page.data %}
                 <div class="thread card bg-l15-darkblue">
                     <a class="thread card-image img-container" href="/cyoa/quest/{{cyoa['short_name']}}/thread/{{thread['id']}}">
-                        <img src="{{thread['thread_image']}}" alt="{{thread['title']}}">
+                        <img src="{{thread.get_op_image()['link']}}" alt="{{thread['op_post']['op_image']['filename']}}">
                     </a>
                     <div class="thread card-content p-1">
                         <h3 class="title">                         

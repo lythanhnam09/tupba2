@@ -13,6 +13,9 @@ class SQLRef:
     def get(self, table, where = None, order_by = None, limit = None, offset = None):
         return None
 
+    def get_one(self, table, where = None, order_by = None, offset = None):
+        return None
+
     def get_page(self, table, page, per_page, where = None, order_by = None):
         logging.warning(f'{self.__class__.__name__}.filter(): {self.__class__.__name__} does not have filter()')
         return None
@@ -28,6 +31,9 @@ class SQLRefOne(SQLRef):
     def get(self, table, where = None, order_by = None, limit = None, offset = None):
         return self.ref_table.find_id(table.cols[self.col])
 
+    def get_one(self, table, where = None, order_by = None, offset = None):
+        return self.ref_table.find_id(table.cols[self.col])
+
 class SQLRefMany(SQLRef):
     def __init__(self, col, ref_table, ref_col):
         super().__init__(col, ref_table, ref_col)
@@ -37,6 +43,12 @@ class SQLRefMany(SQLRef):
             where = []
         where.append([self.ref_col, table.cols[self.col]])
         return self.ref_table.select(where=where, order_by=order_by, limit=limit, offset=offset)
+
+    def get_one(self, table, where = None, order_by = None, offset = None):
+        if (where == None):
+            where = []
+        where.append([self.ref_col, table.cols[self.col]])
+        return self.ref_table.select_one(where=where, order_by=order_by, limit=1, offset=offset)
 
     def get_page(self, table, page, per_page, where = None, order_by = None):
         if (where == None):
@@ -78,6 +90,28 @@ class SQLRefPivot(SQLRef):
             result.append(o2)
 
         return result
+
+    def get_one(self, table, where = None, order_by = None, offset = None):
+        name_t1 = 't1'
+        name_t2 = 't2'
+
+        ref_pivot:SQLRef = self.ref_table._reference[self.pivot_ref]
+        t1 = f'{self.ref_table._table_name} {name_t1}'
+        t2 = f'{ref_pivot.ref_table._table_name} {name_t2}'
+        join_on = f'{name_t1}.{ref_pivot.col} = {name_t2}.{ref_pivot.ref_col}'
+        if (where == None): where = []
+        where.append([f't1.{self.ref_col}', table.cols[self.col]])
+        sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by, limit=1, offset=offset)
+
+        qresult = db_util.db_get_all(table._dbfile, sql)
+
+        if (len(qresult) > 0):
+            pos = len(ref_pivot.ref_table._props.keys())
+            o2 = self.ref_table(row=qresult[0][pos:])
+            o2.cols[self.pivot_ref] = ref_pivot.ref_table(row=qresult[0][:pos])
+            
+            return o2
+        return None
 
     def get_many(self, table, where = None, order_by = None, limit = None, offset = None):
         name_t1 = 't1'
@@ -410,7 +444,7 @@ class SQLTable:
             sql = sql_command.delete(cls._table_name, cls._primary)
             db_util.db_exec(cls._dbfile, sql, o.id_value_tuple(), constraint)
 
-    def get_ref(self, ref_name:str, where = None, order_by = None, limit = None, offset = None, save_result = False, get_many = False):
+    def get_ref(self, ref_name:str, where = None, order_by = None, limit = None, offset = None, save_result = False, save_name = None, get_many = False):
         if (not ref_name in self._reference):
             raise Exception(f'Reference {ref_name!r} not found')
         if (get_many):
@@ -419,10 +453,10 @@ class SQLTable:
             result = self._reference[ref_name].get_many(self, where, order_by, limit, offset)
         else:
             result = self._reference[ref_name].get(self, where, order_by, limit, offset)
-        if (save_result): self.cols[ref_name] = result
+        if (save_result): self.cols[save_name or ref_name] = result
         return result
 
-    def get_ref_page(self, ref_name:str, page_num:int, per_page:int, where = None, order_by = None, save_result = False, get_many = False):
+    def get_ref_page(self, ref_name:str, page_num:int, per_page:int, where = None, order_by = None, save_result = False, save_name = None, get_many = False):
         if (not ref_name in self._reference):
             raise Exception(f'Reference {ref_name!r} not found')
         if (get_many):
@@ -432,7 +466,20 @@ class SQLTable:
         else:
             result = self._reference[ref_name].get_page(self, page_num, per_page, where, order_by)
         
-        if (save_result): self.cols[ref_name] = result
+        if (save_result): self.cols[save_name or ref_name] = result
+        return result
+
+    def get_ref_one(self, ref_name:str, where = None, order_by = None, offset = None, save_result = False, save_name = None):
+        if (not ref_name in self._reference):
+            raise Exception(f'Reference {ref_name!r} not found')
+
+        result = self._reference[ref_name].get_one(self, where, order_by, offset)
+
+        if (save_result):
+            if (save_name != None):
+                self.cols[save_name] = result
+            else:
+                self.cols[ref_name] = result
         return result
 
     def __repr__(self):
