@@ -10,7 +10,7 @@
 {% block body %}
     <form id="form-page" action="/cyoa/quest/{{cyoa['short_name']}}">
     <input type="hidden" name="page" value="{{form['page']}}">
-    <input type="hidden" name="per_page" value="{{form['perpage']}}">
+    <input type="hidden" name="perpage" value="{{form['perpage']}}">
     </form>
     <div class="bg-darkblue">
         <div class="container-lg bg-d10-darkblue py-2">
@@ -75,7 +75,7 @@
             <div class="control-group px-2">
                 <button id="btn-bottom" class="btn btn-primary mr-1" title="To page bottom" onclick="scrollToEl('#btn-top', 1000)"><i class="fas fa-arrow-to-bottom"></i></button>
                 {{page_nav.html().markup()}}
-                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage()">
+                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage('form-page')">
                     <option value="20" {{form.option_selected('perpage', 40)}}>Show 40</option>
                     <option value="50" {{form.option_selected('perpage', 80)}}>Show 80</option>
                     <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>
@@ -123,7 +123,7 @@
             <div class="control-group px-2 py-1">
                 <button id="btn-top" class="btn btn-primary mr-1" title="To page top" onclick="scrollToEl('#btn-refresh', 1000)"><i class="fas fa-arrow-to-top"></i></button>
                 {{page_nav.html().markup()}}
-                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage()">
+                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage('form-page')">
                     <option value="20" {{form.option_selected('perpage', 40)}}>Show 40</option>
                     <option value="50" {{form.option_selected('perpage', 80)}}>Show 80</option>
                     <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>

@@ -30,7 +30,7 @@ class Post(SQLTable):
             'title': '',
             'username': json['_name'],
             'tripcode': json['_trip'],
-            'comment_plain': json['_comment'],
+            'comment_plain': json.get('_comment', ''), # and then it null sometime... (I know this won't solve it but just to make sure)
             'comment_html': '',
             'is_qm': int(json['_QM']),
             'post_date': int(json['_date'])
@@ -40,6 +40,7 @@ class Post(SQLTable):
 
     def extra_col(self):
         self.cols['post_date_str'] = util.date_str_from_timestamp(self.cols['post_date'], '%d-%m-%Y(%a) &H:%M:%S')
+        if (self.cols['comment_plain'] == None): self.cols['comment_plain'] = ''
         h = html2text.HTML2Text()
         h.ignore_links = True
         self.cols['comment_plain'] = h.handle(self.cols['comment_plain'])
