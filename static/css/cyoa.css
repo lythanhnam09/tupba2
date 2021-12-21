@@ -199,7 +199,7 @@
 }
 
 @media (max-width: 480px) {
-  #select-perpage {
+  #select-perpage, #select-perpage-b {
     margin-left: 0 !important;
     margin-top: 0.5rem;
   }
@@ -224,4 +224,15 @@
   .grow-xsm {
     flex-grow: 1;
   }
+}
+
+.post.card-inline {
+  margin: 0;
+  min-width: 350px;
+}
+.post.card-inline > .card-content > .card-image {
+  border: 2px solid #818181;
+  float: left;
+  width: 25%;
+  min-width: 200px;
 }/*# sourceMappingURL=cyoa.css.map */

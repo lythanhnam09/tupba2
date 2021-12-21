@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{cyoa['name']}} - {{thread['title'] if thread['title'] not in ['', None] else '#%d' % thread['id']}}{% endblock %}
+{% block extracss %}
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/cyoa.css">
+{% endblock extracss %}
+{% block extrajs %}
+    <script src="/static/js/cyoa.js"></script>
+{% endblock extrajs %}
+{% block body %}
+    <div class="bg-darkblue">
+        <div class="container-lg bg-d10-darkblue py-2">
+            {% for post in ls_post %}
+            <div class="px-1 pb-1">
+                <div class="post card-inline bg-l15-darkblue">
+                    <div class="card-header bg-d25-darkblue">
+                        {{post['username']}} No.{{post['id']}} {{post['post_date_str']}}
+                    </div>
+                    <div class="card-content bg-l15-darkblue">
+                        {% if post.get_ref('images', save_result=True)|length > 0 %}
+                        <div class="card-image img-container mb-2 mr-2">
+                            <img src="{{post['images'][0]['link']}}" alt="{{post['images'][0]['filename']}}" title="{{post['images'][0]['filename']}}">
+                        </div>
+                        {% endif %}
+                        <div class="card-text">
+                            {{post['comment_plain']}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+

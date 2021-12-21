@@ -76,8 +76,8 @@
                 <button id="btn-bottom" class="btn btn-primary mr-1" title="To page bottom" onclick="scrollToEl('#btn-top', 1000)"><i class="fas fa-arrow-to-bottom"></i></button>
                 {{page_nav.html().markup()}}
                 <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage('form-page')">
-                    <option value="20" {{form.option_selected('perpage', 40)}}>Show 40</option>
-                    <option value="50" {{form.option_selected('perpage', 80)}}>Show 80</option>
+                    <option value="40" {{form.option_selected('perpage', 40)}}>Show 40</option>
+                    <option value="80" {{form.option_selected('perpage', 80)}}>Show 80</option>
                     <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>
                     <option value="200" {{form.option_selected('perpage', 200)}}>Show 200</option>
                     <option value="0" {{form.option_selected('perpage', 0)}}>Show all</option>
@@ -96,9 +96,9 @@
                         <h3 class="title">                         
                             <a class="name" href="/cyoa/quest/{{cyoa['short_name']}}/thread/{{thread['id']}}">
                                 {% if thread['title'] == '' or thread['title'] == None %}
-                                <span class="fg-l15-success">[{{loop.index}}]</span> <i> {{cyoa['name']}} #{{loop.index}}</i>
+                                <span class="fg-l15-success">[{{loop.index + ((thread_page.page_num-1) * thread_page.per_page)}}]</span> <i> {{cyoa['name']}} #{{loop.index}}</i>
                                 {% else %}
-                                <span class="fg-l15-success">[{{loop.index}}]</span> {{thread['title']}}
+                                <span class="fg-l15-success">[{{loop.index + ((thread_page.page_num-1) * thread_page.per_page)}}]</span> {{thread['title']}}
                                 {% endif %}
                             </a>
                         </h3>
@@ -123,9 +123,9 @@
             <div class="control-group px-2 py-1">
                 <button id="btn-top" class="btn btn-primary mr-1" title="To page top" onclick="scrollToEl('#btn-refresh', 1000)"><i class="fas fa-arrow-to-top"></i></button>
                 {{page_nav.html().markup()}}
-                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage('form-page')">
-                    <option value="20" {{form.option_selected('perpage', 40)}}>Show 40</option>
-                    <option value="50" {{form.option_selected('perpage', 80)}}>Show 80</option>
+                <select id="select-perpage-b" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage('form-page', 'select-perpage-b')">
+                    <option value="40" {{form.option_selected('perpage', 40)}}>Show 40</option>
+                    <option value="80" {{form.option_selected('perpage', 80)}}>Show 80</option>
                     <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>
                     <option value="200" {{form.option_selected('perpage', 200)}}>Show 200</option>
                     <option value="0" {{form.option_selected('perpage', 0)}}>Show all</option>

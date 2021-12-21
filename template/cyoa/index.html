@@ -127,7 +127,7 @@
                     <button class="btn btn-primary"><i class="fas fa-chevron-double-right"></i></button>
                 </div> #}
                 {{page_nav.html().markup()}}
-                <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage()">
+                <select id="select-perpage-b" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage('form-filter', 'select-perpage-b')">
                     <option value="20" {{form.option_selected('perpage', 20)}}>Show 20</option>
                     <option value="50" {{form.option_selected('perpage', 50)}}>Show 50</option>
                     <option value="100" {{form.option_selected('perpage', 100)}}>Show 100</option>

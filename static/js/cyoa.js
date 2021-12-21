@@ -7,8 +7,8 @@ function refreshCyoaData() {
     $('#btn-refresh').prop('onclick', false);
 }
 
-function refreshThreadData(cyoaId) {
-    socket.emit('cyoa_thread_refresh', {id: cyoaId});
+function refreshThreadData(cyoaId, force = false) {
+    socket.emit('cyoa_thread_refresh', {id: cyoaId, force: true});
     $('#btn-refresh').html('<i class="fas fa-ellipsis-h"></i>');
     $('#btn-refresh').attr('class', 'btn btn-disabled mr-1')
     $('#btn-refresh').prop('onclick', false);
@@ -44,8 +44,8 @@ function showPageDialog(page, pagecount, formid='form-filter') {
     dialog.show();
 }
 
-function changePerpage(formid = 'form-filter') {
-    $('input[name=perpage]').val($('#select-perpage').val());
+function changePerpage(formid = 'form-filter', id='select-perpage') {
+    $('input[name=perpage]').val($(`#${id}`).val());
     $('input[name=page]').val('1');
     $(`#${formid}`).submit();
 }

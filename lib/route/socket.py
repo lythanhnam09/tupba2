@@ -22,13 +22,18 @@ def task_update(data = {}):
     emit('task_data', res)
 
     @copy_current_request_context
-    def update_task():
+    def update_task(worker):
         emit('task_data', task_util.get_queue_stat())
     @copy_current_request_context
-    def done_task():
-        emit('refresh_page', {'context': f'/cyoa/quest/{cy["short_name"]}'})
+    def done_task(worker):
+        cy = cyoa.Cyoa.find_id(worker.meta["cyoa_id"])
+        cy['save_status'] = 1
+        cyoa.Cyoa.update(cy, set_col=['save_status'])
+        emit('task_data', task_util.get_queue_stat())
+        emit('refresh_page', {'context': f'/cyoa/quest/{worker.meta["short_name"]}'})
     @copy_current_request_context
     def error_task(worker, e, trace):
+        emit('task_data', task_util.get_queue_stat())
         emit('throw_error', {'exception': f'{e}', 'trace': trace, 'name': worker.name})
     task_util.task_queue.on_task_update = update_task
     task_util.task_queue.on_task_done = done_task
@@ -50,16 +55,21 @@ def cyoa_refresh_thread(data):
     print(f'socketio: Refresh CYOA Threads data')
     cy = cyoa.Cyoa.find_id(data['id'])
     @copy_current_request_context
-    def update_task():
+    def update_task(worker):
         emit('task_data', task_util.get_queue_stat())
     @copy_current_request_context
-    def done_task():
-        emit('refresh_page', {'context': f'/cyoa/quest/{cy["short_name"]}'})
+    def done_task(worker):
+        cy = cyoa.Cyoa.find_id(worker.meta["cyoa_id"])
+        cy['save_status'] = 1
+        cyoa.Cyoa.update(cy, set_col=['save_status'])
+        emit('task_data', task_util.get_queue_stat())
+        emit('refresh_page', {'context': f'/cyoa/quest/{worker.meta["short_name"]}'})
     @copy_current_request_context
     def error_task(worker, e, trace):
+        emit('task_data', task_util.get_queue_stat())
         emit('throw_error', {'exception': f'{e}', 'trace': trace, 'name': worker.name})
     if (cy != None):
-        anonpone.refresh_thread_list(cy)
+        anonpone.refresh_thread_list(cy, force_refresh_all=data['force'])
         # emit('refresh_page', {})
         task_util.task_queue.on_task_update = update_task
         task_util.task_queue.on_task_done = done_task

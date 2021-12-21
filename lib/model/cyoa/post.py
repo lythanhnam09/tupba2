@@ -39,7 +39,7 @@ class Post(SQLTable):
         return o
 
     def extra_col(self):
-        self.cols['post_date_str'] = util.date_str_from_timestamp(self.cols['post_date'], '%d-%m-%Y(%a) &H:%M:%S')
+        self.cols['post_date_str'] = util.date_str_from_timestamp(self.cols['post_date'], '%d-%m-%Y(%a) %H:%M:%S')
         if (self.cols['comment_plain'] == None): self.cols['comment_plain'] = ''
         h = html2text.HTML2Text()
         h.ignore_links = True

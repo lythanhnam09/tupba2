@@ -8,6 +8,7 @@ import lib.model.cyoa._ref
 import lib.provider.anonpone as anonpone
 from lib.model.web.navbar import NavOption, NavButton
 from lib.model.cyoa.cyoa import *
+from lib.model.cyoa.cyoa_thread import *
 from lib.model.web.form import WebForm
 from lib.model.web.page import SimplePageNav
 
@@ -50,5 +51,17 @@ def cyoa_info(sname):
     ls_th = anonpone.get_thread_list(cy, form['page'], form['perpage'])
     return render_template('cyoa/info.html', nav=cyoa_nav(), form=form, cyoa=cy, thread_page=ls_th, page_nav=SimplePageNav(ls_th, 'form-page'))
 
-
+@cyoa.route('/quest/<sname>/thread/<thread_id>')
+def thread_view(sname, thread_id):
+    try:
+        thread_id = int(thread_id)
+    except Exception as e:
+        abort(404)
+    cy = Cyoa.find_shortname(sname)
+    if (cy is None): abort(404)
+    cyth = CyoaThread.find_id((cy['id'], thread_id))
+    if (cyth is None): abort(404)
+    th = Thread.find_id(thread_id)
+    ls_post = anonpone.get_post_list(cy, th)
+    return render_template('cyoa/thread_view.html', nav=cyoa_nav(), cyoa=cy, thread=th, ls_post=ls_post)
 

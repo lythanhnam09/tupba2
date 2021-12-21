@@ -240,7 +240,7 @@ $size-portrait: 480px;
     }
 }
 
-#select-perpage {
+#select-perpage, #select-perpage-b {
     @media (max-width: $size-portrait) {
         margin-left: 0 !important;
         margin-top: .5rem;
@@ -265,5 +265,28 @@ $size-portrait: 480px;
 .grow-xsm {
     @media (max-width: $size-portrait) {
         flex-grow: 1;
+    }
+}
+
+.post.card-inline {
+    margin: 0;
+    min-width: 350px;
+
+    > .card-header {
+
+    }
+
+    > .card-content {
+
+        > .card-image {
+            border: 2px solid $secondary;
+            float: left;
+            width: 25%;
+            min-width: 200px;
+        }
+
+        > .card-text {
+
+        }
     }
 }
