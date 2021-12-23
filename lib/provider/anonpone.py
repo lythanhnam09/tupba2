@@ -27,10 +27,10 @@ def refresh_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
     print(f'{th["id"]=} {cy["id"]=}')
     # print(f'{cy=}')
     link_anon = f'https://www.anonpone.com/api/thread/{cy["id"]}/{th["id"]}/false'
-    link_desu = f'https://desuarchive.org/_/api/chan/thread/?board=mlp&num={th["id"]}'
+    link_desu = f'https://desuarchive.org/_/api/chan/thread/?board={th["board"]}&num={th["id"]}'
     try:
         anon_js = util.get_json_api(link_anon)
-        desu_js = util.get_json_api(link_desu)
+        if (th['chan'] == '4chan'): desu_js = util.get_json_api(link_desu)
     except Exception as e:
         print('Fetch url error: ' + e)
         return
@@ -57,6 +57,7 @@ def refresh_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
             post['title'] = th['title']
             if ((str(th['id']) in desu_js) and th['chan'] == '4chan' and th['board'] == 'mlp'):
                 js_dp = desu_js[f'{th["id"]}']['op']
+                post['comment_plain'] = js_dp['comment_sanitized']
                 if (js_dp['media'] != None):
                     img = cyoa_post.PostImage.from_desu_json(js_dp)
                     if (js_ap['_filename'] not in [None, '', '0']):
@@ -66,19 +67,21 @@ def refresh_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
             if ((str(th['id']) in desu_js) and th['chan'] == '4chan' and th['board'] == 'mlp'):
                 if (str(post['id']) in desu_js[f'{th["id"]}']['posts']):
                     js_dp = desu_js[f'{th["id"]}']['posts'][f'{post["id"]}']
+                    post['comment_plain'] = js_dp['comment_sanitized']
                     if (js_dp['media'] != None):
                         img = cyoa_post.PostImage.from_desu_json(js_dp)
                         if (js_ap['_filename'] not in [None, '', '0']):
                             img['link'] = image_link(js_ap['_filename'])
                         lsimg.append(img)
+        post.process_html()
         ls_post.append(post)
         index += 1
-    th['thread_image'] = lsimg[0]['link']
+    th['thread_image'] = image_link(lsimg[0]['link'])
     th['total_post'] = len(ls_post)
     th['op_name'] = ls_post[0]['username']
-    cyoa_thread.Thread.update(th, set_col=['thread_image', 'total_post'])
-    cyoa_post.Post.insert(ls_post, or_ignore=True)
+    cyoa_post.Post.insert(ls_post, update_conflict=True, set_col=['comment_plain', 'comment_html'])
     cyoa_post.PostImage.insert(lsimg, update_conflict=True, set_col=['filename', 'link'])
+    cyoa_thread.Thread.update(th, set_col=['thread_image', 'total_post'])
 
 def refresh_thread_list(cy:cyoa.Cyoa, refresh_post = True, force_refresh_all = False):
     link = f'https://www.anonpone.com/api/threads/{cy["id"]}'

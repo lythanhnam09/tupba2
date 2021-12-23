@@ -1,3 +1,7 @@
+a {
+  color: #2b83e7;
+}
+
 .list-container {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -226,13 +230,37 @@
   }
 }
 
+.btn-reply {
+  display: inline-flex;
+  margin-right: 0.25rem;
+  margin-bottom: 0.3rem;
+}
+.btn-reply > .btn {
+  padding: 0.05rem 0.5rem;
+}
+
 .post.card-inline {
   margin: 0;
   min-width: 350px;
+}
+.post.card-inline > .card-header > .info > .username {
+  font-size: 12pt;
+  font-weight: bold;
 }
 .post.card-inline > .card-content > .card-image {
   border: 2px solid #818181;
   float: left;
   width: 25%;
   min-width: 200px;
+}
+.post.card-inline > .card-content > .card-text .quote {
+  color: #20ff20;
+}
+.post.card-inline > .card-content > .card-text .spoiler {
+  background-color: black;
+  color: white;
+}
+.post.card-inline > .card-content > .card-text .spoiler a {
+  background-color: #176ac8;
+  color: white;
 }/*# sourceMappingURL=cyoa.css.map */

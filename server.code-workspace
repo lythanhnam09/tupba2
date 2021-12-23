@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../UPBA/server/tupba"
+		},
+		{
+			"path": "../PPageGen2"
 		}
 	],
 	"settings": {

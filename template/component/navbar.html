@@ -12,14 +12,14 @@
         {% endif %}
         <div id="exp-left" class="nav-expandable left" style="display: none">
             {% for button in nav.left_buttons %}
-                <a class="nav-item px-2" title="{{button.text}}" {{ button.show_href() }} {{ button.show_on_click() }}>
+                <a class="nav-item px-2{{' disabled' if button.disabled else ''}}" title="{{button.text}}" {{ button.show_href() }} {{ button.show_on_click() }}>
                     <i class="{{button.icon}}"></i>
                     <div class="text">{{button.text}}</div>
                 </a>
             {% endfor %}
         </div>
         <a class="nav-title" {{nav.show_title_href()}}>
-            <h2 class="fg-warning">{{nav.title}}</h2>
+            <h2 class="fg-warning" {{'style="font-size:%s"'|safe % nav.title_size if nav.title_size != None else ''}}>{{nav.title}}</h2>
         </a>
     </div>
     <div class="nav-container-right">
@@ -30,7 +30,7 @@
         {% endif %}
         <div id="exp-right" class="nav-expandable right" style="display: none">
             {% for button in nav.right_buttons %}
-                <a class="nav-item px-2" title="{{button.text}}" {{ button.show_href() }} {{ button.show_on_click() }}>
+                <a class="nav-item px-2{{' disabled' if button.disabled else ''}}" title="{{button.text}}" {{ button.show_href() }} {{ button.show_on_click() }}>
                     <i class="{{button.icon}}"></i>
                     <div class="text">{{button.text}}</div>
                 </a>

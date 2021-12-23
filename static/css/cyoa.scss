@@ -16,6 +16,10 @@ $size-medium: 960px;
 $size-small: 720px;
 $size-portrait: 480px;
 
+a {
+    color: $primary;
+}
+
 .list-container {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
@@ -268,12 +272,27 @@ $size-portrait: 480px;
     }
 }
 
+.btn-reply {
+    display: inline-flex;
+    margin-right: 0.25rem;
+    margin-bottom: 0.3rem;
+
+    > .btn {
+        padding: 0.05rem 0.5rem;
+    }
+}
+
 .post.card-inline {
     margin: 0;
     min-width: 350px;
 
     > .card-header {
-
+        > .info {
+            > .username {
+                font-size: 12pt;
+                font-weight: bold;
+            }
+        }
     }
 
     > .card-content {
@@ -286,7 +305,19 @@ $size-portrait: 480px;
         }
 
         > .card-text {
+            .quote {
+                color: #20ff20;
+            }
 
+            .spoiler {
+                background-color: black;
+                color: white;
+
+                a {
+                    background-color: darken($primary, 10%);
+                    color: white;
+                }
+            }
         }
     }
 }

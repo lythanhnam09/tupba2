@@ -12,18 +12,33 @@
         <div class="container-lg bg-d10-darkblue py-2">
             {% for post in ls_post %}
             <div class="px-1 pb-1">
-                <div class="post card-inline bg-l15-darkblue">
-                    <div class="card-header bg-d25-darkblue">
-                        {{post['username']}} No.{{post['id']}} {{post['post_date_str']}}
+                <div id="p{{post['id']}}" class="post card-inline bg-dark{{' border-warning' if post['is_qm'] == 1 else ''}}">
+                    <div class="card-header bg-darkblue">
+                        <div class="info">
+                            <span class="username fg-l10-success">{{post['username']}}</span>
+                            {% if post['tripcode'] != None %}
+                            <span class="trip fg-succcess">{{post['tripcode']}}</span> 
+                            {% endif %}
+                            No.<span class="id fg-warning">{{post['id']}}</span> 
+                            <span class="date">{{post['post_date_str']}}</span>
+                        </div>
+                        <div class="reply-by">
+                            {% for rep in post['reply_by'] %}
+                            <div class="control-group-round btn-reply">
+                                <button class="btn btn-{{'warning' if rep['reply']['is_qm'] == 1 else 'primary'}}">&gt;&gt;{{rep['reply_id']}}</button>
+                                <a class="btn btn-{{'warning' if rep['reply']['is_qm'] == 1 else 'primary'}}" href="#p{{rep['reply_id']}}">#</a>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                    <div class="card-content bg-l15-darkblue">
+                    <div class="card-content bg-dark">
                         {% if post.get_ref('images', save_result=True)|length > 0 %}
                         <div class="card-image img-container mb-2 mr-2">
                             <img src="{{post['images'][0]['link']}}" alt="{{post['images'][0]['filename']}}" title="{{post['images'][0]['filename']}}">
                         </div>
                         {% endif %}
                         <div class="card-text">
-                            {{post['comment_plain']}}
+                            {{post['comment_html']|safe}}
                         </div>
                     </div>
                 </div>

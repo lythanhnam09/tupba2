@@ -129,7 +129,7 @@ class DBBatch:
     def add_exec_multi(self, sql:str, param:list = [], contraint=False):
         self.ls_query.append({'f': self._exec_multi, 'q': sql, 'p': param})
 
-    def run(self, commit = True, close = True, get_result = True) -> list:
+    def run(self, close = True, commit = True, get_result = True) -> list:
         self.conn = sqlite3.connect(self.dbfile)
         self.cur = self.conn.cursor()
         if (self.constraint):
@@ -148,7 +148,7 @@ class DBBatch:
         if (get_result): return result
 
     def commit(self):
-        self.cur.commit()
+        self.conn.commit()
 
     def close(self):
         self.conn.close()

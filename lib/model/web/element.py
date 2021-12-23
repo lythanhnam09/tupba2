@@ -25,3 +25,9 @@ class WebElement:
     
 def fa_icon(name, style='fas', extra_cls=''):
     return f'<i class="{style} fa-{name} {extra_cls}"></i>'
+
+def cyoa_reply_button(id, is_op=False, is_valid=True, theme='btn-primary', op_theme='btn-warning', invalid_theme='btn-secondary'):
+    rtheme = theme
+    if is_op: rtheme = op_theme
+    if not is_valid: rtheme = invalid_theme
+    return f'<div class="control-group-round btn-reply"><button class="btn {rtheme}">&gt;&gt;{id}</button><a href="#p{id}" class="btn {rtheme}">#</a></div>'

@@ -17,10 +17,25 @@ cyoa = Blueprint('cyoa', __name__, template_folder='template', root_path='.')
 CORS(cyoa, support_credentials=True)
 
 def cyoa_nav():
-    right_btn = [NavButton('Saved CYOA', 'fas fa-server'), NavButton('Tags', 'fas fa-tags')]
+    right_btn = [NavButton('Saved CYOA', 'fas fa-server', href="/cyoa/?q=save_status=1"), NavButton('Tags', 'fas fa-tags')]
 
-    left_btn = [NavButton('Back', 'fas fa-arrow-left', href='/'), NavButton('Previous', 'fas fa-chevron-left', on_click='history.back()'), NavButton('Next', 'fas fa-chevron-right', on_click='history.forward()')]
+    left_btn = [NavButton('Back', 'fas fa-arrow-left', href='/cyoa'), NavButton('Previous', 'fas fa-chevron-left', on_click='history.back()'), NavButton('Next', 'fas fa-chevron-right', on_click='history.forward()')]
     nav_item = NavOption('CYOA Browser', title_link='/cyoa', theme='nav-success', left_buttons=left_btn, right_buttons=right_btn)
+
+    return nav_item
+
+def thread_nav(cyoa, thread, ls_th, num, count): # TODO: Here
+    right_btn = [
+        NavButton('First thread', 'fas fa-chevron-double-left', disabled=(num <= 1), href=f'{ls_th[0]["id"]}'), 
+        NavButton('Previous thread', 'fas fa-chevron-left', disabled=(num <= 1), href=f'{ls_th[num - 1]["id"] if (num > 0) else ""}'), 
+        NavButton(f'Next thread', 'fas fa-chevron-right', disabled=(num + 1 >= count), href=f'{ls_th[num + 1]["id"] if (num+1 < count) else ""}'), 
+        NavButton('Last thread', 'fas fa-chevron-double-right', disabled=(num + 1 >= count), href=f'{ls_th[count-1]["id"]}')
+    ]
+
+    left_btn = [
+        NavButton('Back', 'fas fa-arrow-left', href=f'/cyoa/quest/{cyoa["short_name"]}')
+    ]
+    nav_item = NavOption(f'[{num+1}] {thread["title"]}' if thread['title'] not in ['', None] else f'[{num+1}] {cyoa["name"]} #{num+1}', theme='nav-success', left_buttons=left_btn, right_buttons=right_btn, title_size='12pt')
 
     return nav_item
 
@@ -62,6 +77,10 @@ def thread_view(sname, thread_id):
     cyth = CyoaThread.find_id((cy['id'], thread_id))
     if (cyth is None): abort(404)
     th = Thread.find_id(thread_id)
+    if (th == None): abort(404)
+    ls_th = cy.get_ref('threads', get_many=True)
+    num = [i for i,x in enumerate(ls_th) if x['id'] == th['id']][0]
+    count = len(ls_th)
     ls_post = anonpone.get_post_list(cy, th)
-    return render_template('cyoa/thread_view.html', nav=cyoa_nav(), cyoa=cy, thread=th, ls_post=ls_post)
+    return render_template('cyoa/thread_view.html', nav=thread_nav(cy, th, ls_th, num, count), cyoa=cy, thread=th, ls_post=ls_post)
 

@@ -46,7 +46,8 @@
                         <i class="fas fa-arrow-right fg-l10-warning"></i> {{cyoa['last_post_date_str']}}
                     </div>
                     <div class="stat">
-                        <i class="fas fa-link fg-l10-warning"></i> <span class="fg-l10-warning">Link: </span> <a class="fg-white" href="https://www.anonpone.com/quest/{{cyoa['short_name']}}" target="_blank">anonpone.com/{{cyoa['short_name']}}</a>
+                        <i class="fas fa-hashtag fg-l10-warning"></i> <span class="fg-l10-warning">ID: </span> {{cyoa['id']}}
+                        <i class="fas fa-link fg-l10-warning ml-1"></i> <span class="fg-l10-warning">Link: </span> <a class="fg-white" href="https://www.anonpone.com/quest/{{cyoa['short_name']}}" target="_blank">anonpone.com/{{cyoa['short_name']}}</a>
                     </div>
                     <div class="stat">
                         <i class="fas fa-link fg-l10-warning"></i> <span class="fg-l10-warning">Chan: </span> {{cyoa['chan']}} - {{cyoa['board']}}
@@ -65,9 +66,10 @@
                         {{cyoa['description']}}
                     </div>
                     <hr class="mt-1">
-                    <div class="control-group mt-1">
-                        <button id="btn-refresh" class="btn btn-primary" onclick="refreshThreadData({{cyoa['id']}})"><i class="fas fa-sync"></i> Refresh thread</button>
-                        <button class="btn btn-primary ml-1"><i class="fas fa-download"></i> Download image</button>
+                    <div class="control-group">
+                        <button id="btn-refresh-all" class="btn btn-danger mt-1" onclick="refreshThreadData({{cyoa['id']}}, true)"><i class="fas fa-sync"></i> All</button>
+                        <button id="btn-refresh" class="btn btn-primary mt-1 ml-1" onclick="refreshThreadData({{cyoa['id']}})"><i class="fas fa-sync"></i> Refresh thread</button>
+                        <button id="btn-download-img" class="btn btn-primary mt-1 ml-1"><i class="fas fa-download"></i> Download image</button>
                     </div>
                 </div>
             </div>
@@ -90,10 +92,10 @@
                 {% for thread in thread_page.data %}
                 <div class="thread card bg-l15-darkblue">
                     <a class="thread card-image img-container" href="/cyoa/quest/{{cyoa['short_name']}}/thread/{{thread['id']}}">
-                        <img src="{{thread.get_op_image()['link']}}" alt="{{thread['op_post']['op_image']['filename']}}">
+                        <img src="{{thread.get_op_image()}}" alt="{{thread['title']}}">
                     </a>
                     <div class="thread card-content p-1">
-                        <h3 class="title">                         
+                        <h3 class="title mb-1">                         
                             <a class="name" href="/cyoa/quest/{{cyoa['short_name']}}/thread/{{thread['id']}}">
                                 {% if thread['title'] == '' or thread['title'] == None %}
                                 <span class="fg-l15-success">[{{loop.index + ((thread_page.page_num-1) * thread_page.per_page)}}]</span> <i> {{cyoa['name']}} #{{loop.index}}</i>
@@ -110,7 +112,7 @@
                             <div class="date">
                                 <i class="fas fa-calendar-alt fg-l10-warning"></i> {{thread['thread_date_str']}}
                             </div>
-                            <div class="stat mb-1">
+                            <div class="stat">
                                 <i class="fas fa-file fg-l10-warning"></i> {{thread.get('total_op_post', '??')}} / {{thread['total_post']}}
                                 <i class="fas fa-align-left fg-l10-warning ml-1"></i> {{thread.get('total_word', '??')}}
                             </div>

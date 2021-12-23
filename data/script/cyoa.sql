@@ -113,18 +113,18 @@ create table if not exists post_image (
 create table if not exists post_reply_to (
 	post_id integer,
 	reply_id integer,
-	primary key (post_id, alt_id),
+	primary key (post_id, reply_id),
 	foreign key (post_id) references post(id) on delete cascade,
 	foreign key (reply_id) references post(id) on delete cascade
-)
+);
 
 create table if not exists post_reply_by (
 	post_id integer,
 	reply_id integer,
-	primary key (post_id, alt_id),
+	primary key (post_id, reply_id),
 	foreign key (post_id) references post(id) on delete cascade,
 	foreign key (reply_id) references post(id) on delete cascade
-)
+);
 
 
 

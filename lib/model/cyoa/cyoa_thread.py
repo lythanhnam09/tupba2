@@ -49,7 +49,18 @@ class Thread(SQLTable):
         self.cols['thread_date_str'] = util.date_str_from_timestamp(self.cols['thread_date'], '%d-%m-%Y(%a) %H:%M:%S')
 
     def get_op_image(self, save = True):
-        return self.get_ref_one('posts', save_result=save, save_name='op_post').get_ref_one('images', save_result=save, save_name='op_image')
+        post = self.get_ref_one('posts', save_result=save, save_name='op_post')
+        if (post != None):
+            return post.get_ref_one('images', save_result=save, save_name='op_image')['link']
+        return self.cols['thread_image']
+
+    def get_title(self, alt_name, index = 0):
+        return self.cols['title'] if self.cols['title'] not in ['', None] else (f'{alt_name}{"" if index == None else " #" + str(index)}')
+    
+    def get_post_ids(self) -> list:
+        sql = f'select p.id from thread t join post p on t.id = p.thread_id where t.id in (select ct.thread_id from cyoa_thread ct where ct.cyoa_id = ?)'
+        result = db_util.db_get_all(self._dbfile, sql, (self.cols['id'],))
+        return [x[0] for x in result]
 
 class CyoaThread(SQLTable):
     _dbfile = 'data/cyoa.db'
