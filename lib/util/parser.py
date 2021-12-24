@@ -2,15 +2,42 @@ import re
 import lib.model.web.element as element
 # from lib.model.cyoa.post import PostReplyTo, PostReplyBy
 
+class Parser:
+    def __init__(self, name):
+        self.name = name
+        self.result = []
+    
+    def to_format(self, text:str) -> str:
+        return text
+
+    def to_html(self, text:str) -> str:
+        return text
+
+class TagParser(Parser):
+    def __init__(self, tagname, replace = '<{0}>', end_tag = '{0}'):
+        super().__init__(tagname)
+        self.tagname = tagname
+        self.replace = replace
+        self.end_tag = end_tag
+
+    def to_format(self, text:str) -> str:
+        return text
+
+    def to_html(self, text:str) -> str:
+        text = text.replace(f'[{self.tagname}]', self.replace.format(self.tagname))
+        text = text.replace(f'[/{self.tagname}]', f'</{self.end_tag.format(self.tagname)}>')
+        return text
+
 class RegexParser:
-    def __init__(self, name, regex):
+    def __init__(self, name, regex, option = re.MULTILINE):
         self.name = name
         self.regex = regex
+        self.option = option
         self.result = []
     
     def to_format(self, text:str) -> str:
         temp = text
-        res = re.findall(self.regex, text, re.MULTILINE)
+        res = re.findall(self.regex, text, self.option)
         if (len(res) > 0):
             self.result = res
             return self.replace_format(res, temp)
@@ -50,12 +77,12 @@ class LinkParser(RegexParser):
 
 class BoardLinkParser(RegexParser):
     def __init__(self, name):
-        regex = r"^\s?>>>/(\w+)/"
+        regex = r"^\s?&gt;&gt;&gt;/(\w+)/"
         super().__init__(name, regex)
 
     def replace_format(self, result:list, text:str) -> str:
         for x in result:
-            text = text.replace(f'>>>{x}', f'[{self.name}]({x})', 1)
+            text = text.replace(f'&gt;&gt;&gt;{x}', f'[{self.name}]({x})', 1)
         return text
 
     def replace_html(self, result:list, text:str) -> str:
@@ -65,32 +92,35 @@ class BoardLinkParser(RegexParser):
 
 class ReplyParser(RegexParser):
     def __init__(self, name, post):
-        regex = r">>([0-9]+)"
-        super().__init__(name, regex)
+        regex = r"&gt;&gt;([0-9]+)"
+        super().__init__(name, regex, 0)
         self.post = post
         self.ls_rep = []
 
     def replace_format(self, result:list, text:str) -> str:
         ls_id = [int(x) for x in result]
         self.post.add_replies(ls_id)
-        self.ls_rep = self.post['reply_to']
-        for x in result:
-            text = text = text.replace(f'>>{x}', f'[{self.name}]({x})', 1)
+        self.ls_rep = self.post.get_ref('reply_to')
+        for p in self.ls_rep:
+            text = text.replace(f'&gt;&gt;{p["reply_id"]}', f'[{self.name}]({p["reply_id"]})')
+            # ls_id.remove(p['reply_id'])
+        # for p in ls_id:
+        #     text = text.replace(f'&gt;&gt;{p}', element.cyoa_reply_button(p, is_valid=True))
         return text
 
     def replace_html(self, result:list, text:str) -> str:
-        for rep in self.ls_rep:
-            text = text.replace(f'[{self.name}]({rep["reply_id"]})', element.cyoa_reply_button(rep["reply_id"], is_op=rep['reply']['is_qm'] == 1), 1)
+        for p in self.ls_rep:
+            text = text.replace(f'[{self.name}]({p["reply_id"]})', element.cyoa_reply_button(p['reply_id'], is_op=p['reply']['is_qm'] == 1))
         return text
 
 class QuoteParser(RegexParser):
     def __init__(self, name):
-        regex = r"^\s?>(.*)"
+        regex = r"^\s?&gt;(.*)"
         super().__init__(name, regex)
 
     def replace_format(self, result:list, text:str) -> str:
         for x in result:
-            text = text = text.replace(f'>{x}', f'[{self.name}]({x})', 1)
+            text = text.replace(f'&gt;{x}', f'[{self.name}]({x})', 1)
         return text
 
     def replace_html(self, result:list, text:str) -> str:
@@ -98,49 +128,23 @@ class QuoteParser(RegexParser):
             text = text.replace(f'[{self.name}]({x})', f'<span class="quote">&gt;{x}</span>', 1)
         return text
 
-class SpoilerParser(RegexParser):
-    def __init__(self, name):
-        regex = r"\[spoiler\](.*)\[/spoiler\]"
-        super().__init__(name, regex)
-
-    def replace_format(self, result:list, text:str) -> str:
-        for x in result:
-            text = text = text.replace(f'[spoiler]{x}[/spoiler]', f'[{self.name}]({x})', 1)
-        return text
-
-    def replace_html(self, result:list, text:str) -> str:
-        for x in result:
-            text = text.replace(f'[{self.name}]({x})', f'<span class="spoiler">{x}</span>', 1)
-        return text
-
-class BoldParser(RegexParser):
-    def __init__(self, name):
-        regex = r"\[b\]([.\n]*)\[/b\]"
-        super().__init__(name, regex)
-
-    def replace_format(self, result:list, text:str) -> str:
-        for x in result:
-            text = text = text.replace(f'[b]{x}[/b]', f'[{self.name}]({x})', 1)
-        return text
-
-    def replace_html(self, result:list, text:str) -> str:
-        for x in result:
-            text = text.replace(f'[{self.name}]({x})', f'<b>{x}</b>', 1)
-        return text
 
 class PostProcessor:
     def __init__(self, text, post):
         self.text = text
+        self.post = post
         self.parsers = [
             LinkParser('link'),
             BoardLinkParser('board'),
             ReplyParser('reply', post),
             QuoteParser('quote'),
-            SpoilerParser('spoiler'),
-            BoldParser('b')
+            TagParser('spoiler', '<span class="{0}">', 'span'),
+            TagParser('b')
         ]
 
     def process(self):
+        self.text = self.text.replace('>', '&gt;')
+
         for p in self.parsers:
             self.text = p.to_format(self.text)
         for p in self.parsers:

@@ -47,7 +47,7 @@ class Post(SQLTable):
     _reference = {}
 
     @classmethod
-    def from_json(cls, json:dict): # TODO: AND here !!!
+    def from_json(cls, json:dict):
         rdict = {
             'id': int(json['_pid']),
             'thread_id': int(json['_tid']),
@@ -59,6 +59,10 @@ class Post(SQLTable):
             'is_qm': int(json['_QM']),
             'post_date': int(json['_date'])
         } 
+        if rdict['comment_plain'] is None: rdict['comment_plain'] = ''
+        h = html2text.HTML2Text()
+        h.ignore_links = True
+        rdict['comment_plain'] = h.handle(rdict['comment_plain'])
         o = cls(data=rdict)
         return o
 
@@ -69,17 +73,14 @@ class Post(SQLTable):
     def extra_col(self):
         self.cols['post_date_str'] = util.date_str_from_timestamp(self.cols['post_date'], '%d-%m-%Y(%a) %H:%M:%S')
         if (self.cols['comment_plain'] == None): self.cols['comment_plain'] = ''
-        h = html2text.HTML2Text()
-        h.ignore_links = True
-        self.cols['comment_plain'] = h.handle(self.cols['comment_plain'])
 
     def add_replies(self, ls_id:list):
         batch = db_util.DBBatch(self._dbfile)
         ls_rt = [(self.cols['id'], id) for id in ls_id]
         ls_rb = [(id, self.cols['id']) for id in ls_id]
-        sql = sql_command.insert('post_reply_to', PostReplyTo.get_props_name(), or_ignore=True)
+        sql = sql_command.insert('post_reply_to', ['post_id', 'reply_id'], or_ignore=True)
         batch.add_exec_multi(sql, ls_rt)
-        sql = sql_command.insert('post_reply_by', PostReplyBy.get_props_name(), or_ignore=True)
+        sql = sql_command.insert('post_reply_by', ['post_id', 'reply_id'], or_ignore=True)
         batch.add_exec_multi(sql, ls_rb)
         batch.run()
 

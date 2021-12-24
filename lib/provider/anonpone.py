@@ -4,6 +4,7 @@ import lib.model.cyoa.cyoa_thread as cyoa_thread
 import lib.model.cyoa.post as cyoa_post
 import lib.model.cyoa.cyoa_tag as tag
 import lib.util.task_util as task_util
+import lib.util.db_util as db_util
 
 
 def image_link(filename:str) -> str:
@@ -73,7 +74,6 @@ def refresh_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
                         if (js_ap['_filename'] not in [None, '', '0']):
                             img['link'] = image_link(js_ap['_filename'])
                         lsimg.append(img)
-        post.process_html()
         ls_post.append(post)
         index += 1
     th['thread_image'] = image_link(lsimg[0]['link'])
@@ -82,6 +82,12 @@ def refresh_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
     cyoa_post.Post.insert(ls_post, update_conflict=True, set_col=['comment_plain', 'comment_html'])
     cyoa_post.PostImage.insert(lsimg, update_conflict=True, set_col=['filename', 'link'])
     cyoa_thread.Thread.update(th, set_col=['thread_image', 'total_post'])
+
+def parse_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
+    ls_post = th['posts']
+    for post in ls_post:
+        post.process_html()
+    cyoa_post.Post.update(ls_post, set_col=['comment_html'])
 
 def refresh_thread_list(cy:cyoa.Cyoa, refresh_post = True, force_refresh_all = False):
     link = f'https://www.anonpone.com/api/threads/{cy["id"]}'
@@ -107,15 +113,21 @@ def refresh_thread_list(cy:cyoa.Cyoa, refresh_post = True, force_refresh_all = F
             for th in ls_emty:
                 qw.enqueue(task_util.WorkerTask(refresh_thread_post, None, cy=cy, th=th))
             task_util.task_queue.enqueue(qw)
+
+            qw = task_util.QueueWorker(name=f'Parsing posts: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id']})
+            for th in ls_emty:
+                qw.enqueue(task_util.WorkerTask(parse_thread_post, None, cy=cy, th=th))
+            task_util.task_queue.enqueue(qw)
         else:
-            th = cy.get_ref('threads', order_by=['thread_date', 'desc'], limit=1, get_many=True)
+            th = cy.get_ref_one('threads', order_by=['thread_date', 'desc'])['thread']
             qw = task_util.QueueWorker(name=f'Refresh last thread data: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id']})
-            qw.enqueue(task_util.WorkerTask(refresh_thread_post, None, cy=cy, th=th[0]))
+            qw.enqueue(task_util.WorkerTask(refresh_thread_post, None, cy=cy, th=th))
+            task_util.task_queue.enqueue(qw)
+
+            qw = task_util.QueueWorker(name=f'Parsing posts: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id']})
+            qw.enqueue(task_util.WorkerTask(parse_thread_post, None, cy=cy, th=th))
             task_util.task_queue.enqueue(qw)
     return result
-
-def parse_query(query) -> list:
-    pass
 
 def get_cyoa_list(q:str = '', page = 1, per_page = 20, order_by:list = ['last_post_time', 'desc'], refresh = False) -> list:
     if (refresh):

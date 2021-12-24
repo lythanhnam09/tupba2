@@ -9,17 +9,20 @@
 {% endblock extrajs %}
 {% block body %}
     <div class="bg-darkblue">
-        <div class="container-lg bg-d10-darkblue py-2">
+        <div class="container-lg bg-d25-darkblue py-2">
             {% for post in ls_post %}
             <div class="px-1 pb-1">
-                <div id="p{{post['id']}}" class="post card-inline bg-dark{{' border-warning' if post['is_qm'] == 1 else ''}}">
-                    <div class="card-header bg-darkblue">
+                <div id="p{{post['id']}}" data-id="{{post['id']}}" class="post card-inline bg-dark{{' border-warning border-2' if post['is_qm'] == 1 else ''}}{{' border-success border-2' if post['is_qm'] != 1 and post['username'] == thread['op_name'] and thread['op_name'] != 'Anonymous' else ''}}">
+                    <div class="card-header bg-d10-darkblue">
                         <div class="info">
-                            <span class="username fg-l10-success">{{post['username']}}</span>
+                            <span class="username">{{post['username']}}</span>
                             {% if post['tripcode'] != None %}
-                            <span class="trip fg-succcess">{{post['tripcode']}}</span> 
+                            <span class="trip">{{post['tripcode']}}</span> 
                             {% endif %}
-                            No.<span class="id fg-warning">{{post['id']}}</span> 
+                            {% if post['title'] != None %}
+                            <span class="title">{{post['title']}}</span> 
+                            {% endif %}
+                            <span class="id">No.{{post['id']}}</span> 
                             <span class="date">{{post['post_date_str']}}</span>
                         </div>
                         <div class="reply-by">
@@ -33,8 +36,22 @@
                     </div>
                     <div class="card-content bg-dark">
                         {% if post.get_ref('images', save_result=True)|length > 0 %}
-                        <div class="card-image img-container mb-2 mr-2">
-                            <img src="{{post['images'][0]['link']}}" alt="{{post['images'][0]['filename']}}" title="{{post['images'][0]['filename']}}">
+                        <div class="card-image mb-1 mr-2" data-id="{{post['id']}}">
+                            <div class="img-container">
+                                <img src="{{post['images'][0]['link']}}" alt="{{post['images'][0]['filename']}}" title="{{post['images'][0]['filename']}}">
+                            </div>
+                            {% if post['images']|length > 1 %}
+                            <div class="image-alt">
+                                {% for img in post['images'] %}
+                                <div class="alt">
+                                {{img['alt_name']}}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="image-filename">
+                                {{post['images'][0]['filename']}}
+                            </div>
                         </div>
                         {% endif %}
                         <div class="card-text">

@@ -246,12 +246,40 @@ a {
 .post.card-inline > .card-header > .info > .username {
   font-size: 12pt;
   font-weight: bold;
+  color: #ffff52;
+}
+.post.card-inline > .card-header > .info > .trip {
+  font-style: italic;
+  color: #cbff52;
+  margin-left: 0.25rem;
+}
+.post.card-inline > .card-header > .info > .title {
+  font-weight: bold;
+  color: #16fd50;
+  margin-left: 0.25rem;
+}
+.post.card-inline > .card-header > .info > .id {
+  color: #fcac18;
+  margin-left: 0.25rem;
+}
+.post.card-inline > .card-header > .info > .date {
+  margin-left: 0.2rem;
 }
 .post.card-inline > .card-content > .card-image {
   border: 2px solid #818181;
   float: left;
   width: 25%;
   min-width: 200px;
+  border-radius: 0px 0px 0.5rem 0.5rem;
+  overflow: hidden;
+}
+.post.card-inline > .card-content > .card-image > .image-filename {
+  display: block;
+  word-break: break-all;
+  background-color: #4b43b4;
+  color: white;
+  padding: 0.25rem;
+  text-align: center;
 }
 .post.card-inline > .card-content > .card-text .quote {
   color: #20ff20;

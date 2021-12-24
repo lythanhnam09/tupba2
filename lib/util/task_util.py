@@ -59,8 +59,7 @@ class QueueWorker:
             task = self.queue[0]
             self.current.append(task)
             self.queue.remove(task)
-            t = threading.Thread(target=task.exec)
-            t.daemon = True
+            t = threading.Thread(target=task.exec, name='Worker Thread', daemon=True)
             t.start()
             return task
         return None
@@ -158,7 +157,7 @@ def get_queue_stat() -> dict:
         dt['category'] = q.meta['category']
         dt['name'] = q.name
         dt['count'] = q.get_total_task()
-        dt['progress'] = dt['count'] - len(q.queue)
+        dt['progress'] = dt['count'] - (len(q.queue) + len(q.current))
         res['tasks'].append(dt)
 
     return res

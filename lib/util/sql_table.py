@@ -425,15 +425,30 @@ class SQLTable:
 
     @classmethod
     def update(cls, o, set_col:list = None, where = None):
-        if (set_col != None):
-            #lsset = list(set(o.get_cols_name()) & set(set_col))
-            lsval = o.col_value_tuple(set_col)
-            if (where == None): lsval += o.id_value_tuple()
-            sql = sql_command.update(cls._table_name, set_col, where or cls._primary)
-            db_util.db_exec(cls._dbfile, sql, lsval)
+        if (isinstance(o, list)):
+            lsarg = []
+            if (set_col != None):
+                #lsset = list(set(o.get_cols_name()) & set(set_col))
+                for i in o:
+                    lsval = i.col_value_tuple(set_col)
+                    if (where == None): lsval += i.id_value_tuple()
+                    lsarg.append(lsval)
+                sql = sql_command.update(cls._table_name, set_col, where or cls._primary)
+                db_util.db_exec_multi(cls._dbfile, sql, lsarg)
+            else:
+                lsarg = [x.to_tuple(id_last=True) for x in o]
+                sql = sql_command.update(cls._table_name, o.get_cols_name(no_id=True), cls._primary)
+                db_util.db_exec_multi(cls._dbfile, sql, lsarg)
         else:
-            sql = sql_command.update(cls._table_name, o.get_cols_name(no_id=True), cls._primary)
-            db_util.db_exec(cls._dbfile, sql, o.to_tuple(id_last=True))
+            if (set_col != None):
+                #lsset = list(set(o.get_cols_name()) & set(set_col))
+                lsval = o.col_value_tuple(set_col)
+                if (where == None): lsval += o.id_value_tuple()
+                sql = sql_command.update(cls._table_name, set_col, where or cls._primary)
+                db_util.db_exec(cls._dbfile, sql, lsval)
+            else:
+                sql = sql_command.update(cls._table_name, o.get_cols_name(no_id=True), cls._primary)
+                db_util.db_exec(cls._dbfile, sql, o.to_tuple(id_last=True))
 
     @classmethod
     def delete(cls, o = None, where = None, constraint = True):

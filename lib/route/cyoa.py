@@ -26,8 +26,8 @@ def cyoa_nav():
 
 def thread_nav(cyoa, thread, ls_th, num, count): # TODO: Here
     right_btn = [
-        NavButton('First thread', 'fas fa-chevron-double-left', disabled=(num <= 1), href=f'{ls_th[0]["id"]}'), 
-        NavButton('Previous thread', 'fas fa-chevron-left', disabled=(num <= 1), href=f'{ls_th[num - 1]["id"] if (num > 0) else ""}'), 
+        NavButton('First thread', 'fas fa-chevron-double-left', disabled=(num <= 0), href=f'{ls_th[0]["id"]}'), 
+        NavButton('Previous thread', 'fas fa-chevron-left', disabled=(num <= 0), href=f'{ls_th[num - 1]["id"] if (num > 0) else ""}'), 
         NavButton(f'Next thread', 'fas fa-chevron-right', disabled=(num + 1 >= count), href=f'{ls_th[num + 1]["id"] if (num+1 < count) else ""}'), 
         NavButton('Last thread', 'fas fa-chevron-double-right', disabled=(num + 1 >= count), href=f'{ls_th[count-1]["id"]}')
     ]

@@ -291,6 +291,24 @@ a {
             > .username {
                 font-size: 12pt;
                 font-weight: bold;
+                color: rgb(255, 255, 82);
+            }
+            > .trip {
+                font-style: italic;
+                color: rgb(203, 255, 82);
+                margin-left: 0.25rem;
+            }
+            > .title {
+                font-weight: bold;
+                color: rgb(22, 253, 80);
+                margin-left: 0.25rem;
+            }
+            > .id {
+                color: rgb(252, 172, 24);
+                margin-left: 0.25rem;
+            }
+            > .date {
+                margin-left: 0.2rem;
             }
         }
     }
@@ -302,6 +320,17 @@ a {
             float: left;
             width: 25%;
             min-width: 200px;
+            border-radius: 0px 0px 0.5rem 0.5rem;
+            overflow: hidden;
+
+            > .image-filename {
+                display: block;
+                word-break: break-all;
+                background-color: $darkblue;
+                color: white;
+                padding: 0.25rem;
+                text-align: center;
+            }
         }
 
         > .card-text {

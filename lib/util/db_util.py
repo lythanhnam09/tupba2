@@ -3,18 +3,18 @@ import logging
 
 
 #logging = logging.Logger('db_util', logging.INFO)
-# logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.INFO)
 
 def db_close(conn):
     conn.commit()
     conn.close()
 
 def db_exec_script(dbfile, sqlfile):
-    logging.debug(f'{sqlfile}: Reading SQL script')
+    logging.info(f'{sqlfile}: Reading SQL script')
     txt = ''
     with open(sqlfile, 'rt') as sqlf:
         txt = sqlf.read()
-    logging.debug(f'{dbfile}: Executing script \'{sqlfile}\'')
+    logging.info(f'{dbfile}: Executing script \'{sqlfile}\'')
     conn = sqlite3.connect(dbfile)
     cur = conn.cursor()
     cur.executescript(txt)
@@ -22,29 +22,32 @@ def db_exec_script(dbfile, sqlfile):
     conn.close()
 
 def db_exec(dbfile, sql, param:tuple = (), constraint = False):
-    logging.debug(f'{dbfile}: {sql} -> {param}')
+    logging.info(f'{dbfile}: {sql}')
+    logging.debug(f'-> {param}')
     conn = sqlite3.connect(dbfile)
     cur = conn.cursor()
     if (constraint):
-        logging.debug(f'{dbfile}: pragma foreign_keys = on')
+        logging.info(f'{dbfile}: pragma foreign_keys = on')
         cur.execute('pragma foreign_keys = on')
     cur.execute(sql, param)
     conn.commit()
     conn.close()
 
 def db_exec_multi(dbfile, sql, param:list = None, constraint = False):
-    logging.debug(f'{dbfile}: {sql} -> {param}')
+    logging.info(f'{dbfile}: {sql}')
+    logging.debug(f'-> {param}')
     conn = sqlite3.connect(dbfile)
     cur = conn.cursor()
     if (constraint):
-        logging.debug(f'{dbfile}: pragma foreign_keys = on')
+        logging.info(f'{dbfile}: pragma foreign_keys = on')
         cur.execute('pragma foreign_keys = on')
     cur.executemany(sql, param)
     conn.commit()
     conn.close()
 
 def db_get_all(dbfile, sql, param:tuple = ()) -> list:
-    logging.debug(f'{dbfile}: {sql} -> {param}')
+    logging.info(f'{dbfile}: {sql}')
+    logging.debug(f'-> {param}')
     conn = sqlite3.connect(dbfile)
     cur = conn.cursor()
     cur.execute(sql, param)
@@ -55,14 +58,16 @@ def db_get_all(dbfile, sql, param:tuple = ()) -> list:
     return ls
 
 def db_get_iter(dbfile, sql, param:tuple = ()):
-    logging.debug(f'{dbfile}: {sql} -> {param}')
+    logging.info(f'{dbfile}: {sql}')
+    logging.debug(f'-> {param}')
     conn = sqlite3.connect(dbfile)
     cur = conn.cursor()
     cur.execute(sql, param)
     return cur
 
 def db_get_single_row(dbfile, sql, param:tuple = ()) -> tuple:
-    logging.debug(f'{dbfile}: {sql} -> {param}')
+    logging.info(f'{dbfile}: {sql}')
+    logging.debug(f'-> {param}')
     conn = sqlite3.connect(dbfile)
     cur = conn.cursor()
     cur.execute(sql, param)
@@ -72,7 +77,8 @@ def db_get_single_row(dbfile, sql, param:tuple = ()) -> tuple:
     return res
 
 def db_get_single_cell(dbfile, sql, param:tuple = ()):
-    logging.debug(f'{dbfile}: {sql} -> {param}')
+    logging.info(f'{dbfile}: {sql}')
+    logging.debug(f'-> {param}')
     conn = sqlite3.connect(dbfile)
     cur = conn.cursor()
     cur.execute(sql, param)
@@ -133,12 +139,13 @@ class DBBatch:
         self.conn = sqlite3.connect(self.dbfile)
         self.cur = self.conn.cursor()
         if (self.constraint):
-            logging.debug(f'DBBatch:{self.dbfile}: pragma foreign_keys = on')
+            logging.info(f'DBBatch:{self.dbfile}: pragma foreign_keys = on')
             self.cur.execute('pragma foreign_keys = on')
         if (get_result):
             result = []
         for query in self.ls_query:
-            logging.debug(f'DBBatch:{self.dbfile}: {query["q"]} -> {query["p"]}')
+            logging.info(f'DBBatch:{self.dbfile}: {query["q"]}')
+            logging.debug(f' -> {query["p"]}')
             res = query['f'](self.cur, query['q'], query['p'])
             if (get_result): result.append(res)
         
