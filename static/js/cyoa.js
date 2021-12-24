@@ -55,3 +55,44 @@ function gotoPage(num, formid = 'form-filter') {
     $('input[name=page]').val(num);
     $(`#${formid}`).submit();
 }
+
+function changeAltImg(postId, altId) {
+    let ls = $(`.img-container[data-id="${postId}"]`).children();
+    for (let e of ls) {
+        $(e).hide();
+    }
+    $(`.img-container[data-id="${postId}"] > img[data-altid="${altId}"]`).show();
+}
+
+function toggleExpandImage(postId, image = null) {
+    let img = $(`.card-image[data-id="${postId}"]`);
+    if (img.hasClass('expand')) {
+        img.removeClass('expand');
+        scrollToEl(image, 0, -48);
+    } else {
+        img.addClass('expand');
+    }
+}
+
+function showPostReply(button, postId) {
+    let post = $(`#p${postId}`);
+    if (post.length == 0) {
+        $(button).prop('disabled', true);
+        $(button).addClass('invalid');
+        $(button).next().removeAttr('href');
+        $(button).next().removeClass('btn-warning');
+        $(button).next().removeClass('btn-primary');
+        $(button).next().addClass('btn-disabled');
+        return;
+    }
+    if ($(button).data('show') != 1) {
+        $(button).data('show', 1);
+        $(button).addClass('shown');
+        $(`#p${postId}`).clone().insertAfter($(button).parent());
+    } else {
+        $(button).parent().next().remove();
+        $(button).data('show', 0);
+        $(button).removeClass('shown');
+    }
+    
+}

@@ -11,6 +11,8 @@
             </div>
         {% endif %}
         <div id="exp-left" class="nav-expandable left" style="display: none">
+            {% block extra_nav_left %}
+            {% endblock %}
             {% for button in nav.left_buttons %}
                 <a class="nav-item px-2{{' disabled' if button.disabled else ''}}" title="{{button.text}}" {{ button.show_href() }} {{ button.show_on_click() }}>
                     <i class="{{button.icon}}"></i>

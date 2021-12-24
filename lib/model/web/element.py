@@ -30,4 +30,4 @@ def cyoa_reply_button(id, is_op=False, is_valid=True, theme='btn-primary', op_th
     rtheme = theme
     if is_op: rtheme = op_theme
     if not is_valid: rtheme = invalid_theme
-    return f'<div class="control-group-round btn-reply"><button class="btn {rtheme}">&gt;&gt;{id}</button><a href="#p{id}" class="btn {rtheme}">#</a></div>'
+    return f'<div class="control-group-round btn-reply"><button class="btn-reply-num btn {rtheme}" onclick="showPostReply(this, {id})">&gt;&gt;{id}</button><a href="#p{id}" class="btn {rtheme}">#</a></div>'

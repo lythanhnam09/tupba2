@@ -32,6 +32,7 @@ def refresh_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
     try:
         anon_js = util.get_json_api(link_anon)
         if (th['chan'] == '4chan'): desu_js = util.get_json_api(link_desu)
+        else: desu_js = {}
     except Exception as e:
         print('Fetch url error: ' + e)
         return

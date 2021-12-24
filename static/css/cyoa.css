@@ -1,5 +1,5 @@
 a {
-  color: #2b83e7;
+  color: #599eec;
 }
 
 .list-container {
@@ -238,6 +238,14 @@ a {
 .btn-reply > .btn {
   padding: 0.05rem 0.5rem;
 }
+.btn-reply > .btn.shown {
+  text-decoration: underline;
+  font-weight: bold;
+  background-color: #46b842;
+}
+.btn-reply > .btn.invalid {
+  text-decoration: line-through;
+}
 
 .post.card-inline {
   margin: 0;
@@ -262,16 +270,24 @@ a {
   color: #fcac18;
   margin-left: 0.25rem;
 }
+.post.card-inline > .card-header > .info > .id > a {
+  text-decoration: none;
+  color: #fcac18;
+}
 .post.card-inline > .card-header > .info > .date {
   margin-left: 0.2rem;
 }
 .post.card-inline > .card-content > .card-image {
   border: 2px solid #818181;
   float: left;
-  width: 25%;
+  max-width: 25%;
   min-width: 200px;
   border-radius: 0px 0px 0.5rem 0.5rem;
   overflow: hidden;
+}
+.post.card-inline > .card-content > .card-image.expand {
+  max-width: 100%;
+  display: block;
 }
 .post.card-inline > .card-content > .card-image > .image-filename {
   display: block;
@@ -281,14 +297,35 @@ a {
   padding: 0.25rem;
   text-align: center;
 }
+.post.card-inline > .card-content > .card-image > .image-alt {
+  display: flex;
+  justify-content: center;
+  flex-flow: row wrap;
+  background-color: #029999;
+}
+.post.card-inline > .card-content > .card-image > .image-alt > .alt-button {
+  display: block;
+  padding: 0.2rem 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.post.card-inline > .card-content > .card-image > .image-alt > .alt-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
 .post.card-inline > .card-content > .card-text .quote {
   color: #20ff20;
 }
 .post.card-inline > .card-content > .card-text .spoiler {
   background-color: black;
-  color: white;
+  color: black;
 }
 .post.card-inline > .card-content > .card-text .spoiler a {
   background-color: #176ac8;
+  color: #176ac8;
+}
+.post.card-inline > .card-content > .card-text .spoiler a:hover, .post.card-inline > .card-content > .card-text .spoiler a:focus {
+  color: white;
+}
+.post.card-inline > .card-content > .card-text .spoiler:hover, .post.card-inline > .card-content > .card-text .spoiler:focus {
   color: white;
 }/*# sourceMappingURL=cyoa.css.map */

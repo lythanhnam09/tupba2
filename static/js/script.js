@@ -148,10 +148,14 @@ $(document).mouseup(function(e)
     registerMenuDismiss(e, $('#exp-right'), $('#btn-exp-right'), (con) => con.slideUp(300));
 });
 
-function scrollToEl(selector, time = 2000) {
-    $([document.documentElement, document.body]).animate({
-        scrollTop: $(selector).offset().top
-    }, time);
+function scrollToEl(selector, time = 2000, offset = 0) {
+    if (time == 0) {
+        document.documentElement.scrollTop = $(selector).offset().top + offset;
+    } else {
+        $([document.documentElement, document.body]).animate({
+            scrollTop: $(selector).offset().top + offset
+        }, time);
+    }
 }
 
 class Dialog {

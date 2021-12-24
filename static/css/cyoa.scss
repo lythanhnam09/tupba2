@@ -17,7 +17,7 @@ $size-small: 720px;
 $size-portrait: 480px;
 
 a {
-    color: $primary;
+    color: lighten($color: $primary, $amount: 10%);
 }
 
 .list-container {
@@ -279,6 +279,18 @@ a {
 
     > .btn {
         padding: 0.05rem 0.5rem;
+
+        &.shown {
+            text-decoration: underline;
+            font-weight: bold;
+            background-color: $success;
+        }
+
+        &.invalid {
+            text-decoration: line-through;
+            // background-color: $secondary;
+        }
+
     }
 }
 
@@ -306,6 +318,11 @@ a {
             > .id {
                 color: rgb(252, 172, 24);
                 margin-left: 0.25rem;
+
+                > a {
+                    text-decoration: none;
+                    color: rgb(252, 172, 24);
+                }
             }
             > .date {
                 margin-left: 0.2rem;
@@ -318,10 +335,15 @@ a {
         > .card-image {
             border: 2px solid $secondary;
             float: left;
-            width: 25%;
+            max-width: 25%;
             min-width: 200px;
             border-radius: 0px 0px 0.5rem 0.5rem;
             overflow: hidden;
+
+            &.expand {
+                max-width: 100%;
+                display: block;
+            }
 
             > .image-filename {
                 display: block;
@@ -330,6 +352,24 @@ a {
                 color: white;
                 padding: 0.25rem;
                 text-align: center;
+            }
+
+            > .image-alt {
+                display: flex;
+                justify-content: center;
+                flex-flow: row wrap;
+                background-color: rgb(2, 153, 153);
+
+                > .alt-button {
+                    display: block;
+                    padding: 0.2rem 0.5rem;
+                    font-weight: bold;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: rgba(255, 255, 255, 0.3);
+                    }
+                }
             }
         }
 
@@ -340,10 +380,18 @@ a {
 
             .spoiler {
                 background-color: black;
-                color: white;
+                color: black;
 
                 a {
                     background-color: darken($primary, 10%);
+                    color: darken($primary, 10%);
+
+                    &:hover, &:focus {
+                        color: white;
+                    }
+                }
+
+                &:hover, &:focus {
                     color: white;
                 }
             }
