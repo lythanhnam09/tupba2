@@ -26,8 +26,11 @@ class WebElement:
 def fa_icon(name, style='fas', extra_cls=''):
     return f'<i class="{style} fa-{name} {extra_cls}"></i>'
 
-def cyoa_reply_button(id, is_op=False, is_valid=True, theme='btn-primary', op_theme='btn-warning', invalid_theme='btn-secondary'):
+def cyoa_reply_button(id, is_op=False, is_valid=True, theme='btn-primary', op_theme='btn-warning', invalid_theme='btn-disabled'):
     rtheme = theme
     if is_op: rtheme = op_theme
     if not is_valid: rtheme = invalid_theme
-    return f'<div class="control-group-round btn-reply"><button class="btn-reply-num btn {rtheme}" onclick="showPostReply(this, {id})">&gt;&gt;{id}</button><a href="#p{id}" class="btn {rtheme}">#</a></div>'
+    if (is_valid):
+        return f'<div class="control-group-round btn-reply"><button class="btn-reply-num btn {rtheme}" onclick="showPostReply(this, {id})">&gt;&gt;{id}</button><a href="#p{id}" class="btn {rtheme}">#</a></div>'
+    else:
+        return f'<div class="control-group-round btn-reply"><button class="btn-reply-num btn {rtheme}" disabled>&gt;&gt;{id}</button><a class="btn {rtheme}">#</a></div>'

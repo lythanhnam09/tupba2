@@ -103,9 +103,9 @@ class ReplyParser(RegexParser):
         self.ls_rep = self.post.get_ref('reply_to')
         for p in self.ls_rep:
             text = text.replace(f'&gt;&gt;{p["reply_id"]}', f'[{self.name}]({p["reply_id"]})')
-            # ls_id.remove(p['reply_id'])
-        # for p in ls_id:
-        #     text = text.replace(f'&gt;&gt;{p}', element.cyoa_reply_button(p, is_valid=True))
+            ls_id.remove(p['reply_id'])
+        for p in ls_id:
+            text = text.replace(f'&gt;&gt;{p}', element.cyoa_reply_button(p, is_valid=True))
         return text
 
     def replace_html(self, result:list, text:str) -> str:

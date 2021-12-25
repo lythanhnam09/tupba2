@@ -16,6 +16,31 @@ $size-medium: 960px;
 $size-small: 720px;
 $size-portrait: 480px;
 
+$lightness-threshold: 72;
+
+@function highlight-overlay($color){
+    @if (lightness($color) < $lightness-threshold) {
+        @return fade-out(white, 0.8);
+    } @else {
+        @return fade-out(black, 0.8);
+    }
+}
+
+@function btn-hover-color($color){
+    @if (lightness($color) < $lightness-threshold){
+        @return lighten($color, $hover-change);
+    } @else {
+        @return darken($color, $hover-change);
+    }
+}
+
+@function color-from-bg($color) {
+    @if (lightness($color) > $lightness-threshold) {
+        @return black;
+    } @else {
+        @return white;
+    }
+}
 a {
     color: lighten($color: $primary, $amount: 10%);
 }
@@ -339,6 +364,14 @@ a {
             min-width: 200px;
             border-radius: 0px 0px 0.5rem 0.5rem;
             overflow: hidden;
+            margin-bottom: 0.5rem;
+            margin-right: 1rem;
+
+            @media (max-width: $size-portrait) {
+                float: none;
+                margin: 0px;
+                max-width: 100%;
+            }
 
             &.expand {
                 max-width: 100%;
@@ -397,4 +430,88 @@ a {
             }
         }
     }
+}
+
+.nav-progress {
+    display: block;
+    position: sticky;
+    z-index: 100;
+    top: 38px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.4);
+
+    > .value {
+        position: absolute;
+        height: 10px;
+        width: 50%;
+        background: rgba(4, 248, 236, 0.6);
+    }
+
+    >.mark-container {
+        position: absolute;
+        height: 10px;
+        width: 100%;
+
+        > .qm-mark {
+            position: absolute;
+            height: 10px;
+            width: 6px;
+            background: rgba(241, 218, 10, 0.8);
+            z-index: 120;
+
+            .maybe {
+                background: rgba(75, 241, 10, 0.8);
+            }
+        }
+    }
+}
+
+$color-cyoa-thread: transparentize($color: #51c635, $amount: 0.2);
+$color-cyoa: linear-gradient(48deg, #78dc13, #51c635);
+
+.nav-cyoa-thread {
+    background: $color-cyoa-thread;
+    backdrop-filter: blur(5px);
+    color: color-from-bg($color-cyoa-thread) !important;
+    & .nav-expandable {
+        @media (max-width: $size-small) {
+            background: $success !important;
+        }
+    }
+    & .nav-title, & .nav-title * {
+        color: color-from-bg($color-cyoa-thread) !important;
+    }
+    & .nav-item:not(.disabled) {
+        // background-color: $color-cyoa-thread !important;
+        color: color-from-bg($color-cyoa-thread) !important;
+        cursor: pointer;
+
+        &:hover:not(.disabled) {
+            background: highlight-overlay($color-cyoa-thread) !important;
+            color: color-from-bg($color-cyoa-thread) !important;
+        }
+    }         
+}
+
+.nav-cyoa {
+    background: $color-cyoa;
+    color: white !important;
+    & .nav-expandable {
+        @media (max-width: $size-small) {
+            background: $success !important;
+        }
+    }
+    & .nav-title, & .nav-title * {
+        color: white !important;
+    }
+    & .nav-item:not(.disabled) {
+        // background-color: $color-cyoa-thread !important;
+        color: white !important;
+        cursor: pointer;
+
+        &:hover:not(.disabled) {
+            background: fade-out(white, 0.8) !important;
+            color: white !important;
+        }
+    }         
 }

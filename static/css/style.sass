@@ -457,6 +457,11 @@ input[type=file].form-control
         align-items: center
         text-decoration: none
 
+        &-xsm-center
+            @media (max-width: $size-small)
+                text-align: center
+                justify-content: center
+
     &-title *
         color: black
         text-decoration: none
@@ -499,7 +504,8 @@ input[type=file].form-control
                 display: none
             
             & ~ .nav-expandable
-                background-color: white
+                @media (max-width: $size-small)
+                    background-color: white
 
                 @media (min-width: $size-small + 1)
                     display: flex !important
@@ -550,11 +556,12 @@ input[type=file].form-control
             background-color: $color !important
             color: color-from-bg($color) !important
             & .nav-expandable
-                background-color: $color !important
+                @media (max-width: $size-small)
+                    background-color: $color !important
             & .nav-title, & .nav-title *
                 color: color-from-bg($color) !important
             & .nav-item:not(.disabled)
-                background-color: $color !important
+                // background-color: $color !important
                 color: color-from-bg($color) !important
                 cursor: pointer
 

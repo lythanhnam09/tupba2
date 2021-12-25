@@ -1,4 +1,51 @@
+$(document).ready(function() {
+    if ($('.nav-progress').length > 0) {
+        $(window).scroll(function() {
+            updateThreadProgress();
+        });
+        
+        updateThreadProgress();
+        showQMMark();
 
+        $(window).resize(function() {
+            showQMMark();
+            updateThreadProgress();
+        });
+    }
+});
+
+function updateThreadProgress() {
+    var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    var scrolled = (winScroll / height) * 100;
+    $('#nav-progress-value').css('width', scrolled + "%");
+}
+
+function showQMMark() {
+    var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    var width = $('#mark-container').width();
+    var left = $('#mark-container').offset().left;
+
+    $('#mark-container').html('');
+
+    $('.op').each(function() {
+        let postId = $(this).data('id');
+
+        var markpos = $(this).offset().top + left;
+        var barpos = (markpos / height) * width;
+        if (barpos > (width - 4)) barpos = width - 4;
+        $('#mark-container').append(`<div class="qm-mark" style="left:${barpos}px" onclick="scrollToEl('#p${postId}', 500)"></div>`);
+    });
+
+    $('.op-maybe').each(function() {
+        let postId = $(this).data('id');
+
+        var markpos = $(this).offset().top + left;
+        var barpos = (markpos / height) * width;
+        if (barpos > (width - 4)) barpos = width - 4;
+        $('#mark-container').append(`<div class="qm-mark maybe" style="left:${barpos}px" onclick="scrollToEl('#p${postId}', 500)"></div>`);
+    });
+}
 
 function refreshCyoaData() {
     socket.emit('cyoa_refresh', {});
@@ -68,7 +115,7 @@ function toggleExpandImage(postId, image = null) {
     let img = $(`.card-image[data-id="${postId}"]`);
     if (img.hasClass('expand')) {
         img.removeClass('expand');
-        scrollToEl(image, 0, -48);
+        scrollToEl($(image), 0, -150);
     } else {
         img.addClass('expand');
     }

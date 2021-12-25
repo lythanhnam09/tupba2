@@ -14,10 +14,7 @@
             {% block extra_nav_left %}
             {% endblock %}
             {% for button in nav.left_buttons %}
-                <a class="nav-item px-2{{' disabled' if button.disabled else ''}}" title="{{button.text}}" {{ button.show_href() }} {{ button.show_on_click() }}>
-                    <i class="{{button.icon}}"></i>
-                    <div class="text">{{button.text}}</div>
-                </a>
+                {{button.html()}}
             {% endfor %}
         </div>
         <a class="nav-title" {{nav.show_title_href()}}>
@@ -32,11 +29,16 @@
         {% endif %}
         <div id="exp-right" class="nav-expandable right" style="display: none">
             {% for button in nav.right_buttons %}
-                <a class="nav-item px-2{{' disabled' if button.disabled else ''}}" title="{{button.text}}" {{ button.show_href() }} {{ button.show_on_click() }}>
-                    <i class="{{button.icon}}"></i>
-                    <div class="text">{{button.text}}</div>
-                </a>
+                {{button.html()}}
             {% endfor %}
         </div>
     </div>
 </nav>
+{% if nav.show_progress %}
+<div class="nav-progress top-previous">
+    <div id="mark-container" class="mark-container">
+        {# <div class="qm-mark" style="left:12px"></div> #}
+    </div>
+    <div id="nav-progress-value" class="value"></div>
+</div>
+{% endif %}

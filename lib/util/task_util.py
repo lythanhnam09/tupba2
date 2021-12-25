@@ -153,7 +153,8 @@ def get_queue_stat() -> dict:
     res['tasks'] = []
     for q in task_queue.queue:
         dt = {}
-        dt['id'] = f'{q.meta["category"]}-{q.meta["id"]}'
+        dt['id'] = f'{q.meta["category"].lower()}-{q.meta["id"]}'
+        if ('operation' in q.meta): dt['id'] += f'-{q.meta["operation"]}'
         dt['category'] = q.meta['category']
         dt['name'] = q.name
         dt['count'] = q.get_total_task()

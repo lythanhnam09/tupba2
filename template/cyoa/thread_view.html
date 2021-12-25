@@ -6,7 +6,11 @@
 {% endblock extracss %}
 {% block extrajs %}
     <script src="/static/js/cyoa.js"></script>
+    
 {% endblock extrajs %}
+{% block bodyprop %}
+class="bg-darkblue"
+{% endblock bodyprop %}
 {% block body %}
     <div class="bg-darkblue">
         <div class="container-lg bg-d25-darkblue py-2">
@@ -36,7 +40,7 @@
                     </div>
                     <div class="card-content bg-dark">
                         {% if post.get_ref('images', save_result=True)|length > 0 %}
-                        <div class="card-image mb-1 mr-2" data-id="{{post['id']}}">
+                        <div class="card-image" data-id="{{post['id']}}">
                             <div class="img-container" data-id="{{post['id']}}" onclick="toggleExpandImage({{post['id']}}, this)">
                                 {% for img in post['images'] %}
                                 <img src="{{img['link']}}" data-altid="{{img['alt_id']}}" alt="{{post['images'][0]['filename']}} ({{img['alt_name']}})" title="{{post['images'][0]['filename']}}" style="display:{{'block' if loop.index == 1 else 'none'}}">
@@ -63,6 +67,7 @@
                 </div>
             </div>
             {% endfor %}
+            <hr id="hr-bottom" class="my-2">
         </div>
     </div>
 {% endblock %}

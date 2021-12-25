@@ -20,6 +20,20 @@ $(function() {
     $('.image-square').css('height', mw + 'px');
 
     connectSocket();
+
+    $('.top-previous').each(function() {
+        let je = $(this);
+        let prev = je.prev();
+        je.css('top', prev.offset().top + prev.height() - $(window).scrollTop() + 'px');
+    });
+
+    $(window).resize(function() {
+        $('.top-previous').each(function() {
+            let je = $(this);
+            let prev = je.prev();
+            je.css('top', prev.offset().top + prev.height() - $(window).scrollTop() + 'px');
+        });
+    });
 });
 
 function setSocketStat(stat, color) {

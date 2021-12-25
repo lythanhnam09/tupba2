@@ -6,7 +6,7 @@ import math
 import urllib
 import lib.model.cyoa._ref
 import lib.provider.anonpone as anonpone
-from lib.model.web.navbar import NavOption, NavButton
+from lib.model.web.navbar import *
 from lib.model.cyoa.cyoa import *
 from lib.model.cyoa.cyoa_thread import *
 from lib.model.web.form import WebForm
@@ -20,14 +20,17 @@ def cyoa_nav():
     right_btn = [NavButton('Saved CYOA', 'fas fa-server', href="/cyoa/?q=save_status=1"), NavButton('Tags', 'fas fa-tags')]
 
     left_btn = [NavButton('Back', 'fas fa-arrow-left', href='/cyoa'), NavButton('Previous', 'fas fa-chevron-left', on_click='history.back()'), NavButton('Next', 'fas fa-chevron-right', on_click='history.forward()')]
-    nav_item = NavOption('CYOA Browser', title_link='/cyoa', theme='nav-success', left_buttons=left_btn, right_buttons=right_btn)
+    nav_item = NavOption('CYOA Browser', title_link='/cyoa', theme='nav-cyoa', left_buttons=left_btn, right_buttons=right_btn)
 
     return nav_item
 
 def thread_nav(cyoa, thread, ls_th, num, count): # TODO: Here
     right_btn = [
+        NavButton('Scroll top', 'fas fa-arrow-to-top', on_click="scrollToEl('body', 0)"), 
+        NavButton('Scroll bottom', 'fas fas fa-arrow-to-bottom', on_click="scrollToEl('#hr-bottom', 0)"), 
         NavButton('First thread', 'fas fa-chevron-double-left', disabled=(num <= 0), href=f'{ls_th[0]["id"]}'), 
         NavButton('Previous thread', 'fas fa-chevron-left', disabled=(num <= 0), href=f'{ls_th[num - 1]["id"] if (num > 0) else ""}'), 
+        NavLabel(f'{num+1}/{count}'),
         NavButton(f'Next thread', 'fas fa-chevron-right', disabled=(num + 1 >= count), href=f'{ls_th[num + 1]["id"] if (num+1 < count) else ""}'), 
         NavButton('Last thread', 'fas fa-chevron-double-right', disabled=(num + 1 >= count), href=f'{ls_th[count-1]["id"]}')
     ]
@@ -35,7 +38,7 @@ def thread_nav(cyoa, thread, ls_th, num, count): # TODO: Here
     left_btn = [
         NavButton('Back', 'fas fa-arrow-left', href=f'/cyoa/quest/{cyoa["short_name"]}')
     ]
-    nav_item = NavOption(f'[{num+1}] {thread["title"]}' if thread['title'] not in ['', None] else f'[{num+1}] {cyoa["name"]} #{num+1}', theme='nav-success', left_buttons=left_btn, right_buttons=right_btn, title_size='12pt')
+    nav_item = NavOption(f'[{num+1}] {thread["title"]}' if thread['title'] not in ['', None] else f'[{num+1}] {cyoa["name"]} #{num+1}', theme='nav-cyoa-thread', left_buttons=left_btn, right_buttons=right_btn, title_size='12pt', show_progress=True)
 
     return nav_item
 

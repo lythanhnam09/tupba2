@@ -284,6 +284,15 @@ a {
   min-width: 200px;
   border-radius: 0px 0px 0.5rem 0.5rem;
   overflow: hidden;
+  margin-bottom: 0.5rem;
+  margin-right: 1rem;
+}
+@media (max-width: 480px) {
+  .post.card-inline > .card-content > .card-image {
+    float: none;
+    margin: 0px;
+    max-width: 100%;
+  }
 }
 .post.card-inline > .card-content > .card-image.expand {
   max-width: 100%;
@@ -328,4 +337,79 @@ a {
 }
 .post.card-inline > .card-content > .card-text .spoiler:hover, .post.card-inline > .card-content > .card-text .spoiler:focus {
   color: white;
+}
+
+.nav-progress {
+  display: block;
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 100;
+  top: 38px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+.nav-progress > .value {
+  position: absolute;
+  height: 10px;
+  width: 50%;
+  background: rgba(4, 248, 236, 0.6);
+}
+.nav-progress > .mark-container {
+  position: absolute;
+  height: 10px;
+  width: 100%;
+}
+.nav-progress > .mark-container > .qm-mark {
+  position: absolute;
+  height: 10px;
+  width: 6px;
+  background: rgba(241, 218, 10, 0.8);
+  z-index: 120;
+}
+.nav-progress > .mark-container > .qm-mark .maybe {
+  background: rgba(75, 241, 10, 0.8);
+}
+
+.nav-cyoa-thread {
+  background: rgba(81, 198, 53, 0.8);
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
+  color: white !important;
+}
+@media (max-width: 720px) {
+  .nav-cyoa-thread .nav-expandable {
+    background: #46b842 !important;
+  }
+}
+.nav-cyoa-thread .nav-title, .nav-cyoa-thread .nav-title * {
+  color: white !important;
+}
+.nav-cyoa-thread .nav-item:not(.disabled) {
+  color: white !important;
+  cursor: pointer;
+}
+.nav-cyoa-thread .nav-item:not(.disabled):hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.nav-cyoa {
+  background: linear-gradient(48deg, #78dc13, #51c635);
+  color: white !important;
+}
+@media (max-width: 720px) {
+  .nav-cyoa .nav-expandable {
+    background: #46b842 !important;
+  }
+}
+.nav-cyoa .nav-title, .nav-cyoa .nav-title * {
+  color: white !important;
+}
+.nav-cyoa .nav-item:not(.disabled) {
+  color: white !important;
+  cursor: pointer;
+}
+.nav-cyoa .nav-item:not(.disabled):hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
 }/*# sourceMappingURL=cyoa.css.map */
