@@ -1,7 +1,8 @@
 import sqlite3
 import json
 from datetime import datetime, timedelta
-from urllib.request import Request, urlopen
+# from urllib.request import Request, urlopen
+import urllib3
 from pathlib import Path
 
 
@@ -56,12 +57,9 @@ def date_str_from_timestamp(timestamp, format):
 useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
 
 def get_json_api(link):
-    req = Request(link, headers={'User-Agent': useragent})
-    fp = urlopen(req)
-    mybytes = fp.read()
-    mystr = mybytes.decode("utf8")
-    fp.close()
-    js = json.loads(mystr)
+    http = urllib3.PoolManager(headers={'User-Agent': useragent})
+    r = http.request('GET', link)
+    js = json.loads(r.data.decode('utf-8'))
     return js
 
 class PageButton:
