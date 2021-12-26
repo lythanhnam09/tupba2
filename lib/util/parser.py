@@ -144,6 +144,7 @@ class PostProcessor:
 
     def process(self):
         self.text = self.text.replace('>', '&gt;')
+        self.text = self.text.replace('\n\n\n', '\n\n')
 
         for p in self.parsers:
             self.text = p.to_format(self.text)

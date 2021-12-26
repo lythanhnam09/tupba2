@@ -188,6 +188,22 @@ body
     margin-right: auto
 
 @for $i from 0 through $space-step-count
+    .m-#{$i}
+        margin: $i * $space-gap
+    .ml-#{$i}
+        margin-left: $i * $space-gap
+    .mr-#{$i}
+        margin-right: $i * $space-gap
+    .mt-#{$i}
+        margin-top: $i * $space-gap
+    .mb-#{$i}
+        margin-bottom: $i * $space-gap
+    .mx-#{$i}
+        margin-left: $i * $space-gap
+        margin-right: $i * $space-gap
+    .my-#{$i}
+        margin-top: $i * $space-gap
+        margin-bottom: $i * $space-gap
     @each $name, $size in $dev-size
         @media (min-width: $size)
             .m-#{$name}-#{$i}
@@ -206,22 +222,6 @@ body
             .my-#{$name}-#{$i}
                 margin-top: $i * $space-gap !important
                 margin-bottom: $i * $space-gap !important
-    .m-#{$i}
-        margin: $i * $space-gap !important
-    .ml-#{$i}
-        margin-left: $i * $space-gap !important
-    .mr-#{$i}
-        margin-right: $i * $space-gap !important
-    .mt-#{$i}
-        margin-top: $i * $space-gap !important
-    .mb-#{$i}
-        margin-bottom: $i * $space-gap !important
-    .mx-#{$i}
-        margin-left: $i * $space-gap !important
-        margin-right: $i * $space-gap !important
-    .my-#{$i}
-        margin-top: $i * $space-gap !important
-        margin-bottom: $i * $space-gap !important
 
 // Padding
 @for $i from 0 through $space-step-count
@@ -340,16 +340,16 @@ body
         background-color: darken($secondary, $hover-change)
 
     @each $name, $color in $colors
-        &-#{$name}
+        &-#{$name}:not(:disabled):not(.btn-disabled)
             background-color: $color
             color: color-from-bg($color)
-            &:hover:not(:disabled), &:focus:not(:disabled), &:focus-visible:not(:disabled)
+            &:hover:not(:disabled):not(.btn-disabled), &:focus:not(:disabled):not(.btn-disabled), &:focus-visible:not(:disabled):not(.btn-disabled)
                 background-color: darken($color, $hover-change)//btn-hover-color($color)
                 color: color-from-bg($color)
-            &:active:not(:disabled), &:focus:not(:disabled), &:focus-visible:not(:disabled)
+            &:active:not(:disabled):not(.btn-disabled), &:focus:not(:disabled):not(.btn-disabled), &:focus-visible:not(:disabled):not(.btn-disabled)
                 outline: transparentize($color, 0.5) solid 0.2rem
                 z-index: 50
-            &:active:not(:disabled)
+            &:active:not(:disabled):not(.btn-disabled)
                 background-color: darken($color, $active-change)//btn-hover-color($color)
             
             &.btn-outline

@@ -6,6 +6,7 @@
 {% endblock extracss %}
 {% block extrajs %}
     <script src="/static/js/cyoa.js"></script>
+    <script src="/static/js/cyoainfo.js"></script>
 {% endblock extrajs %}
 {% block body %}
     <form id="form-page" action="/cyoa/quest/{{cyoa['short_name']}}">
@@ -65,15 +66,19 @@
                     <div class="description mt-1">
                         {{cyoa['description']}}
                     </div>
+                    {% if cyoa['save_status'] > 0 %}
                     <hr class="mt-1">
                     <div class="control-group">
-                        <button id="btn-refresh-all" class="btn btn-danger mt-1" onclick="refreshThreadData({{cyoa['id']}}, true)"><i class="fas fa-sync"></i> All</button>
-                        <button id="btn-refresh" class="btn btn-primary mt-1 ml-1" onclick="refreshThreadData({{cyoa['id']}})"><i class="fas fa-sync"></i> Refresh thread</button>
-                        <button id="btn-download-img" class="btn btn-primary mt-1 ml-1"><i class="fas fa-download"></i> Download image</button>
+                        <button id="btn-refresh-all" class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-image"></i> View images</button>
+                        <button id="btn-refresh" class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-file"></i> View by post</button>
                     </div>
+                    {% endif %}
                 </div>
             </div>
+            
             <hr class="mb-1">
+
+            {% if cyoa['save_status'] > 0 %}
             <div class="control-group px-2">
                 <button id="btn-bottom" class="btn btn-primary mr-1" title="To page bottom" onclick="scrollToEl('#btn-top', 1000)"><i class="fas fa-arrow-to-bottom"></i></button>
                 {{page_nav.html().markup()}}
@@ -85,6 +90,15 @@
                     <option value="0" {{form.option_selected('perpage', 0)}}>Show all</option>
                 </select>
                 <div id="page-stat" class="pl-2">Showing {{thread_page.data|length}} of {{thread_page.total_count}}</div>
+                <div class="control-group ml-0 ml-md-1">
+                    {% if cyoa['save_status'] > 0 %}
+                    <button id="btn-refresh-all" class="btn btn-danger reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData({{cyoa['id']}}, true)"><i class="fas fa-sync"></i> All</button>
+                    {% endif %}
+                    <button id="btn-refresh" class="btn btn-primary reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData({{cyoa['id']}})"><i class="fas fa-sync"></i> Refresh thread</button>
+                    {% if cyoa['save_status'] > 0 %}
+                    <button id="btn-download-img" class="btn btn-primary reload-disable mt-1 mt-md-0"><i class="fas fa-download"></i> Get image</button>
+                    {% endif %}
+                </div>
             </div>
             <hr class="my-1">
 
@@ -100,7 +114,7 @@
                                 {% if thread['title'] == '' or thread['title'] == None %}
                                 <span class="fg-l15-success">[{{loop.index + ((thread_page.page_num-1) * thread_page.per_page)}}]</span> <i> {{cyoa['name']}} #{{loop.index}}</i>
                                 {% else %}
-                                <span class="fg-l15-success">[{{loop.index + ((thread_page.page_num-1) * thread_page.per_page)}}]</span> {{thread['title']}}
+                                <span class="fg-l15-success">[{{loop.index + ((thread_page.page_num-1) * thread_page.per_page)}}]</span> {{thread['title']|safe}}
                                 {% endif %}
                             </a>
                         </h3>
@@ -135,6 +149,12 @@
                 <div id="page-stat" class="pl-2">Showing {{thread_page.data|length}} of {{thread_page.total_count}}</div>
             </div>
             <hr>
+            {% else %}
+            <div class="emty-frame text-center h-100">
+                <h1 class="mt-3 fg-d25-light">Nothing here, lol</h1>
+                <button id="btn-refresh" class="btn btn-primary mt-1" onclick="refreshThreadData({{cyoa['id']}})"><i class="fas fa-sync reload-disable"></i> Fetch thread data</button>
+            </div>
+            {% endif %}
 
         </div>
     </div>

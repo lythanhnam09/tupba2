@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}{{cyoa['name']}} - {{thread['title'] if thread['title'] not in ['', None] else '#%d' % thread['id']}}{% endblock %}
+{% block title %}{{cyoa['name']}} #{{thread_num + 1}} - {{thread['title'] if thread['title'] not in ['', None] else '#%d' % thread['id']}}{% endblock %}
 {% block extracss %}
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/cyoa.css">
 {% endblock extracss %}
 {% block extrajs %}
     <script src="/static/js/cyoa.js"></script>
-    
+    <script src="/static/js/cyoathread.js"></script>
 {% endblock extrajs %}
 {% block bodyprop %}
 class="bg-darkblue"
@@ -55,9 +55,11 @@ class="bg-darkblue"
                                 {% endfor %}
                             </div>
                             {% endif %}
+                            {% if post['images'][0]['filename'] != None %}
                             <div class="image-filename">
                                 {{post['images'][0]['filename']}}
                             </div>
+                            {% endif %}
                         </div>
                         {% endif %}
                         <div class="card-text">

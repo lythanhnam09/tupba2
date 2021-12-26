@@ -87,12 +87,12 @@ class Cyoa(SQLTable):
         else:
             lstag = [s.strip(' ') for s in query.split(',')]
             for tag in lstag:
-                ls = re.split('[=:<>]', tag, maxsplit=1)
+                ls = re.split('[=:<>][>=]?', tag, maxsplit=1)
                 # re.findall(pattern, string)
                 if (len(ls) < 2):
                     lswhere.append([f'{tag!r}', 'in', ['(select t.name from cyoa_tag ct join tag t on ct.tag_id = t.id where ct.cyoa_id = c.id)']])
                 else:
-                    ls = list(re.findall('(\w+)([:<>=]*)([\w ]+)', tag)[0])
+                    ls = list(re.findall('(\w+)([:<>=][>=]?)([\w ]+)', tag)[0])
                     if (ls[1] == ':'):
                         ls[1] = 'like'
                         ls[2] = f'%{ls[2]}%'

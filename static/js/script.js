@@ -1,6 +1,8 @@
 var connected = false;
 var socket;
 
+var onSocketStatLoad = null;
+
 $(function() {
     $('.card-foldable>.card-header').append('<i class="fas fa-chevron-up foldbutton"></i>');
     $('.card-foldable>.card-header').click(function() {
@@ -57,6 +59,7 @@ function connectSocket() {
         console.log(`Task data:`);
         console.log(data);
         updateTask(data);
+        if (onSocketStatLoad != null) onSocketStatLoad(data);
     });
 
     socket.on('refresh_page', function(data) {

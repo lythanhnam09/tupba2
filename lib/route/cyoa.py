@@ -11,20 +11,21 @@ from lib.model.cyoa.cyoa import *
 from lib.model.cyoa.cyoa_thread import *
 from lib.model.web.form import WebForm
 from lib.model.web.page import SimplePageNav
+from lib.util.task_util import get_queue_stat
 
 
 cyoa = Blueprint('cyoa', __name__, template_folder='template', root_path='.')
 CORS(cyoa, support_credentials=True)
 
 def cyoa_nav():
-    right_btn = [NavButton('Saved CYOA', 'fas fa-server', href="/cyoa/?q=save_status=1"), NavButton('Tags', 'fas fa-tags')]
+    right_btn = [NavButton('Saved CYOA', 'fas fa-server', href="/cyoa/?q=save_status>0"), NavButton('Tags', 'fas fa-tags')]
 
     left_btn = [NavButton('Back', 'fas fa-arrow-left', href='/cyoa'), NavButton('Previous', 'fas fa-chevron-left', on_click='history.back()'), NavButton('Next', 'fas fa-chevron-right', on_click='history.forward()')]
     nav_item = NavOption('CYOA Browser', title_link='/cyoa', theme='nav-cyoa', left_buttons=left_btn, right_buttons=right_btn)
 
     return nav_item
 
-def thread_nav(cyoa, thread, ls_th, num, count): # TODO: Here
+def thread_nav(cyoa, thread, ls_th, num, count):
     right_btn = [
         NavButton('Scroll top', 'fas fa-arrow-to-top', on_click="scrollToEl('body', 0)"), 
         NavButton('Scroll bottom', 'fas fas fa-arrow-to-bottom', on_click="scrollToEl('#hr-bottom', 0)"), 
@@ -67,7 +68,7 @@ def cyoa_info(sname):
     if (cy is None): abort(404)
     cy.check_steath_lewd()
     ls_th = anonpone.get_thread_list(cy, form['page'], form['perpage'])
-    return render_template('cyoa/info.html', nav=cyoa_nav(), form=form, cyoa=cy, thread_page=ls_th, page_nav=SimplePageNav(ls_th, 'form-page'))
+    return render_template('cyoa/info.html', nav=cyoa_nav(), form=form, cyoa=cy, thread_page=ls_th, page_nav=SimplePageNav(ls_th, 'form-page'), worker_stat=get_queue_stat())
 
 @cyoa.route('/quest/<sname>/thread/<thread_id>')
 def thread_view(sname, thread_id):
@@ -85,5 +86,5 @@ def thread_view(sname, thread_id):
     num = [i for i,x in enumerate(ls_th) if x['id'] == th['id']][0]
     count = len(ls_th)
     ls_post = anonpone.get_post_list(cy, th)
-    return render_template('cyoa/thread_view.html', nav=thread_nav(cy, th, ls_th, num, count), cyoa=cy, thread=th, ls_post=ls_post)
+    return render_template('cyoa/thread_view.html', nav=thread_nav(cy, th, ls_th, num, count), cyoa=cy, thread=th, ls_post=ls_post, thread_num=num)
 

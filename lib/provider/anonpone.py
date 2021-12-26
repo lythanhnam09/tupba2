@@ -82,7 +82,7 @@ def refresh_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
     th['op_name'] = ls_post[0]['username']
     cyoa_post.Post.insert(ls_post, update_conflict=True, set_col=['comment_plain', 'comment_html'])
     cyoa_post.PostImage.insert(lsimg, update_conflict=True, set_col=['filename', 'link'])
-    cyoa_thread.Thread.update(th, set_col=['thread_image', 'total_post'])
+    cyoa_thread.Thread.update(th, set_col=['thread_image', 'total_post', 'op_name'])
 
 def parse_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
     ls_post = th['posts']
@@ -104,30 +104,42 @@ def refresh_thread_list(cy:cyoa.Cyoa, refresh_post = True, force_refresh_all = F
     cyoa_thread.CyoaThread.insert(lsct, or_ignore=True)
     if (refresh_post):
         if (force_refresh_all):
-            print(f'refresh_thread_list: deleting all post in cyoa id {cy["id"]}')
+            qw = task_util.QueueWorker(name=f'Delete all thread data: {cy["name"]}', limit=1, dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'delete-thread'})
             for th in result:
-                cyoa_post.Post.delete(where=[['thread_id', th['id']]])
-        ls_emty = cy.get_list_emty()
-        if (len(ls_emty) > 0):
-            print(f'refresh_thread_list: {len(ls_emty)} threads have no post, begin worker task')
+                qw.enqueue(task_util.WorkerTask(cyoa_post.Post.delete, None, where=[['thread_id', th['id']]]))
+            task_util.task_queue.enqueue(qw)
+
             qw = task_util.QueueWorker(name=f'Refresh thread data: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'get-thread'})
-            for th in ls_emty:
+            for th in result:
                 qw.enqueue(task_util.WorkerTask(refresh_thread_post, None, cy=cy, th=th))
             task_util.task_queue.enqueue(qw)
 
             qw = task_util.QueueWorker(name=f'Parsing posts: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'parse-post'})
-            for th in ls_emty:
+            for th in result:
                 qw.enqueue(task_util.WorkerTask(parse_thread_post, None, cy=cy, th=th))
             task_util.task_queue.enqueue(qw)
         else:
-            th = cy.get_ref_one('threads', order_by=['thread_date', 'desc'])['thread']
-            qw = task_util.QueueWorker(name=f'Refresh last thread data: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'get-thread'})
-            qw.enqueue(task_util.WorkerTask(refresh_thread_post, None, cy=cy, th=th))
-            task_util.task_queue.enqueue(qw)
+            ls_emty = cy.get_list_emty()
+            if (len(ls_emty) > 0):
+                print(f'refresh_thread_list: {len(ls_emty)} threads have no post, begin worker task')
+                qw = task_util.QueueWorker(name=f'Refresh thread data: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'get-thread'})
+                for th in ls_emty:
+                    qw.enqueue(task_util.WorkerTask(refresh_thread_post, None, cy=cy, th=th))
+                task_util.task_queue.enqueue(qw)
 
-            qw = task_util.QueueWorker(name=f'Parsing posts: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'parse-post'})
-            qw.enqueue(task_util.WorkerTask(parse_thread_post, None, cy=cy, th=th))
-            task_util.task_queue.enqueue(qw)
+                qw = task_util.QueueWorker(name=f'Parsing posts: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'parse-post'})
+                for th in ls_emty:
+                    qw.enqueue(task_util.WorkerTask(parse_thread_post, None, cy=cy, th=th))
+                task_util.task_queue.enqueue(qw)
+            else:
+                th = cy.get_ref_one('threads', order_by=['thread_date', 'desc'])['thread']
+                qw = task_util.QueueWorker(name=f'Refresh last thread data: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'get-thread'})
+                qw.enqueue(task_util.WorkerTask(refresh_thread_post, None, cy=cy, th=th))
+                task_util.task_queue.enqueue(qw)
+
+                qw = task_util.QueueWorker(name=f'Parsing posts: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'parse-post'})
+                qw.enqueue(task_util.WorkerTask(parse_thread_post, None, cy=cy, th=th))
+                task_util.task_queue.enqueue(qw)
     return result
 
 def get_cyoa_list(q:str = '', page = 1, per_page = 20, order_by:list = ['last_post_time', 'desc'], refresh = False) -> list:
@@ -144,7 +156,7 @@ def get_cyoa_list(q:str = '', page = 1, per_page = 20, order_by:list = ['last_po
 def get_thread_list(cyoa:cyoa.Cyoa, page = 1, per_page = 0, refresh = False):
     if (refresh):
         refresh_cyoa_list()
-    return cyoa.get_ref_page('threads', page, per_page, get_many=True)
+    return cyoa.get_ref_page('threads', page, per_page, order_by=['thread_date', 'asc'], get_many=True)
 
 def get_post_list(cyoa:cyoa.Cyoa , thread:cyoa_thread.Thread, refresh = False):
     if (refresh):

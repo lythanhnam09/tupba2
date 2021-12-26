@@ -292,6 +292,7 @@ a {
     float: none;
     margin: 0px;
     max-width: 100%;
+    margin-bottom: 0.5rem;
   }
 }
 .post.card-inline > .card-content > .card-image.expand {
@@ -351,7 +352,7 @@ a {
 .nav-progress > .value {
   position: absolute;
   height: 10px;
-  width: 50%;
+  width: 0%;
   background: rgba(4, 248, 236, 0.6);
 }
 .nav-progress > .mark-container {
@@ -366,7 +367,7 @@ a {
   background: rgba(241, 218, 10, 0.8);
   z-index: 120;
 }
-.nav-progress > .mark-container > .qm-mark .maybe {
+.nav-progress > .mark-container > .qm-mark.maybe {
   background: rgba(75, 241, 10, 0.8);
 }
 
@@ -394,7 +395,7 @@ a {
 }
 
 .nav-cyoa {
-  background: linear-gradient(48deg, #78dc13, #51c635);
+  background: linear-gradient(48deg, #95cc14, #35c63c);
   color: white !important;
 }
 @media (max-width: 720px) {

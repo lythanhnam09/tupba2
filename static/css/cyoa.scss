@@ -371,6 +371,7 @@ a {
                 float: none;
                 margin: 0px;
                 max-width: 100%;
+                margin-bottom: 0.5rem;
             }
 
             &.expand {
@@ -443,7 +444,7 @@ a {
     > .value {
         position: absolute;
         height: 10px;
-        width: 50%;
+        width: 0%;
         background: rgba(4, 248, 236, 0.6);
     }
 
@@ -459,7 +460,7 @@ a {
             background: rgba(241, 218, 10, 0.8);
             z-index: 120;
 
-            .maybe {
+            &.maybe {
                 background: rgba(75, 241, 10, 0.8);
             }
         }
@@ -467,7 +468,7 @@ a {
 }
 
 $color-cyoa-thread: transparentize($color: #51c635, $amount: 0.2);
-$color-cyoa: linear-gradient(48deg, #78dc13, #51c635);
+$color-cyoa: linear-gradient(48deg, #95cc14, #35c63c);
 
 .nav-cyoa-thread {
     background: $color-cyoa-thread;
