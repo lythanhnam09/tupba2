@@ -96,7 +96,7 @@
                     {% endif %}
                     <button id="btn-refresh" class="btn btn-primary reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData({{cyoa['id']}})"><i class="fas fa-sync"></i> Refresh thread</button>
                     {% if cyoa['save_status'] > 0 %}
-                    <button id="btn-download-img" class="btn btn-primary reload-disable mt-1 mt-md-0"><i class="fas fa-download"></i> Get image</button>
+                    <button id="btn-refresh-all" class="btn btn-primary reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData({{cyoa['id']}}, false, true)"><i class="fas fa-sync"></i> Reparse</button>
                     {% endif %}
                 </div>
             </div>
@@ -152,7 +152,7 @@
             {% else %}
             <div class="emty-frame text-center h-100">
                 <h1 class="mt-3 fg-d25-light">Nothing here, lol</h1>
-                <button id="btn-refresh" class="btn btn-primary mt-1" onclick="refreshThreadData({{cyoa['id']}})"><i class="fas fa-sync reload-disable"></i> Fetch thread data</button>
+                <button id="btn-refresh" class="btn btn-primary mt-1 reload-disable" onclick="refreshThreadData({{cyoa['id']}})"><i class="fas fa-sync"></i> Fetch thread data</button>
             </div>
             {% endif %}
 

@@ -2,8 +2,8 @@ $(document).ready(function() {
     $('.nav-progress').hide();
 });
 
-function refreshThreadData(cyoaId, force = false) {
-    socket.emit('cyoa_thread_refresh', {id: cyoaId, force: force});
+function refreshThreadData(cyoaId, force = false, parse = false) {
+    socket.emit('cyoa_thread_refresh', {id: cyoaId, force: force, parse: parse});
     // $('#btn-refresh').html('<i class="fas fa-ellipsis-h"></i>');
     // $('#btn-refresh').prop('disabled', true);
     // $('#btn-refresh-all').prop('disabled', true);

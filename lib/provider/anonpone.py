@@ -90,7 +90,7 @@ def parse_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
         post.process_html()
     cyoa_post.Post.update(ls_post, set_col=['comment_html'])
 
-def refresh_thread_list(cy:cyoa.Cyoa, refresh_post = True, force_refresh_all = False):
+def refresh_thread_list(cy:cyoa.Cyoa, refresh_post = True, force_refresh_all = False, reparse_post = False):
     link = f'https://www.anonpone.com/api/threads/{cy["id"]}'
     js = util.get_json_api(link)
     result = []
@@ -114,6 +114,11 @@ def refresh_thread_list(cy:cyoa.Cyoa, refresh_post = True, force_refresh_all = F
                 qw.enqueue(task_util.WorkerTask(refresh_thread_post, None, cy=cy, th=th))
             task_util.task_queue.enqueue(qw)
 
+            qw = task_util.QueueWorker(name=f'Parsing posts: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'parse-post'})
+            for th in result:
+                qw.enqueue(task_util.WorkerTask(parse_thread_post, None, cy=cy, th=th))
+            task_util.task_queue.enqueue(qw)
+        elif (reparse_post):
             qw = task_util.QueueWorker(name=f'Parsing posts: {cy["name"]}', dequeue_on_done = True, meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id'], 'operation': 'parse-post'})
             for th in result:
                 qw.enqueue(task_util.WorkerTask(parse_thread_post, None, cy=cy, th=th))

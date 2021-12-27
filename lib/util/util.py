@@ -62,6 +62,13 @@ def get_json_api(link):
     js = json.loads(r.data.decode('utf-8'))
     return js
 
+def download_file(link, path):
+    http = urllib3.PoolManager(headers={'User-Agent': useragent})
+    r = http.request('GET', link)
+    res = r.data
+    with open(path, 'wb') as f:
+        f.write(res)
+
 class PageButton:
     def __init__(self, text='0', link='', disabled=False, num=0):
         self.text = text

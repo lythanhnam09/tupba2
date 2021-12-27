@@ -69,7 +69,7 @@ def cyoa_refresh_thread(data):
         emit('task_data', task_util.get_queue_stat())
         emit('throw_error', {'exception': f'{e}', 'trace': trace, 'name': worker.name})
     if (cy != None):
-        anonpone.refresh_thread_list(cy, force_refresh_all=data['force'])
+        anonpone.refresh_thread_list(cy, force_refresh_all=data.get('force', False), reparse_post=data.get('parse', False))
         # emit('refresh_page', {})
         task_util.task_queue.on_task_update = update_task
         task_util.task_queue.on_task_done = done_task
