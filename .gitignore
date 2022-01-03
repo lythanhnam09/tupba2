@@ -4,3 +4,4 @@ __pycache__
 .kdev4
 config/*
 git_note.txt
+tmp

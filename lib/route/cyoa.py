@@ -12,6 +12,7 @@ from lib.model.cyoa.cyoa_thread import *
 from lib.model.web.form import WebForm
 from lib.model.web.page import SimplePageNav
 from lib.util.task_util import get_queue_stat
+from lib.util.util import serve_template
 
 
 cyoa = Blueprint('cyoa', __name__, template_folder='template', root_path='.')
@@ -58,7 +59,7 @@ def root():
     else:
         ls = anonpone.get_cyoa_list(form['q'], form['page'], form['perpage'], [form['sf'], form['sd']])
     
-    return render_template('cyoa/index.html', nav=cyoa_nav(), form=form, ls_cyoa=ls, page_nav=SimplePageNav(ls, 'form-filter'))
+    return serve_template('cyoa/index.mako', nav=cyoa_nav(), form=form, ls_cyoa=ls, page_nav=SimplePageNav(ls, 'form-filter'))
 
 @cyoa.route('/quest/<sname>')
 def cyoa_info(sname):
@@ -68,7 +69,7 @@ def cyoa_info(sname):
     if (cy is None): abort(404)
     cy.check_steath_lewd()
     ls_th = anonpone.get_thread_list(cy, form['page'], form['perpage'])
-    return render_template('cyoa/info.html', nav=cyoa_nav(), form=form, cyoa=cy, thread_page=ls_th, page_nav=SimplePageNav(ls_th, 'form-page'), worker_stat=get_queue_stat())
+    return serve_template('cyoa/info.mako', nav=cyoa_nav(), form=form, cyoa=cy, thread_page=ls_th, page_nav=SimplePageNav(ls_th, 'form-page'), worker_stat=get_queue_stat())
 
 @cyoa.route('/quest/<sname>/thread/<thread_id>')
 def thread_view(sname, thread_id):
@@ -86,5 +87,5 @@ def thread_view(sname, thread_id):
     num = [i for i,x in enumerate(ls_th) if x['id'] == th['id']][0]
     count = len(ls_th)
     ls_post = anonpone.get_post_list(cy, th)
-    return render_template('cyoa/thread_view.html', nav=thread_nav(cy, th, ls_th, num, count), cyoa=cy, thread=th, ls_post=ls_post, thread_num=num)
+    return serve_template('cyoa/thread_view.mako', nav=thread_nav(cy, th, ls_th, num, count), cyoa=cy, thread=th, ls_post=ls_post, thread_num=num)
 

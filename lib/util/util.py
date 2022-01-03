@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 # from urllib.request import Request, urlopen
 import urllib3
 from pathlib import Path
+from mako.template import Template
+from mako.lookup import TemplateLookup
 
 
 class Page:
@@ -122,3 +124,9 @@ def get_file_size_str(num, round = 2, threshold = 1024):
         ui += 1
         num /= 1024
     return f'{num:.{round}f}{lsu[ui]}'
+
+mylookup = TemplateLookup(directories=['template'], module_directory='tmp/mako_modules')
+
+def serve_template(templatename, **kwargs):
+    mytemplate = mylookup.get_template(templatename)
+    return mytemplate.render(**kwargs)

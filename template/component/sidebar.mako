@@ -25,18 +25,18 @@
     <hr>
     <h3 class="task-title">TASKS</h3><span id="task-count" class="task-count">3 tasks</span>
     <div id="task-list" class="task-list mt-1 mx-1">
-        {# <div class="task-item card bg-l10-darkblue mb-1">
-            <div class="card-content">
-                <div class="task-stat">
-                    <div class="task-tag tag-cyoa">CYOA</div>
-                    <div class="task-progress">100% (1000/1000)</div>
-                </div>
+        ## <div class="task-item card bg-l10-darkblue mb-1">
+        ##     <div class="card-content">
+        ##         <div class="task-stat">
+        ##             <div class="task-tag tag-cyoa">CYOA</div>
+        ##             <div class="task-progress">100% (1000/1000)</div>
+        ##         </div>
                 
-                <div class="task-name">Download image: NORTHEN EXCURSION</div>
-                <div class="progress-bar">
-                    <div class="value bg-warning"></div>
-                </div>
-            </div>
-        </div> #}
+        ##         <div class="task-name">Download image: NORTHEN EXCURSION</div>
+        ##         <div class="progress-bar">
+        ##             <div class="value bg-warning"></div>
+        ##         </div>
+        ##     </div>
+        ## </div>
     </div>
 </div>
