@@ -325,6 +325,9 @@ a {
 .post.card-inline > .card-content > .card-text .quote {
   color: #20ff20;
 }
+.post.card-inline > .card-content > .card-text .quote .spoiler:hover, .post.card-inline > .card-content > .card-text .quote .spoiler:focus {
+  color: #20ff20;
+}
 .post.card-inline > .card-content > .card-text .spoiler {
   background-color: black;
   color: black;
@@ -360,6 +363,16 @@ a {
   height: 10px;
   width: 100%;
 }
+.nav-progress > .mark-container > .post-mark {
+  position: absolute;
+  height: 10px;
+  width: 6px;
+  background: rgba(121, 39, 202, 0.8);
+  z-index: 115;
+}
+.nav-progress > .mark-container > .post-mark.lewd-2 {
+  border-top: 4px solid #ff820c;
+}
 .nav-progress > .mark-container > .qm-mark {
   position: absolute;
   height: 10px;
@@ -371,10 +384,10 @@ a {
   background: rgba(75, 241, 10, 0.8);
 }
 .nav-progress > .mark-container > .qm-mark.lewd-1 {
-  border-top: 4px solid #84e9ff;
+  border-top: 4px solid #ff42e0;
 }
 .nav-progress > .mark-container > .qm-mark.lewd-2 {
-  border-top: 4px solid #9484ff;
+  border-top: 4px solid #ff820c;
 }
 
 .nav-cyoa-thread {

@@ -1,6 +1,8 @@
 import re
 import lib.model.web.element as element
-# from lib.model.cyoa.post import PostReplyTo, PostReplyBy
+import lib.util.util as util
+import lib.util.db_util as db_util
+import sqlite3
 
 class Parser:
     def __init__(self, name):
@@ -58,21 +60,138 @@ class RegexParser:
     def replace_html(self, result:list, text:str) -> str:
         return text
 
+class Link:
+    def __init__(self, protocol, host, port, path):
+        self.protocol = protocol
+        self.host = host
+        self.port = port
+        self.path = path
+
+    def __str__(self):
+        return f'{self.protocol}://{self.host}{self.port}{self.path}'
+
+    def __repr__(self):
+        return f'Link({self.protocol}://{self.host}{self.port}{self.path})'
+
+
 class LinkParser(RegexParser):
     def __init__(self, name):
-        regex = r"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))(:\d+)?([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"
-        super().__init__(name, regex)
+        self.regex = r"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))(:\d+)?([\w.,@?^=%&:/+#-]*[\w@?^=%&/+#-])?"
+        super().__init__(name, self.regex)
+        self.links = []
+
+    def to_format(self, text:str) -> str:
+        temp = text
+        res = re.findall(self.regex, text, self.option)
+        if (len(res) > 0):
+            self.result = res
+            self.links = [Link(x[0], x[1], x[2], x[3]) for x in self.result]
+            return self.replace_format(res, temp)
+        else:
+            return text
     
     def replace_format(self, result:list, text:str) -> str:
-        for x in result:
-            url = f'{x[0]}://{x[1]}{x[2]}{x[3]}'
-            text = text.replace(url, f'[{self.name}]({url})', 1)
+        for x in self.links:
+            text = text.replace(str(x), f'[{self.name}]({x!s})', 1)
         return text
 
     def replace_html(self, result:list, text:str) -> str:
         for x in result:
             url = x
             text = text.replace(f'[{self.name}]({url})', f'<a href="{url}">{url}</a>', 1)
+        return text
+
+class ImgurLinkParser(LinkParser):
+    def __init__(self, name, post):
+        super().__init__(name)
+        self.regex = r"(http|ftp|https)://(imgur.com)(:\d+)?([\w.,@?^=%&:/+#-]*[\w@?^=%&/+#-])"
+        self.post = post
+    
+    def replace_format(self, result:list, text:str) -> str:
+        from lib.model.cyoa.post import PostImage
+
+        conn = sqlite3.connect(PostImage._dbfile)
+        max_alt = db_util.db_get_single_cell(conn, 'select max(alt_id) from post_image where post_id = ?', (self.post['id'], )) or 2
+        alt_index = max(max_alt + 1, 2)
+        index = 1
+        lsimg = []
+        for x in self.links:
+            print(f'ImgurLinkParser: [#{self.post["id"]}] found {x!s}')
+            if (x.path.startswith('/a/')):
+                id = x.path[3:]
+                js = util.get_json_api(f'https://api.imgur.com/post/v1/albums/{id}?client_id=546c25a59c58ad7&include=media')
+                if ('media' not in js): continue
+                for jsimg in js['media']:
+                    print(f'ImgurLinkParser: [#{self.post["id"]}] <{id}> found {jsimg["url"]}')
+                    img = PostImage(data={
+                        'post_id': self.post['id'],
+                        'alt_id': alt_index,
+                        'alt_name': f'Imgur {index}',
+                        'filename': jsimg['name'],
+                        'link': jsimg['url'],
+                        'offline_link': None,
+                        'status_code': 0
+                    })
+                    lsimg.append(img)
+                    alt_index += 1
+                    index += 1
+            else:
+                id = x.path[1:]
+                js = util.get_json_api(f'https://api.imgur.com/post/v1/media/{id}?client_id=546c25a59c58ad7&include=media')
+                if ('media' not in js): continue
+                print(f'ImgurLinkParser: [#{self.post["id"]}] <{id}> found {js["media"][0]["url"]}')
+                img = PostImage(data={
+                    'post_id': self.post['id'],
+                    'alt_id': alt_index,
+                    'alt_name': f'Imgur {index}',
+                    'filename': js['media'][0]['name'],
+                    'link': js['media'][0]['url'],
+                    'offline_link': None,
+                    'status_code': 0
+                })
+                lsimg.append(img)
+                alt_index += 1
+                index += 1
+        if (len(lsimg) > 0): PostImage.insert(lsimg, True, conn = conn)
+        conn.close()
+
+        return text
+
+class MediaLinkParser(LinkParser):
+    def __init__(self, name, post):
+        super().__init__(name)
+        self.post = post
+    
+    def replace_format(self, result:list, text:str) -> str:
+        from lib.model.cyoa.post import PostImage
+
+        conn = sqlite3.connect(PostImage._dbfile)
+        max_alt = db_util.db_get_single_cell(conn, 'select max(alt_id) from post_image where post_id = ?', (self.post['id'], )) or 1
+        alt_index = max(max_alt + 1, 2)
+        index = 1
+        lsimg = []
+        for x in self.links:
+            extpos = x.path.rfind('.')
+            if (extpos != -1):
+                ext = x.path[extpos + 1:]
+                if (ext in ['jpg', 'png', 'gif', 'webm', 'jpeg', 'mp4']):
+                    filename = x.path[x.path.rfind('/') + 1:]
+                    print(f'MediaLinkParser: [#{self.post["id"]}] found {x!s}')
+                    img = PostImage(data={
+                        'post_id': self.post['id'],
+                        'alt_id': alt_index,
+                        'alt_name': f'Link {index}',
+                        'filename': filename,
+                        'link': str(x),
+                        'offline_link': None,
+                        'status_code': 0
+                    })
+                    lsimg.append(img)
+                    alt_index += 1
+                    index += 1
+        if (len(lsimg) > 0): PostImage.insert(lsimg, True, conn = conn)
+        conn.close()
+
         return text
 
 class BoardLinkParser(RegexParser):
@@ -134,6 +253,8 @@ class PostProcessor:
         self.text = text
         self.post = post
         self.parsers = [
+            MediaLinkParser('link', post),
+            ImgurLinkParser('link', post),
             LinkParser('link'),
             BoardLinkParser('board'),
             ReplyParser('reply', post),

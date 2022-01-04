@@ -66,8 +66,15 @@ function showQMMark() {
 
     $('.lewd-2').each(function() {
         let postId = $(this).data('id');
+        if ($(`#mark-${postId}`).length > 0) {
+            $(`#mark-${postId}`).addClass('lewd-2');
+        } else {
+            let markpos = $(this).offset().top + left + offset;
+            let barpos = (markpos / height) * width;
+            if (barpos > (width - markWidth)) barpos = width - markWidth;
 
-        $(`#mark-${postId}`).addClass('lewd-2');
+            $('#mark-container').append(`<div id="mark-${postId}" class="post-mark" style="left:${barpos}px" onclick="scrollToEl('#p${postId}', 500, ${-offset})"></div>`);
+        }
     });
 }
 

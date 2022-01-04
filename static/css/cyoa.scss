@@ -410,6 +410,12 @@ a {
         > .card-text {
             .quote {
                 color: #20ff20;
+
+                .spoiler {
+                    &:hover, &:focus {
+                        color: #20ff20;
+                    }
+                }
             }
 
             .spoiler {
@@ -453,6 +459,19 @@ a {
         height: 10px;
         width: 100%;
 
+        > .post-mark {
+            position: absolute;
+            height: 10px;
+            width: 6px;
+            background: rgba(121, 39, 202, 0.8);
+            z-index: 115;
+
+            &.lewd-2 {
+                border-top: 4px solid rgb(255, 130, 12);
+                // border: 1px solid rgb(116, 57, 255);
+            }
+        }
+
         > .qm-mark {
             position: absolute;
             height: 10px;
@@ -466,11 +485,11 @@ a {
 
             &.lewd-1 {
                 // background: rgba(255, 147, 242, 0.857);
-                border-top: 4px solid rgb(132, 233, 255);
+                border-top: 4px solid rgb(255, 66, 224);
             }
 
             &.lewd-2 {
-                border-top: 4px solid rgb(148, 132, 255);
+                border-top: 4px solid rgb(255, 130, 12);
                 // border: 1px solid rgb(116, 57, 255);
             }
         }
