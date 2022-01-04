@@ -1,13 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "../UPBA/server/tupba/templates"
-		},
-		{
 			"path": "."
 		},
 		{
 			"path": "../UPBA/server/tupba/static"
+		},
+		{
+			"path": "../PPageGen2/template"
 		}
 	],
 	"settings": {

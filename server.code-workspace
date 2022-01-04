@@ -17,10 +17,11 @@
 		"files.exclude": {
 			"**/__pycache__": true,
 			"**/.kdev4": true,
+			"**/*.code-workspace": true,
 			"**/*.kdev4": true,
 			"**/static": true,
-			"**/template": true,
-			"**/*.code-workspace": true
+			"tupba/template": true,
+			"tupba2/template": true
 		},
 		"explorer.compactFolders": false
 	}

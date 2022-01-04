@@ -29,16 +29,16 @@ app.register_blueprint(cyoa, url_prefix='/cyoa')
 @app.route('/')
 def root():
     #name = request.args.get('name', 'anon', type=str)
-    return render_template('index.html', nav=NavOption('TUPBA II - the second', theme='nav-primary'))
+    return serve_template('index.mako', nav=NavOption('TUPBA II - the second', theme='nav-primary'))
 
 @app.route('/sockettest')
 def sockettest():
-    return render_template('cyoa/socket.html')
+    return serve_template('cyoa/socket.html')
 
 @app.route('/csstest')
 def csstest():
     #name = request.args.get('name', 'anon', type=str)
-    return render_template('test.html')
+    return serve_template('test.html')
 
 def init():
     print('Root dir:', app.root_path)
