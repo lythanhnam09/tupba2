@@ -16,8 +16,19 @@
 <div class="bg-darkblue">
     <div class="container-lg bg-d25-darkblue py-2">
         % for post in ls_post:
+            <%
+                lsimg = post.get_ref('images', save_result=True)
+                lewd_post = 0
+                if (len(lsimg) >= 1):
+                    for img in lsimg:
+                        if (img['alt_id'] >= 1):
+                            lewd_post = img['alt_id']
+                            break
+                    if (lsimg[0]['alt_id'] >= 1):
+                        lsimg.insert(0, {'alt_id':0, 'link':'/static/img/lewd.png', 'alt_name':'Spoiler', 'filename':lsimg[0]['filename']})
+            %>
             <div class="px-1 pb-1" id="p${post['id']}">
-                <div data-id="${post['id']}" class="post card-inline bg-dark${' border-warning border-2 op' if post['is_qm'] == 1 else ''}${' border-success border-2 op-maybe' if post['is_qm'] != 1 and post['username'] == thread['op_name'] and thread['op_name'] != 'Anonymous' else ''}">
+                <div data-id="${post['id']}" class="post card-inline bg-dark${' border-warning border-2 op' if post['is_qm'] == 1 else ''}${' border-success border-2 op-maybe' if post['is_qm'] != 1 and post['username'] == thread['op_name'] and thread['op_name'] != 'Anonymous' else ''} ${f'lewd-{lewd_post}' if (lewd_post > 0) else ''}">
                     <div class="card-header bg-d10-darkblue">
                         <div class="info">
                             <span class="username">${post['username']}</span>
@@ -40,25 +51,25 @@
                         </div>
                     </div>
                     <div class="card-content bg-dark">
-                        % if len(post.get_ref('images', save_result=True)) > 0:
+                        % if len(lsimg) > 0:
                             <div class="card-image" data-id="${post['id']}">
                                 <div class="img-container" data-id="${post['id']}" onclick="toggleExpandImage(${post['id']}, this)">
-                                    % for img in post['images']:
+                                    % for img in lsimg:
                                         <img src="${img['link']}" data-altid="${img['alt_id']}" alt="${post['images'][0]['filename']} (${img['alt_name']})" title="${post['images'][0]['filename']}" style="display:${'block' if loop.index == 0 else 'none'}">
                                     % endfor
                                 </div>
-                                % if len(post['images']) > 1:
+                                % if len(lsimg) > 1:
                                     <div class="image-alt">
-                                        % for img in post['images']:
+                                        % for img in lsimg:
                                             <div class="alt-button" data-altid="${img['alt_id']}" onclick="changeAltImg(${post['id']}, ${img['alt_id']})">
                                                 ${img['alt_name']}
                                             </div>
                                         % endfor
                                     </div>
                                 % endif
-                                % if post['images'][0]['filename'] != None:
+                                % if lsimg[0]['filename'] != None:
                                     <div class="image-filename">
-                                        ${post['images'][0]['filename']}
+                                        ${lsimg[0]['filename']}
                                     </div>
                                 % endif
                             </div>

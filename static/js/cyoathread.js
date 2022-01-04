@@ -46,7 +46,7 @@ function showQMMark() {
         let markpos = $(this).offset().top + left + offset;
         let barpos = (markpos / height) * width;
         if (barpos > (width - markWidth)) barpos = width - markWidth;
-        $('#mark-container').append(`<div class="qm-mark" style="left:${barpos}px" onclick="scrollToEl('#p${postId}', 500, ${-offset})"></div>`);
+        $('#mark-container').append(`<div id="mark-${postId}" class="qm-mark" style="left:${barpos}px" onclick="scrollToEl('#p${postId}', 500, ${-offset})"></div>`);
     });
 
     $('.op-maybe').each(function() {
@@ -55,7 +55,19 @@ function showQMMark() {
         let markpos = $(this).offset().top + left + offset;
         let barpos = (markpos / height) * width;
         if (barpos > (width - markWidth)) barpos = width - markWidth;
-        $('#mark-container').append(`<div class="qm-mark maybe" style="left:${barpos}px" onclick="scrollToEl('#p${postId}', 500, ${-offset})"></div>`);
+        $('#mark-container').append(`<div id="mark-${postId}" class="qm-mark maybe" style="left:${barpos}px" onclick="scrollToEl('#p${postId}', 500, ${-offset})"></div>`);
+    });
+    
+    $('.lewd-1').each(function() {
+        let postId = $(this).data('id');
+
+        $(`#mark-${postId}`).addClass('lewd-1');
+    });
+
+    $('.lewd-2').each(function() {
+        let postId = $(this).data('id');
+
+        $(`#mark-${postId}`).addClass('lewd-2');
     });
 }
 

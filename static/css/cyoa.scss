@@ -463,6 +463,16 @@ a {
             &.maybe {
                 background: rgba(75, 241, 10, 0.8);
             }
+
+            &.lewd-1 {
+                // background: rgba(255, 147, 242, 0.857);
+                border-top: 4px solid rgb(132, 233, 255);
+            }
+
+            &.lewd-2 {
+                border-top: 4px solid rgb(148, 132, 255);
+                // border: 1px solid rgb(116, 57, 255);
+            }
         }
     }
 }

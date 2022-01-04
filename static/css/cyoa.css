@@ -370,6 +370,12 @@ a {
 .nav-progress > .mark-container > .qm-mark.maybe {
   background: rgba(75, 241, 10, 0.8);
 }
+.nav-progress > .mark-container > .qm-mark.lewd-1 {
+  border-top: 4px solid #84e9ff;
+}
+.nav-progress > .mark-container > .qm-mark.lewd-2 {
+  border-top: 4px solid #9484ff;
+}
 
 .nav-cyoa-thread {
   background: rgba(81, 198, 53, 0.8);
