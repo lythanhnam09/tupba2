@@ -9,58 +9,66 @@ def db_close(conn):
     conn.commit()
     conn.close()
 
-def db_exec_script(dbfile, sqlfile):
+def make_conn(dbconn):
+    if (isinstance(dbconn, str)): conn = sqlite3.connect(dbfile)
+    else: conn = dbconn
+    return conn
+
+def close_temp_conn(dbconn, conn):
+    if (isinstance(dbconn, str)): conn.close()
+
+def db_exec_script(dbfile:str, sqlfile):
     logging.info(f'{sqlfile}: Reading SQL script')
     txt = ''
     with open(sqlfile, 'rt') as sqlf:
         txt = sqlf.read()
     logging.info(f'{dbfile}: Executing script \'{sqlfile}\'')
-    conn = sqlite3.connect(dbfile)
+    conn = make_conn(dbfile)
     cur = conn.cursor()
     cur.executescript(txt)
     conn.commit()
-    conn.close()
+    close_temp_conn(dbfile, conn)
 
 def db_exec(dbfile, sql, param:tuple = (), constraint = False):
     logging.info(f'{dbfile}: {sql}')
     logging.debug(f'-> {param}')
-    conn = sqlite3.connect(dbfile)
+    conn = make_conn(dbfile)
     cur = conn.cursor()
     if (constraint):
         logging.info(f'{dbfile}: pragma foreign_keys = on')
         cur.execute('pragma foreign_keys = on')
     cur.execute(sql, param)
     conn.commit()
-    conn.close()
+    close_temp_conn(dbfile, conn)
 
 def db_exec_multi(dbfile, sql, param:list = None, constraint = False):
     logging.info(f'{dbfile}: {sql}')
     logging.debug(f'-> {param}')
-    conn = sqlite3.connect(dbfile)
+    conn = make_conn(dbfile)
     cur = conn.cursor()
     if (constraint):
         logging.info(f'{dbfile}: pragma foreign_keys = on')
         cur.execute('pragma foreign_keys = on')
     cur.executemany(sql, param)
     conn.commit()
-    conn.close()
+    close_temp_conn(dbfile, conn)
 
 def db_get_all(dbfile, sql, param:tuple = ()) -> list:
     logging.info(f'{dbfile}: {sql}')
     logging.debug(f'-> {param}')
-    conn = sqlite3.connect(dbfile)
+    conn = make_conn(dbfile)
     cur = conn.cursor()
     cur.execute(sql, param)
     ls = cur.fetchall()
     cur.close()
     conn.commit()
-    conn.close()
+    close_temp_conn(dbfile, conn)
     return ls
 
 def db_get_iter(dbfile, sql, param:tuple = ()):
     logging.info(f'{dbfile}: {sql}')
     logging.debug(f'-> {param}')
-    conn = sqlite3.connect(dbfile)
+    conn = make_conn(dbfile)
     cur = conn.cursor()
     cur.execute(sql, param)
     return cur
@@ -68,24 +76,24 @@ def db_get_iter(dbfile, sql, param:tuple = ()):
 def db_get_single_row(dbfile, sql, param:tuple = ()) -> tuple:
     logging.info(f'{dbfile}: {sql}')
     logging.debug(f'-> {param}')
-    conn = sqlite3.connect(dbfile)
+    conn = make_conn(dbfile)
     cur = conn.cursor()
     cur.execute(sql, param)
     res = cur.fetchone()
     conn.commit()
-    conn.close()
+    close_temp_conn(dbfile, conn)
     return res
 
 def db_get_single_cell(dbfile, sql, param:tuple = ()):
     logging.info(f'{dbfile}: {sql}')
     logging.debug(f'-> {param}')
-    conn = sqlite3.connect(dbfile)
+    conn = make_conn(dbfile)
     cur = conn.cursor()
     cur.execute(sql, param)
     res = cur.fetchone()
     if (res != None): res = res[0]
     conn.commit()
-    conn.close()
+    close_temp_conn(dbfile, conn)
     return res
 
 class DBBatch:
@@ -95,7 +103,7 @@ class DBBatch:
         self.ls_result:list = []
         self.constraint = constraint
         self.cur = None
-        self.conn = None
+        self.conn = make_conn(dbfile)
 
     def _get_all(self, cur, sql, param):
         cur.execute(sql, param)
@@ -136,7 +144,7 @@ class DBBatch:
         self.ls_query.append({'f': self._exec_multi, 'q': sql, 'p': param})
 
     def run(self, close = True, commit = True, get_result = True) -> list:
-        self.conn = sqlite3.connect(self.dbfile)
+        # self.conn = sqlite3.connect(self.dbfile)
         self.cur = self.conn.cursor()
         if (self.constraint):
             logging.info(f'DBBatch:{self.dbfile}: pragma foreign_keys = on')
@@ -150,7 +158,7 @@ class DBBatch:
             if (get_result): result.append(res)
         
         if (commit): self.conn.commit()
-        if (close): self.conn.close()
+        if (close): close_temp_conn(self.dbfile, self.conn)
         self.ls_query.clear()
         if (get_result): return result
 

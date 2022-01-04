@@ -10,17 +10,17 @@ class SQLRef:
         self.ref_col = ref_col
         self.ref_table = ref_table
 
-    def get(self, table, where = None, order_by = None, limit = None, offset = None):
+    def get(self, table, where = None, order_by = None, limit = None, offset = None, conn = None):
         return None
 
-    def get_one(self, table, where = None, order_by = None, offset = None):
+    def get_one(self, table, where = None, order_by = None, offset = None, conn = None):
         return None
 
-    def get_page(self, table, page, per_page, where = None, order_by = None):
-        logging.warning(f'{self.__class__.__name__}.filter(): {self.__class__.__name__} does not have filter()')
+    def get_page(self, table, page, per_page, where = None, order_by = None, conn = None):
+        logging.warning(f'{self.__class__.__name__}.filter(): {self.__class__.__name__} does not have get_page()')
         return None
 
-    def filter(self, table, where = None, order_by = None, limit = None, offset = None):
+    def filter(self, table, where = None, order_by = None, limit = None, offset = None, conn = None):
         logging.warning(f'{self.__class__.__name__}.filter(): {self.__class__.__name__} does not have filter()')
         return None
 
@@ -28,33 +28,33 @@ class SQLRefOne(SQLRef):
     def __init__(self, col, ref_table, ref_col):
         super().__init__(col, ref_table, ref_col)
 
-    def get(self, table, where = None, order_by = None, limit = None, offset = None):
-        return self.ref_table.find_id(table.cols[self.col])
+    def get(self, table, where = None, order_by = None, limit = None, offset = None, conn = None):
+        return self.ref_table.find_id(table.cols[self.col], conn = conn)
 
-    def get_one(self, table, where = None, order_by = None, offset = None):
-        return self.ref_table.find_id(table.cols[self.col])
+    def get_one(self, table, where = None, order_by = None, offset = None, conn = None):
+        return self.ref_table.find_id(table.cols[self.col], conn = conn)
 
 class SQLRefMany(SQLRef):
     def __init__(self, col, ref_table, ref_col):
         super().__init__(col, ref_table, ref_col)
 
-    def get(self, table, where = None, order_by = None, limit = None, offset = None):
+    def get(self, table, where = None, order_by = None, limit = None, offset = None, conn = None):
         if (where == None):
             where = []
         where.append([self.ref_col, table.cols[self.col]])
-        return self.ref_table.select(where=where, order_by=order_by, limit=limit, offset=offset)
+        return self.ref_table.select(where=where, order_by=order_by, limit=limit, offset=offset, conn = conn)
 
-    def get_one(self, table, where = None, order_by = None, offset = None):
+    def get_one(self, table, where = None, order_by = None, offset = None, conn = None):
         if (where == None):
             where = []
         where.append([self.ref_col, table.cols[self.col]])
-        return self.ref_table.select_one(where=where, order_by=order_by, limit=1, offset=offset)
+        return self.ref_table.select_one(where=where, order_by=order_by, limit=1, offset=offset, conn = conn)
 
-    def get_page(self, table, page, per_page, where = None, order_by = None):
+    def get_page(self, table, page, per_page, where = None, order_by = None, conn = None):
         if (where == None):
             where = []
         where.append([self.ref_col, table.cols[self.col]])
-        return self.ref_table.get_page(page, per_page, where=where, order_by=order_by)
+        return self.ref_table.get_page(page, per_page, where=where, order_by=order_by, conn = conn)
 
     # def filter(self, table, where = None, order_by = None, limit = None, offset = None):
     #     if (where == None):
@@ -67,7 +67,7 @@ class SQLRefPivot(SQLRef):
         super().__init__(col, ref_table, ref_col)
         self.pivot_ref = pivot_ref
 
-    def get(self, table, where = None, order_by = None, limit = None, offset = None):
+    def get(self, table, where = None, order_by = None, limit = None, offset = None, conn = None):
         name_t1 = 't1'
         name_t2 = 't2'
 
@@ -79,7 +79,7 @@ class SQLRefPivot(SQLRef):
         where.append([f't1.{self.ref_col}', table.cols[self.col]])
         sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by, limit=limit, offset=offset)
 
-        qresult = db_util.db_get_all(table._dbfile, sql)
+        qresult = db_util.db_get_all(conn or table._dbfile, sql)
         result = []
 
         for row in qresult:
@@ -91,7 +91,7 @@ class SQLRefPivot(SQLRef):
 
         return result
 
-    def get_one(self, table, where = None, order_by = None, offset = None):
+    def get_one(self, table, where = None, order_by = None, offset = None, conn = None):
         name_t1 = 't1'
         name_t2 = 't2'
 
@@ -103,7 +103,7 @@ class SQLRefPivot(SQLRef):
         where.append([f't1.{self.ref_col}', table.cols[self.col]])
         sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by, limit=1, offset=offset)
 
-        qresult = db_util.db_get_all(table._dbfile, sql)
+        qresult = db_util.db_get_all(conn or table._dbfile, sql)
 
         if (len(qresult) > 0):
             pos = len(ref_pivot.ref_table._props.keys())
@@ -113,7 +113,7 @@ class SQLRefPivot(SQLRef):
             return o2
         return None
 
-    def get_many(self, table, where = None, order_by = None, limit = None, offset = None):
+    def get_many(self, table, where = None, order_by = None, limit = None, offset = None, conn = None):
         name_t1 = 't1'
         name_t2 = 't2'
 
@@ -125,7 +125,7 @@ class SQLRefPivot(SQLRef):
         where.append([f't1.{self.ref_col}', table.cols[self.col]])
         sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by, limit=limit, offset=offset)
 
-        qresult = db_util.db_get_all(table._dbfile, sql)
+        qresult = db_util.db_get_all(conn or table._dbfile, sql)
         result = []
 
         for row in qresult:
@@ -134,7 +134,7 @@ class SQLRefPivot(SQLRef):
 
         return result
 
-    def get_page(self, table, page_num, per_page, where = None, order_by = None):
+    def get_page(self, table, page_num, per_page, where = None, order_by = None, conn = None):
         limit = per_page
         if (page_num < 1): page_num = 1
         offset = (page_num-1) * per_page
@@ -149,7 +149,7 @@ class SQLRefPivot(SQLRef):
         if (where == None): where = []
         where.append([f't1.{self.ref_col}', table.cols[self.col]])
 
-        batch = db_util.DBBatch(table._dbfile)
+        batch = db_util.DBBatch(conn or table._dbfile)
         if (per_page == 0):
             sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by)
             batch.add_get_all(sql)
@@ -176,7 +176,7 @@ class SQLRefPivot(SQLRef):
 
         return page
 
-    def get_many_page(self, table, page_num, per_page, where = None, order_by = None):
+    def get_many_page(self, table, page_num, per_page, where = None, order_by = None, conn = None):
         limit = per_page
         if (page_num < 1): page_num = 1
         offset = (page_num-1) * per_page
@@ -191,7 +191,7 @@ class SQLRefPivot(SQLRef):
         if (where == None): where = []
         where.append([f't1.{self.ref_col}', table.cols[self.col]])
 
-        batch = db_util.DBBatch(table._dbfile)
+        batch = db_util.DBBatch(conn or table._dbfile)
         if (per_page == 0):
             sql = sql_command.select_join([t1, t2], join_on, columns=[f'{name_t2}.*', f'{name_t1}.*'], where=where, order_by=order_by)
             batch.add_get_all(sql)
@@ -319,43 +319,43 @@ class SQLTable:
         return tuple([self.cols[n] for n in col])
 
     @classmethod
-    def find_id(cls, id):
+    def find_id(cls, id, conn = None):
         id_val = id
         if (len(cls._primary) == 1 and type(id_val) != tuple):
             id_val = (id,)
         sql = sql_command.select(cls._table_name, where=cls._primary)
-        r = db_util.db_get_single_row(cls._dbfile, sql, id_val)
+        r = db_util.db_get_single_row(conn or cls._dbfile, sql, id_val)
         if (r != None):
             return cls(row = r)
         return None
 
     @classmethod
-    def select(cls, where = None, order_by = None, limit = None, offset = None):
-        sqlresult = db_util.db_get_all(cls._dbfile, sql_command.select(cls._table_name, where=where, order_by=order_by, limit=limit, offset=offset))
+    def select(cls, where = None, order_by = None, limit = None, offset = None, conn = None):
+        sqlresult = db_util.db_get_all(conn or cls._dbfile, sql_command.select(cls._table_name, where=where, order_by=order_by, limit=limit, offset=offset))
 
         result = [cls(row=row) for row in sqlresult]
 
         return result
 
     @classmethod
-    def select_one(cls, where = None, order_by = None, limit = None, offset = None):
-        sqlresult = db_util.db_get_all(cls._dbfile, sql_command.select(cls._table_name, where=where, order_by=order_by, limit=limit, offset=offset))
+    def select_one(cls, where = None, order_by = None, limit = None, offset = None, conn = None):
+        sqlresult = db_util.db_get_all(conn or cls._dbfile, sql_command.select(cls._table_name, where=where, order_by=order_by, limit=limit, offset=offset))
 
         return None if len(sqlresult) == 0 else cls(row=sqlresult[0])
 
     @classmethod
-    def get_count(cls, where = None):
-        count = db_util.db_get_single_cell(cls._dbfile, sql_command.select(cls._table_name, ['count(*)'], where))
+    def get_count(cls, where = None, conn = None):
+        count = db_util.db_get_single_cell(conn or cls._dbfile, sql_command.select(cls._table_name, ['count(*)'], where))
         return count
 
     @classmethod
-    def get_page(cls, page_num:int, per_page:int, where = None, order_by = None):
+    def get_page(cls, page_num:int, per_page:int, where = None, order_by = None, conn = None):
         """ Note: page_num starts at 1 or it will set to 1 if lower"""
         limit = per_page
         if (page_num < 1): page_num = 1
         offset = (page_num-1) * per_page
         
-        batch = db_util.DBBatch(cls._dbfile)
+        batch = db_util.DBBatch(conn or cls._dbfile)
 
         if (per_page == 0):
             sql = sql_command.select(cls._table_name, where=where, order_by=order_by)
@@ -367,7 +367,7 @@ class SQLTable:
         sql = sql_command.select(cls._table_name, ['count(*)'], where=where)
         batch.add_get_one_cell(sql)
 
-        lsres = batch.run()
+        lsres = batch.run(close=conn == None)
 
         data = [cls(row=r) for r in lsres[0]]
         total_count = lsres[1]
@@ -378,9 +378,9 @@ class SQLTable:
         return page
 
     @classmethod
-    def insert(cls, o, or_ignore = False, force_primary = False, update_conflict = False, set_col:list = None, where = None):
+    def insert(cls, o, or_ignore = False, force_primary = False, update_conflict = False, set_col:list = None, where = None, conn = None):
         sql = ''
-        if (type(o) == list):
+        if (isinstance(o, list)):
             if (len(o) == 0): return
             sql = sql_command.insert(cls._table_name, cls.get_props_name(no_id=cls._auto_primary and not force_primary), or_ignore=or_ignore)
             lsarg = []
@@ -401,7 +401,7 @@ class SQLTable:
                         sql = sql_command.insert(cls._table_name, cls.get_props_name(no_id=cls._auto_primary and not force_primary), or_ignore=or_ignore, update_conflict=update_conflict, set_value=cls.get_props_name(no_id=True), where=cls._primary)
 
                 lsarg.append(arg)
-            db_util.db_exec_multi(cls._dbfile, sql, lsarg)
+            db_util.db_exec_multi(conn or cls._dbfile, sql, lsarg)
         else:
             if (update_conflict):
                 lsarg = o.to_tuple(no_id=cls._auto_primary and not force_primary)
@@ -421,10 +421,10 @@ class SQLTable:
             sql = sql_command.insert(cls._table_name, cls.get_props_name(no_id=cls._auto_primary and not force_primary), or_ignore=or_ignore)
             #logging.debug(o)
             #logging.debug(o.cols)
-            return db_util.db_exec(cls._dbfile, sql, o.to_tuple(no_id=cls._auto_primary and not force_primary))
+            return db_util.db_exec(conn or cls._dbfile, sql, o.to_tuple(no_id=cls._auto_primary and not force_primary))
 
     @classmethod
-    def update(cls, o, set_col:list = None, where = None):
+    def update(cls, o, set_col:list = None, where = None, conn = None):
         if (isinstance(o, list)):
             lsarg = []
             if (set_col != None):
@@ -434,61 +434,61 @@ class SQLTable:
                     if (where == None): lsval += i.id_value_tuple()
                     lsarg.append(lsval)
                 sql = sql_command.update(cls._table_name, set_col, where or cls._primary)
-                db_util.db_exec_multi(cls._dbfile, sql, lsarg)
+                db_util.db_exec_multi(conn or cls._dbfile, sql, lsarg)
             else:
                 lsarg = [x.to_tuple(id_last=True) for x in o]
                 sql = sql_command.update(cls._table_name, o.get_cols_name(no_id=True), cls._primary)
-                db_util.db_exec_multi(cls._dbfile, sql, lsarg)
+                db_util.db_exec_multi(conn or cls._dbfile, sql, lsarg)
         else:
             if (set_col != None):
                 #lsset = list(set(o.get_cols_name()) & set(set_col))
                 lsval = o.col_value_tuple(set_col)
                 if (where == None): lsval += o.id_value_tuple()
                 sql = sql_command.update(cls._table_name, set_col, where or cls._primary)
-                db_util.db_exec(cls._dbfile, sql, lsval)
+                db_util.db_exec(conn or cls._dbfile, sql, lsval)
             else:
                 sql = sql_command.update(cls._table_name, o.get_cols_name(no_id=True), cls._primary)
-                db_util.db_exec(cls._dbfile, sql, o.to_tuple(id_last=True))
+                db_util.db_exec(conn or cls._dbfile, sql, o.to_tuple(id_last=True))
 
     @classmethod
-    def delete(cls, o = None, where = None, constraint = True):
+    def delete(cls, o = None, where = None, constraint = True, conn = None):
         if (where != None):
             sql = sql_command.delete(cls._table_name, where)
-            db_util.db_exec(cls._dbfile, sql, constraint=constraint)
+            db_util.db_exec(conn or cls._dbfile, sql, constraint=constraint)
         else:
             sql = sql_command.delete(cls._table_name, cls._primary)
-            db_util.db_exec(cls._dbfile, sql, o.id_value_tuple(), constraint)
+            db_util.db_exec(conn or cls._dbfile, sql, o.id_value_tuple(), constraint)
 
-    def get_ref(self, ref_name:str, where = None, order_by = None, limit = None, offset = None, save_result = False, save_name = None, get_many = False):
+    def get_ref(self, ref_name:str, where = None, order_by = None, limit = None, offset = None, save_result = False, save_name = None, get_many = False, conn = None):
         if (not ref_name in self._reference):
             raise Exception(f'Reference {ref_name!r} not found')
         if (get_many):
             if (not isinstance(self._reference[ref_name], SQLRefPivot)):
                 raise Exception(f'Reference {ref_name!r} is not a pivot reference but {type(self._reference[ref_name])}')
-            result = self._reference[ref_name].get_many(self, where, order_by, limit, offset)
+            result = self._reference[ref_name].get_many(self, where, order_by, limit, offset, conn)
         else:
-            result = self._reference[ref_name].get(self, where, order_by, limit, offset)
+            result = self._reference[ref_name].get(self, where, order_by, limit, offset, conn)
         if (save_result): self.cols[save_name or ref_name] = result
         return result
 
-    def get_ref_page(self, ref_name:str, page_num:int, per_page:int, where = None, order_by = None, save_result = False, save_name = None, get_many = False):
+    def get_ref_page(self, ref_name:str, page_num:int, per_page:int, where = None, order_by = None, save_result = False, save_name = None, get_many = False, conn = None):
         if (not ref_name in self._reference):
             raise Exception(f'Reference {ref_name!r} not found')
         if (get_many):
             if (not isinstance(self._reference[ref_name], SQLRefPivot)):
                 raise Exception(f'Reference {ref_name!r} is not a pivot reference but {type(self._reference[ref_name])}')
-            result = self._reference[ref_name].get_many_page(self, page_num, per_page, where, order_by)
+            result = self._reference[ref_name].get_many_page(self, page_num, per_page, where, order_by, conn)
         else:
-            result = self._reference[ref_name].get_page(self, page_num, per_page, where, order_by)
+            result = self._reference[ref_name].get_page(self, page_num, per_page, where, order_by, conn)
         
         if (save_result): self.cols[save_name or ref_name] = result
         return result
 
-    def get_ref_one(self, ref_name:str, where = None, order_by = None, offset = None, save_result = False, save_name = None):
+    def get_ref_one(self, ref_name:str, where = None, order_by = None, offset = None, save_result = False, save_name = None, conn = None):
         if (not ref_name in self._reference):
             raise Exception(f'Reference {ref_name!r} not found')
 
-        result = self._reference[ref_name].get_one(self, where, order_by, offset)
+        result = self._reference[ref_name].get_one(self, where, order_by, offset, conn)
 
         if (save_result):
             if (save_name != None):
