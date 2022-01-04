@@ -5,6 +5,7 @@ import lib.model.cyoa.post as cyoa_post
 import lib.model.cyoa.cyoa_tag as tag
 import lib.util.task_util as task_util
 import lib.util.db_util as db_util
+import re
 
 
 def image_link(filename:str) -> str:
@@ -167,4 +168,30 @@ def get_post_list(cyoa:cyoa.Cyoa , thread:cyoa_thread.Thread, refresh = False):
     if (refresh):
         refresh_thread_post(cyoa, thread)
     return thread.get_ref('posts', save_result=True)
+
+def get_cyoa_image(cyoa:cyoa.Cyoa, query, page = 1, perpage = 40):
+    is_qm = None
+    alt_id = None
+    alt_op = None
+    thread = None
+    offline = False
+    if (query.strip(' ') != ''):
+        lsq = [x.strip(' ') for x in query.strip(' ').split(',')]
+        print(f'{lsq=}')
+        
+        for q in lsq:
+            lsop = list(re.findall('(\w+)([:<>=~][>=]?)(\(?[\d;]+\)?)', q)[0])
+            if (lsop[0] == 'is_qm'):
+                is_qm = int(lsop[2])
+            if (lsop[0] == 'alt_id'):
+                alt_id = lsop[2]
+                alt_op = lsop[1].replace('~', 'in')
+                alt_id = alt_id.replace(';', ',')
+            if (lsop[0] == 'offline'):
+                offline = lsop[1] != '0'
+            if (lsop[0] == 'thread'):
+                thread = int(lsop[2]).split(';')
+
+    print(f'{is_qm=} {alt_id=} {alt_op=} {thread=} {offline=}')
     
+    return cyoa.get_image_list(is_qm, alt_id, alt_op, thread, offline, page, perpage)

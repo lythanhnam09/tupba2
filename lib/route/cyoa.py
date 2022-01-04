@@ -89,3 +89,14 @@ def thread_view(sname, thread_id):
     ls_post = anonpone.get_post_list(cy, th)
     return serve_template('cyoa/thread_view.mako', nav=thread_nav(cy, th, ls_th, num, count), cyoa=cy, thread=th, ls_post=ls_post, thread_num=num)
 
+@cyoa.route('/quest/<sname>/images')
+def cyoa_image(sname):
+    # qm: QM only ; link: Post with link only ; saved: Saved image ; thread: Thread num
+    form = WebForm(data={'q':'is_qm=1,alt_id=0', 'page':1, 'perpage':40})
+    form.get_arg_value(request.args)
+    cy = Cyoa.find_shortname(sname)
+    if (cy is None): abort(404)
+    cy.check_steath_lewd()
+    page = anonpone.get_cyoa_image(cy, form['q'], form['page'], form['perpage'])
+    
+    return serve_template('cyoa/image_view.mako', nav=cyoa_nav(), form=form, cyoa=cy, img_page = page, page_nav=SimplePageNav(page, 'form-page'), worker_stat=get_queue_stat())

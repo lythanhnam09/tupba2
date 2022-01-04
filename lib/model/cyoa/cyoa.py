@@ -4,6 +4,7 @@ import lib.provider.anonpone as anonpone
 import lib.util.util as util
 import html2text
 import re
+import sqlite3
 
 class Cyoa(SQLTable):
     _dbfile = 'data/cyoa.db'
@@ -137,3 +138,58 @@ class Cyoa(SQLTable):
         ls = db_util.db_get_all(self._dbfile, sql, (self.cols['id'], ))
         result = [Thread(row=x) for x in ls]
         return result
+
+    def get_image_list(self, is_qm:bool = None, alt_id:int = None, alt_op = None, thread_num:list = None, offline:bool = False, page:int = 1, per_page:int = 40):
+        from lib.model.cyoa.post import PostImage
+        conn = sqlite3.connect(self._dbfile)
+        
+        sql = 'select {0} from ((post_image pi join post p on pi.post_id = p.id) psi join thread t on psi.thread_id = t.id) ti join cyoa_thread ct on t.id = ct.thread_id where '
+        
+        lsexpr = []
+
+        lsexpr.append(f'ct.cyoa_id = {self.cols["id"]}')
+
+        if (is_qm != None):
+            lsexpr.append(f'p.is_qm = {is_qm}')
+        
+        if (alt_id != None):
+            if (alt_op == None):
+                lsexpr.append(f'pi.alt_id = {alt_id}')
+            else:
+                alt_op = alt_op.replace(':', '=')
+                lsexpr.append(f'pi.alt_id {alt_op} {alt_id}')
+        
+        if (thread_num != None):
+            if (isinstance(thread_num, list) and len(thread_num > 1)):
+                lsexpr.append(f't.id in ({",".join(thread_num)})')
+            else:
+                if (isinstance(thread_num, list) and len(thread_num == 1)):
+                    lsexpr.append(f't.id = {thread_num[0]}')
+                elif (not isinstance(thread_num, list)):
+                    lsexpr.append(f't.id = {thread_num}')
+        
+        if (offline):
+            lsexpr.append(f'pi.offline_link is not null')
+
+        sql += ' and '.join(lsexpr)
+        print(sql)
+        qsql = sql.format('pi.*')
+        countsql = sql.format('count(*)')
+
+        limit = per_page
+        if (page < 1): page = 1
+        offset = (page-1) * per_page
+
+        qsql += ' order by p.post_date asc, pi.alt_id'
+
+        qsql += f' limit {limit} offset {offset}'
+
+        ls = PostImage.get_raw(qsql, conn=conn)
+        count = db_util.db_get_single_cell(conn, countsql)
+        conn.close()
+
+        page_count = math.ceil(count / per_page) if per_page > 0 else 1
+
+        page_res = ResultPage(page, page_count, per_page, count, ls)
+
+        return page_res

@@ -1,6 +1,6 @@
 <%inherit file="../base.mako"/>
 <%block name="title">
-    CYOA info - ${cyoa['name']}
+    Image view - ${cyoa['name']}
 </%block>
 <%block name="extracss">
     <link rel="stylesheet" href="/static/css/cyoa.css">
@@ -16,10 +16,6 @@
     <option value="${value}" ${form.option_selected(name, value)}>${text}</option>
 </%def>
 
-<form id="form-page" action="/cyoa/quest/${cyoa['short_name']}/images">
-    <input type="hidden" name="page" value="${form['page']}">
-    <input type="hidden" name="perpage" value="${form['perpage']}">
-</form>
 <div class="bg-darkblue">
     <div class="container-lg bg-d25-darkblue py-2">
         <div class="cyoa-info">
@@ -75,8 +71,8 @@
                 % if cyoa['save_status'] > 0:
                     <hr class="mt-1">
                     <div class="control-group">
-                        <a href="/cyoa/quest/${cyoa['short_name']}/images" class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-image"></i> View images</a>
-                        <a class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-file"></i> View by post</a>
+                        <button id="btn-refresh-all" class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-image"></i> View images</button>
+                        <button id="btn-refresh" class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-file"></i> View by post</button>
                     </div>
                 % endif
             </div>
@@ -85,6 +81,16 @@
         <hr class="mb-1">
 
         % if cyoa['save_status'] > 0:
+            <form id="form-page" action="/cyoa/quest/${cyoa['short_name']}/images">
+                <div class="control-group mb-1">
+                    <input class="form-control ml-2" type="text" name="q" value="${form['q']}">
+                    <button class="btn btn-success ml-1" type="submit"><i class="fas fa-filter"></i> Filter</button>
+                </div>
+                <input type="hidden" name="page" value="1">
+                <input type="hidden" name="perpage" value="${form['perpage']}">
+            </form>
+            <hr class="mb-1">
+            
             <div class="control-group px-2">
                 <button id="btn-bottom" class="btn btn-primary mr-1" title="To page bottom" onclick="scrollToEl('#btn-top', 1000)"><i class="fas fa-arrow-to-bottom"></i></button>
                 ${page_nav.html().markup()}
@@ -93,7 +99,7 @@
                         ${form_option(form, 'perpage', p, 'Show all' if p == 0 else f'Show {p}')}
                     % endfor
                 </select>
-                <div id="page-stat" class="pl-2">Showing ${len(thread_page.data)} of ${thread_page.total_count}</div>
+                <div id="page-stat" class="pl-2">Showing ${len(img_page.data)} of ${img_page.total_count}</div>
                 <div class="control-group ml-0 ml-md-1">
                     % if cyoa['save_status'] > 0:
                         <button id="btn-refresh-all" class="btn btn-danger reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']}, true)"><i class="fas fa-sync"></i> All</button>
@@ -107,34 +113,12 @@
             <hr class="my-1">
 
             <div class="list-container m-1">
-                % for thread in thread_page.data:
+                % for img in img_page.data:
                     <div class="thread card bg-l15-darkblue">
-                        <a class="thread card-image img-container" href="/cyoa/quest/${cyoa['short_name']}/thread/${thread['id']}">
-                            <img src="${thread.get_op_image()}" alt="${thread['title']}">
+                        <a class="thread card-image img-container">
+                            <img src="${img['link']}" alt="${img['filename']}">
                         </a>
                         <div class="thread card-content p-1">
-                            <h3 class="title mb-1">                         
-                                <a class="name" href="/cyoa/quest/${cyoa['short_name']}/thread/${thread['id']}">
-                                    % if thread['title'] in ['', None]:
-                                        <span class="fg-l15-success">[${loop.index + 1 + ((thread_page.page_num-1) * thread_page.per_page)}]</span> <i> ${cyoa['name']} #${loop.index + 1}</i>
-                                    % else:
-                                        <span class="fg-l15-success">[${loop.index + 1 + ((thread_page.page_num-1) * thread_page.per_page)}]</span> ${thread['title']}
-                                    % endif
-                                </a>
-                            </h3>
-                            <div class="status">
-                                <div class="stat">
-                                    <i class="fas fa-link fg-l10-warning"></i> ${thread['chan']} - ${thread['board']}
-                                    <i class="fas fa-hashtag fg-l10-warning ml-1"></i> ${thread['id']}</a>
-                                </div>
-                                <div class="date">
-                                    <i class="fas fa-calendar-alt fg-l10-warning"></i> ${thread['thread_date_str']}
-                                </div>
-                                <div class="stat">
-                                    <i class="fas fa-file fg-l10-warning"></i> ${thread.get('total_op_post', '??')} / ${thread['total_post']}
-                                    <i class="fas fa-align-left fg-l10-warning ml-1"></i> ${thread.get('total_word', '??')}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 % endfor
@@ -149,7 +133,7 @@
                         ${form_option(form, 'perpage', p, 'Show all' if p == 0 else f'Show {p}')}
                     % endfor
                 </select>
-                <div id="page-stat" class="pl-2">Showing ${len(thread_page.data)} of ${thread_page.total_count}</div>
+                <div id="page-stat" class="pl-2">Showing ${len(img_page.data)} of ${img_page.total_count}</div>
             </div>
             <hr>
         % else:

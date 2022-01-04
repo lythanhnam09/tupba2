@@ -123,6 +123,10 @@ class ImgurLinkParser(LinkParser):
                 if ('media' not in js): continue
                 for jsimg in js['media']:
                     print(f'ImgurLinkParser: [#{self.post["id"]}] <{id}> found {jsimg["url"]}')
+                    i = PostImage.select_one([['post_id', self.post['id']], ['link', jsimg['url']]], conn = conn)
+                    if (i != None):
+                        print(f'ImgurLinkParser: [#{self.post["id"]}] <{id}> Ignored duplicate {jsimg["url"]}')
+                        continue
                     img = PostImage(data={
                         'post_id': self.post['id'],
                         'alt_id': alt_index,
@@ -140,6 +144,10 @@ class ImgurLinkParser(LinkParser):
                 js = util.get_json_api(f'https://api.imgur.com/post/v1/media/{id}?client_id=546c25a59c58ad7&include=media')
                 if ('media' not in js): continue
                 print(f'ImgurLinkParser: [#{self.post["id"]}] <{id}> found {js["media"][0]["url"]}')
+                i = PostImage.select_one([['post_id', self.post['id']], ['link', js['media'][0]['url']]], conn = conn)
+                if (i != None):
+                    print(f'ImgurLinkParser: [#{self.post["id"]}] <{id}> Ignored duplicate {js["media"][0]["url"]}')
+                    continue
                 img = PostImage(data={
                     'post_id': self.post['id'],
                     'alt_id': alt_index,
@@ -177,6 +185,10 @@ class MediaLinkParser(LinkParser):
                 if (ext in ['jpg', 'png', 'gif', 'webm', 'jpeg', 'mp4']):
                     filename = x.path[x.path.rfind('/') + 1:]
                     print(f'MediaLinkParser: [#{self.post["id"]}] found {x!s}')
+                    i = PostImage.select_one([['post_id', self.post['id']], ['link', str(x)]], conn = conn)
+                    if (i != None):
+                        print(f'MediaLinkParser: [#{self.post["id"]}] Ignored duplicate {str(x)}')
+                        continue
                     img = PostImage(data={
                         'post_id': self.post['id'],
                         'alt_id': alt_index,

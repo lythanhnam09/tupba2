@@ -279,6 +279,12 @@ class SQLTable:
             cnt += 1
 
     @classmethod
+    def get_raw(cls, sql:str, param:tuple = tuple(), conn = None):
+        result = db_util.db_get_all(conn or cls._dbfile, sql, param)
+        ls = [cls(row=o) for o in result]
+        return ls
+
+    @classmethod
     def get_props_name(cls, no_id = False, id_last = False, blacklist:list = None) -> list:
         lsprop = list(cls._props.keys())
         if (blacklist != None):
