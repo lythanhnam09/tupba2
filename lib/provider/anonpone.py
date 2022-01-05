@@ -191,7 +191,5 @@ def get_cyoa_image(cyoa:cyoa.Cyoa, query, page = 1, perpage = 40):
                 offline = lsop[1] != '0'
             if (lsop[0] == 'thread'):
                 thread = int(lsop[2]).split(';')
-
-    print(f'{is_qm=} {alt_id=} {alt_op=} {thread=} {offline=}')
     
     return cyoa.get_image_list(is_qm, alt_id, alt_op, thread, offline, page, perpage)

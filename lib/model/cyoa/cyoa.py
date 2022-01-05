@@ -172,7 +172,7 @@ class Cyoa(SQLTable):
             lsexpr.append(f'pi.offline_link is not null')
 
         sql += ' and '.join(lsexpr)
-        print(sql)
+        # print(sql)
         qsql = sql.format('pi.*')
         countsql = sql.format('count(*)')
 

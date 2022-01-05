@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../PPageGen2/template"
+		},
+		{
+			"path": "../../Javascript/NodeJs/tupbajs/views/test"
 		}
 	],
 	"settings": {

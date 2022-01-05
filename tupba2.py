@@ -40,6 +40,11 @@ def csstest():
     #name = request.args.get('name', 'anon', type=str)
     return serve_template('test.html')
 
+@app.route('/preloader')
+def preloader_test():
+    #name = request.args.get('name', 'anon', type=str)
+    return serve_template('test_preloader.mako', nav=NavOption('Preloader test', theme='nav-danger'))
+
 def init():
     print('Root dir:', app.root_path)
     print('Static dir:', app.static_folder)

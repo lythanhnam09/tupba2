@@ -2,6 +2,7 @@ from flask import *
 from flask_socketio import emit, SocketIO
 from flask_cors import CORS, cross_origin
 import lib.util.task_util as task_util
+import lib.util.util as util
 import logging
 import lib.provider.anonpone as anonpone
 import lib.model.cyoa.cyoa as cyoa
@@ -77,3 +78,11 @@ def cyoa_refresh_thread(data):
         emit('task_data', task_util.get_queue_stat())
     else:
         emit('show_error',  {'message': f'Cyoa id {data["id"]} not found'})
+
+@socketio.on('cyoa_image_data')
+def get_image_page(data):
+    print(f'socketio: Get CYOA image data {data=}')
+    cy = cyoa.Cyoa.find_id(data['cyoaId'])
+    if (cy == None):
+        return {'error':'Not found'}
+    return util.to_json_str(cy.get_image_list(True, 0, '=', page=data['page'], per_page=data['perpage']))
