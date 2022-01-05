@@ -6,6 +6,7 @@ import urllib3
 from pathlib import Path
 from mako.template import Template
 from mako.lookup import TemplateLookup
+import time
 
 
 class Page:
@@ -130,3 +131,24 @@ mylookup = TemplateLookup(directories=['template'], module_directory='tmp/mako_m
 def serve_template(templatename, **kwargs):
     mytemplate = mylookup.get_template(templatename)
     return mytemplate.render(**kwargs)
+
+class StopTimer:
+    def __init__(self, name = 'Timer'):
+        self.delta = 0
+        self.name = name
+        print(f'{self.name} started')
+        self.start = time.perf_counter()
+
+    def get(self):
+        self.delta = time.perf_counter() - self.start
+        return self.delta
+
+    def measure(self):
+        self.delta = time.perf_counter() - self.start
+        print(f'{self.name} finnished in ({self.delta:.3f})')
+        return self.delta
+    
+    def restart(self, name = None):
+        self.delta = 0
+        self.name = name or self.name
+        self.start = time.perf_counter()

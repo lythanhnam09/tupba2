@@ -12,7 +12,8 @@ from lib.model.cyoa.cyoa_thread import *
 from lib.model.web.form import WebForm
 from lib.model.web.page import SimplePageNav
 from lib.util.task_util import get_queue_stat
-from lib.util.util import serve_template
+from lib.util.util import serve_template,StopTimer
+import asyncio
 
 
 cyoa = Blueprint('cyoa', __name__, template_folder='template', root_path='.')
@@ -72,7 +73,7 @@ def cyoa_info(sname):
     return serve_template('cyoa/info.mako', nav=cyoa_nav(), form=form, cyoa=cy, thread_page=ls_th, page_nav=SimplePageNav(ls_th, 'form-page'), worker_stat=get_queue_stat())
 
 @cyoa.route('/quest/<sname>/thread/<thread_id>')
-def thread_view(sname, thread_id):
+async def thread_view(sname, thread_id):
     try:
         thread_id = int(thread_id)
     except Exception as e:
@@ -83,20 +84,32 @@ def thread_view(sname, thread_id):
     if (cyth is None): abort(404)
     th = Thread.find_id(thread_id)
     if (th == None): abort(404)
-    ls_th = cy.get_ref('threads', get_many=True)
-    num = [i for i,x in enumerate(ls_th) if x['id'] == th['id']][0]
-    count = len(ls_th)
-    ls_post = anonpone.get_post_list(cy, th)
-    return serve_template('cyoa/thread_view.mako', nav=thread_nav(cy, th, ls_th, num, count), cyoa=cy, thread=th, ls_post=ls_post, thread_num=num)
+    
+    t = StopTimer('Fetching thread post')
+    if (anonpone.threadpost_loader.cyoa == None or anonpone.threadpost_loader.cyoa['id'] != cy['id']):
+        ls_th = cy.get_ref('threads', get_many=True, save_result=True)
+        num = [i for i,x in enumerate(ls_th) if x['id'] == th['id']][0]
+        count = len(ls_th)
+    else:
+        ls_th = anonpone.threadpost_loader.cyoa['threads']
+        num = [i for i,x in enumerate(ls_th) if x['id'] == th['id']][0]
+        count = anonpone.threadpost_loader.thread_count
+    # ls_post = anonpone.get_post_list(cy, th)
+    res_th = await anonpone.threadpost_loader.get(cy, th, num, count)
+    t.measure()
+
+    return serve_template('cyoa/thread_view.mako', nav=thread_nav(cy, res_th, ls_th, num, count), cyoa=cy, thread=res_th, thread_num=num)
 
 @cyoa.route('/quest/<sname>/images')
-def cyoa_image(sname):
+async def cyoa_image(sname):
     # qm: QM only ; link: Post with link only ; saved: Saved image ; thread: Thread num
     form = WebForm(data={'q':'is_qm=1,alt_id=0', 'page':1, 'perpage':40})
     form.get_arg_value(request.args)
     cy = Cyoa.find_shortname(sname)
     if (cy is None): abort(404)
     cy.check_steath_lewd()
-    page = anonpone.get_cyoa_image(cy, form['q'], form['page'], form['perpage'])
+    t = StopTimer('Fetching cyoa image')
+    page = await anonpone.img_loader.get(cy, form['q'], form['page'], form['perpage'])
+    t.measure()
     
     return serve_template('cyoa/image_view.mako', nav=cyoa_nav(), form=form, cyoa=cy, img_page = page, page_nav=SimplePageNav(page, 'form-page'), worker_stat=get_queue_stat())

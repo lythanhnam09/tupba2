@@ -6,6 +6,7 @@ import lib.model.cyoa.cyoa_tag as tag
 import lib.util.task_util as task_util
 import lib.util.db_util as db_util
 import re
+import asyncio
 
 
 def image_link(filename:str) -> str:
@@ -193,3 +194,117 @@ def get_cyoa_image(cyoa:cyoa.Cyoa, query, page = 1, perpage = 40):
                 thread = int(lsop[2]).split(';')
     
     return cyoa.get_image_list(is_qm, alt_id, alt_op, thread, offline, page, perpage)
+
+class CyoaImageLoader(task_util.PagePreLoader):
+    def __init__(self):
+        super().__init__()
+        self.query = ''
+        self.cyoa = None
+
+    def check_page_loaded(self, page):
+        for pg in self.page_data.data:
+            if (page == pg.page_num): return pg
+        return None
+
+    async def do_request(self, page):
+        # print(f'CyoaImageLoader: Loading page {page}')
+        pg = self.check_page_loaded(page)
+        if (pg == None):
+            pg = await self.get_cyoa_image_async(self.cyoa, self.query, page, self.per_page)
+            self.receive_data(pg)
+            # print(f'CyoaImageLoader: Page {page} loaded')
+            return pg
+        # print(f'CyoaImageLoader: Page {page} loaded from cache')
+        return pg
+
+    async def get(self, cyoa, query, page, per_page):
+        # print(f'CyoaImageLoader: Requesting page {page}')
+        if (self.cyoa == None or self.cyoa['id'] != cyoa['id'] or self.query != query or self.per_page != per_page):
+            # print(f'CyoaImageLoader: Different data, clear cache')
+            self.cyoa = cyoa
+            self.query = query
+            self.per_page = per_page
+            self.page_data.data.clear()
+        self.page = page
+
+        result = await self.do_request(page)
+        for i in range(1,self.range + 1):
+            if (self.page + 1 <= self.page_count): asyncio.create_task(self.do_request(self.page + 1))
+            if (self.page - 1 >= 1): asyncio.create_task(self.do_request(self.page - 1))
+        return result
+    
+    async def get_cyoa_image_async(self, cyoa:cyoa.Cyoa, query, page = 1, perpage = 40):
+        is_qm = None
+        alt_id = None
+        alt_op = None
+        thread = None
+        offline = False
+        if (query.strip(' ') != ''):
+            lsq = [x.strip(' ') for x in query.strip(' ').split(',')]
+            
+            for q in lsq:
+                lsop = list(re.findall('(\w+)([:<>=~][>=]?)(\(?[\d;]+\)?)', q)[0])
+                if (lsop[0] == 'is_qm'):
+                    is_qm = int(lsop[2])
+                if (lsop[0] == 'alt_id'):
+                    alt_id = lsop[2]
+                    alt_op = lsop[1].replace('~', 'in')
+                    alt_id = alt_id.replace(';', ',')
+                if (lsop[0] == 'offline'):
+                    offline = lsop[1] != '0'
+                if (lsop[0] == 'thread'):
+                    thread = int(lsop[2]).split(';')
+        
+        return cyoa.get_image_list(is_qm, alt_id, alt_op, thread, offline, page, perpage)
+
+class ThreadPostLoader():
+    def __init__(self, range = 1, cache = 4):
+        self.thread_num = 0
+        self.thread_count = 0
+        self.cyoa = None
+        self.range = range
+        self.cache = cache
+        self.thread_data = task_util.DQueue()
+
+    def check_page_loaded(self, thread):
+        for th in self.thread_data.data:
+            if (thread['id'] == th['id']): return th
+        return None
+
+    async def do_request(self, thread):
+        # print(f'CyoaImageLoader: Loading page {page}')
+        # print(f'{thread=}')
+        th = self.check_page_loaded(thread)
+        if (th == None):
+            th = await self.get_thread_posts(thread)
+            self.receive_data(th)
+            # print(f'CyoaImageLoader: Page {page} loaded')
+            return th
+        # print(f'CyoaImageLoader: Page {page} loaded from cache')
+        return th
+
+    def receive_data(self, thread):
+        self.thread_data.enqueue(thread)
+        self.thread_data.limit(self.cache)
+
+    async def get(self, cyoa, thread, num=None, count=None):
+        # print(f'CyoaImageLoader: Requesting page {page}')
+        if (self.cyoa == None or self.cyoa['id'] != cyoa['id']):
+            # print(f'CyoaImageLoader: Different data, clear cache')
+            self.cyoa = cyoa
+            self.thread_data.data.clear()
+        self.thread_num = num
+        self.thread_count = count
+
+        result = await self.do_request(thread)
+        for i in range(1,self.range + 1):
+            if (num + 1 < count): asyncio.create_task(self.do_request(self.cyoa['threads'][num + 1]))
+            if (num - 1 >= 0): asyncio.create_task(self.do_request(self.cyoa['threads'][num - 1]))
+        return result
+    
+    async def get_thread_posts(self, thread):
+        thread.get_ref('posts', save_result=True)
+        return thread
+
+img_loader = CyoaImageLoader()
+threadpost_loader = ThreadPostLoader()

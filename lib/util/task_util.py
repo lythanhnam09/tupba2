@@ -1,7 +1,7 @@
 import threading
 import time
 import traceback
-
+import asyncio
 
 class WorkerTask:
     def __init__(self, task, callback = None, error_callback = None, **kargs):
@@ -168,3 +168,59 @@ def get_queue_stat() -> dict:
     #if (vid.type in [1,2]):
         #q_worker.enqueue(WorkerTask(process_video, None, vid=vid))
 #worker_queue.enqueue(q_worker)
+
+class DQueue:
+    def __init__(self):
+        self.data = []
+    
+    def enqueue(self, data):
+        self.data.append(data)
+    
+    def dequeue(self):
+        if (len(self.data) <= 0): return None
+        return self.data.pop(0)
+
+    def limit(self, limit):
+        if (len(self.data) > limit):
+            count = len(self.data) - limit
+            self.data = self.data[count:]
+
+    
+
+class PagePreLoader:
+    def __init__(self, range:int = 1, cache:int = 4):
+        self.per_page = 0
+        self.request = None
+        self.range = range
+        self.cache = cache
+        self.page_count = 1
+        self.page = 1
+        self.page_data = DQueue()
+
+    def check_page_loaded(self, page, per_page):
+        for pg in self.page_data.data:
+            if (page == pg.page_num and per_page == pg.per_page): return pg
+        return None
+
+    async def do_request(self, page, perpage):
+        pg = self.check_page_loaded(page, per_page)
+        if (pg == None):
+            data = await self.request(page, per_page)
+            self.receive_data(data)
+            return data
+        return pg
+
+    def receive_data(self, data):
+        self.page_count = data.page_count
+        self.page_data.enqueue(data)
+        self.page_data.limit(self.cache)
+    
+    async def get(self, page, per_page):
+        self.page = page
+        self.per_page = per_page
+        result = await self.do_request(page, self.per_page)
+        for i in range(1,self.range + 1):
+            if (self.page + 1 <= self.page_count): self.do_request(self.page + 1, self.per_page)
+            if (self.page - 1 >= 1): self.do_request(self.page - 1, self.per_page)
+        return result
+

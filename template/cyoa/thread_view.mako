@@ -15,7 +15,7 @@
 
 <div class="bg-darkblue">
     <div class="container-lg bg-d25-darkblue py-2">
-        % for post in ls_post:
+        % for post in thread['posts']:
             <%
                 lsimg = post.get_ref('images', save_result=True)
                 lewd_post = 0
