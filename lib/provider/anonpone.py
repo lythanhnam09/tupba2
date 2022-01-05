@@ -7,6 +7,7 @@ import lib.util.task_util as task_util
 import lib.util.db_util as db_util
 import re
 import asyncio
+import sqlite3
 
 
 def image_link(filename:str) -> str:
@@ -303,7 +304,12 @@ class ThreadPostLoader():
         return result
     
     async def get_thread_posts(self, thread):
-        thread.get_ref('posts', save_result=True)
+        conn = sqlite3.connect(cyoa.Thread._dbfile)
+        thread.get_ref('posts', save_result=True, conn=conn)
+        for post in thread['posts']:
+            post.get_ref('images', save_result=True, conn=conn)
+            post.get_ref('reply_by', save_result=True, conn=conn)
+        conn.close()
         return thread
 
 img_loader = CyoaImageLoader()

@@ -151,4 +151,5 @@ class StopTimer:
     def restart(self, name = None):
         self.delta = 0
         self.name = name or self.name
+        print(f'{self.name} started')
         self.start = time.perf_counter()

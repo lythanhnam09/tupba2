@@ -98,7 +98,11 @@ async def thread_view(sname, thread_id):
     res_th = await anonpone.threadpost_loader.get(cy, th, num, count)
     t.measure()
 
-    return serve_template('cyoa/thread_view.mako', nav=thread_nav(cy, res_th, ls_th, num, count), cyoa=cy, thread=res_th, thread_num=num)
+    t.restart('Render template')
+    s = serve_template('cyoa/thread_view.mako', nav=thread_nav(cy, res_th, ls_th, num, count), cyoa=cy, thread=res_th, thread_num=num)
+    t.measure()
+    
+    return s
 
 @cyoa.route('/quest/<sname>/images')
 async def cyoa_image(sname):

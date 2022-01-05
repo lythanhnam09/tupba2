@@ -17,7 +17,7 @@
     <div class="container-lg bg-d25-darkblue py-2">
         % for post in thread['posts']:
             <%
-                lsimg = post.get_ref('images', save_result=True)
+                lsimg = post['images']
                 lewd_post = 0
                 if (len(lsimg) >= 1):
                     for img in lsimg:
