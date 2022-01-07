@@ -1,0 +1,102 @@
+$tags: (
+    'cyoa': #46b842,
+    'booru': #d84dba,
+    'rewatch': #22b998,
+);
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 0px;
+    height: 100vh;
+    overflow-x: hidden;
+    /* overflow-y: scroll; */
+    scrollbar-width: none;
+
+    background-color: #4b43b4;
+    transition: width 0.3s;
+
+    * {
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    &.show {
+        width: 300px;
+
+        .task-name {
+            white-space: normal;
+        }
+    }
+
+    &-title {
+        margin-top: 3rem;
+        padding: .75rem 1rem;
+        text-align: center;
+    }
+
+    &-item {
+        padding: .75rem;
+        font-size: 14pt;
+        text-align: left;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
+        display: block;
+        transition: background-color .2s;
+
+        > .fas {
+            width: 2rem;
+        }
+
+        &:hover {
+            background-color: #342f80;
+        }
+    }
+}
+
+.task {
+    &-title {
+        color: white;
+        display: inline-block;
+        margin-left: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    &-name {
+        color: white;
+        font-size: 10pt;
+        white-space: nowrap;
+    }
+
+    &-count {
+        color: #cacaca;
+        display: inline-block;
+        font-size: 10pt;
+        margin-left: 4px;
+    }
+
+    &-progress {
+        display: inline-block;
+        padding: 1px 4px;
+        color: white;
+    }
+
+    &-tag {
+        display: inline-block;
+        padding: 1px 4px;
+        background-color: #8581c0;
+        color: white;
+        border-radius: 8px;
+    }
+}
+
+@each $name, $color in $tags {
+    .tag-#{$name} {
+        background-color: $color;
+        color: white;
+    }
+}

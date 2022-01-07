@@ -23,6 +23,7 @@
 body {
   line-height: 1.4;
   font-size: 0.9375rem;
+  overflow-x: hidden;
 }
 
 .text-center {
@@ -4627,10 +4628,12 @@ body {
 }
 .form-control:hover {
   border: 2px #2b83e7 solid;
+  z-index: 1;
 }
 .form-control:focus, .form-control:active {
   border: 2px #2b83e7 solid;
   outline: rgba(43, 131, 231, 0.5) solid 0.2rem;
+  z-index: 2;
 }
 
 select.form-control {
@@ -5028,7 +5031,7 @@ input[type=file].form-control {
   font-family: "Font Awesome 5 Pro";
   content: "";
   margin-left: 0.5rem;
-  postion: relative;
+  position: relative;
 }
 
 .nav-item.dropdown:hover > .dropdown-container-left {
@@ -5104,19 +5107,21 @@ input[type=file].form-control {
 }
 .card-header {
   padding: 0.5rem;
+  position: relative;
+}
+.card-header .foldbutton {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 8px;
+  display: flex;
+  align-items: center;
 }
 .card-content {
   padding: 1rem;
 }
 .card-foldable > .card-header {
   cursor: pointer;
-}
-
-.foldbutton {
-  float: right;
-  position: relative;
-  top: -20px;
-  right: 5px;
 }
 
 img {
@@ -5146,6 +5151,8 @@ img {
   width: 100%;
   position: relative;
   background: #cacaca;
+  overflow: hidden;
+  border-radius: 0.2rem;
 }
 .progress-bar > .value {
   width: 50%;
@@ -5175,8 +5182,14 @@ img {
 .control-group-round :last-child {
   border-radius: 0 0.25rem 0.25rem 0;
 }
+.control-group-round :last-child.form-control {
+  margin-left: -2px;
+}
 .control-group-round :not(:first-child):not(:last-child) {
   border-radius: 0;
+}
+.control-group-round :not(:first-child):not(:last-child).form-control {
+  margin-left: -2px;
 }
 
 .fg-white {
