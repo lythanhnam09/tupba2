@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="/static/css/cyoa.css">
 </%block>
 <%block name="extrajs">
-    <script src="/static/js/cyoa.js"></script>
-    <script src="/static/js/cyoainfo.js"></script>
+    <script src="/static/js/cyoa/cyoa.js"></script>
+    <script src="/static/js/cyoa/cyoainfo.js"></script>
 </%block>
 
 <% ls_perpage = [40, 80, 100, 200, 0] %>

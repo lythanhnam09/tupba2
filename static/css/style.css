@@ -767,6 +767,10 @@ body {
   display: flex !important;
 }
 
+.d-iflex {
+  display: inline-flex !important;
+}
+
 .mr-auto {
   margin-right: auto;
 }
@@ -5146,7 +5150,7 @@ img {
 }
 
 .progress-bar {
-  height: 0.5rem;
+  min-height: 0.5rem;
   display: inline-block;
   width: 100%;
   position: relative;

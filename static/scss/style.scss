@@ -241,6 +241,10 @@ body {
 .d-flex {
     display: flex !important;
 }
+
+.d-iflex {
+    display: inline-flex !important;
+}
     
 // Margin
 .mr-auto {
@@ -878,7 +882,7 @@ img {
 
 // Progressbar
 .progress-bar {
-    height: 0.5rem;
+    min-height: 0.5rem;
     display: inline-block;
     width: 100%;
     position: relative;

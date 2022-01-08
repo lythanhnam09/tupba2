@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="/static/css/cyoa.css">
 </%block>
 <%block name="extrajs">
-    <script src="/static/js/cyoa.js"></script>
-    <script src="/static/js/cyoathread.js"></script>
+    <script src="/static/js/cyoa/cyoa.js"></script>
+    <script src="/static/js/cyoa/cyoathread.js"></script>
 </%block>
 <%block name="bodyprop">
     class="bg-darkblue"

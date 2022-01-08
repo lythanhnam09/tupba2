@@ -25,40 +25,46 @@ class GestureDetector {
                 this.downEvent(event.clientX, event.clientY);
                 if (this.onMouseDown) this.onMouseDown(this, this.currentPos);
             }
-        }, false);
+            // return false;
+        });
         this.e.addEventListener('mousemove', event => {
             if (this.useTouch) return;
             if (this.down) {
                 this.moveEvent(event.clientX, event.clientY);
                 if (this.onMouseMove) this.onMouseMove(this, this.currentPos);
             }
-        }, false);
+            // return false;
+        });
         this.e.addEventListener('mouseup', event => {
             if (this.useTouch) return;
             if (event.button == 0) {
                 this.upEvent(event.clientX, event.clientY);
                 if (this.onMouseUp) this.onMouseUp(this, this.currentPos);
             }
-        }, false);
+            // return false;
+        });
 
         this.e.addEventListener('touchstart', event => {
             document.body.style.overflowY = "hidden";
             this.useTouch = true;
             this.downEvent(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
             if (this.onMouseDown) this.onMouseDown(this, this.currentPos);
-        }, false);
+            // return false;
+        });
         this.e.addEventListener('touchmove', event => {
             if (this.down) {
                 this.moveEvent(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
                 if (this.onMouseMove) this.onMouseMove(this, this.currentPos);
             }
-        }, false);
+            // return false;
+        });
         this.e.addEventListener('touchend', event => {
             document.body.style.overflowY = "unset";
             this.useTouch = false;
             this.upEvent(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
             if (this.onMouseUp) this.onMouseUp(this, this.currentPos);
-        }, false);
+            // return false;
+        });
     }
 
     getMousePos(x, y) {
@@ -134,18 +140,34 @@ class Draggable extends GestureDetector {
         mouseUp: null,
         lockX: false,
         lockY: false,
+        relative: false,
     }, region = document.body) {
 
         super(selector, option, region);
         this.lockX = option.lockX;
         this.lockY = option.lockY;
+        this.relative = option.relative;
+    }
+
+    setPos(x, y) {
+        this.e.style.left = x + 'px';
+        this.e.style.top = y + 'px';
     }
 
     moveElement(dx, dy) {
-        let left = this.e.offsetLeft + dx;
-        let top = this.e.offsetTop + dy;
-        if (! this.lockY) this.e.style.top = top + 'px';
-        if (! this.lockX) this.e.style.left = left + 'px';
+        if (this.relative) {
+            let stop = this.e.style.top == '' ? 0:parseFloat(this.e.style.top.substr(0, this.e.style.top.length - 2));
+            let sleft = this.e.style.left == '' ? 0:parseFloat(this.e.style.left.substr(0, this.e.style.left.length - 2));
+            let left = sleft + dx;
+            let top = stop + dy;
+            if (! this.lockY) this.e.style.top = top + 'px';
+            if (! this.lockX) this.e.style.left = left + 'px';
+        } else {
+            let left = this.e.offsetLeft + dx;
+            let top = this.e.offsetTop + dy;
+            if (! this.lockY) this.e.style.top = top + 'px';
+            if (! this.lockX) this.e.style.left = left + 'px';
+        }
     }
 
     moveEvent(x, y) {
@@ -153,5 +175,40 @@ class Draggable extends GestureDetector {
         super.moveEvent(x,y);
         let d = this.delta;
         this.moveElement(d.x, d.y);
+    }
+}
+
+class ScalableDrag extends Draggable {
+    constructor(selector, option = {
+        mouseDown: null, 
+        mouseMove: null, 
+        mouseUp: null,
+        lockX: false,
+        lockY: false,
+        relative: false,
+    }, region = document.body) {
+
+        super(selector, option, region);
+        this.orgWidth = this.e.getBoundingClientRect().width;
+        this.orgHeight = this.e.getBoundingClientRect().height;
+        this.scale = 1;
+    }
+
+    updateOrgSize() {
+        this.orgWidth = this.e.getBoundingClientRect().width;
+        this.orgHeight = this.e.getBoundingClientRect().height;
+    }
+
+    setScale(scale) {
+        this.scale = scale;
+        this.e.style.width = this.orgWidth * scale + 'px';
+        this.e.style.height = this.orgHeight * scale + 'px';
+        // this.e.style.minHeight = this.orgHeight * scale + 'px';
+    }
+
+    resetScale() {
+        this.scale = 1;
+        this.e.style.width = '';
+        this.e.style.height = '';
     }
 }

@@ -20,7 +20,7 @@
 
 </%block>
 <%block name="script">
-    <script src="/static/js/test_touch.js"></script>
+    <script src="/static/js/test/test_touch.js"></script>
 </%block>
 
 <%def name="form_option(form, name, value, text)">

@@ -6,8 +6,11 @@
     <link rel="stylesheet" href="/static/css/cyoa.css">
 </%block>
 <%block name="extrajs">
-    <script src="/static/js/cyoa.js"></script>
-    <script src="/static/js/cyoainfo.js"></script>
+    <script src="/static/js/util/loader.js"></script>
+    <script src="/static/js/util/gesture.js"></script>
+    <script src="/static/js/cyoa/cyoa.js"></script>
+    <script src="/static/js/cyoa/cyoainfo.js"></script>
+    <script src="/static/js/cyoa/imageview.js"></script>
 </%block>
 
 <% ls_perpage = [40, 80, 100, 200, 0] %>
@@ -71,8 +74,8 @@
                 % if cyoa['save_status'] > 0:
                     <hr class="mt-1">
                     <div class="control-group">
-                        <button id="btn-refresh-all" class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-image"></i> View images</button>
-                        <button id="btn-refresh" class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-file"></i> View by post</button>
+                        <a class="btn btn-success mr-1 mt-1 reload-disable" href="/cyoa/quest/${cyoa['short_name']}"><i class="fas fa-book"></i> View threads</a>
+                        <button class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-file"></i> View by post</button>
                     </div>
                 % endif
             </div>
@@ -86,8 +89,8 @@
                     <input class="form-control ml-2" type="text" name="q" value="${form['q']}">
                     <button class="btn btn-success ml-1" type="submit"><i class="fas fa-filter"></i> Filter</button>
                 </div>
-                <input type="hidden" name="page" value="1">
-                <input type="hidden" name="perpage" value="${form['perpage']}">
+                <input id="inp-page" type="hidden" name="page" value="1">
+                <input id="inp-perpage" type="hidden" name="perpage" value="${form['perpage']}">
             </form>
             <hr class="mb-1">
             
@@ -112,14 +115,10 @@
             </div>
             <hr class="my-1">
 
-            <div class="list-container m-1">
+            <div class="thread-image list-container m-1">
                 % for img in img_page.data:
-                    <div class="thread card bg-l15-darkblue">
-                        <a class="thread card-image img-container">
-                            <img src="${img['link']}" alt="${img['filename']}">
-                        </a>
-                        <div class="thread card-content p-1">
-                        </div>
+                    <div class="thread-image card bg-l15-darkblue img-container" onclick="showImageView(${cyoa['id']}, ${img_page.page_num}, ${img_page.page_count}, ${img_page.total_count}, ${img_page.per_page}, '${form['q']}', ${loop.index})">
+                        <img src="${img['link']}" alt="${img['filename']}">
                     </div>
                 % endfor
             </div>
@@ -146,3 +145,20 @@
     </div>
 </div>
 
+<div id="image-view" class="image-view" style="display:none">
+    <div id="image-view-control" class="image-view-control card-inline bg-l20-darkblue">
+        <div class="control-group">
+            <div id="image-control-drag" class="d-iflex vflex-center fg-white"><i class="fas fa-bars px-2"></i></div>
+            <button class="btn btn-darkblue px-1 ml-1" onclick="viewPrevious()"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-darkblue px-1 ml-1" onclick="viewNext()"><i class="fas fa-chevron-right"></i></button>
+            <button id="image-control-zoom" class="btn btn-darkblue progress-bar px-1 ml-1"><div class="value bg-d10-primary"></div><i class="fas fa-minus mr-1"></i> <span id="zoom-per" class="text-bold">100%</span> <i class="fas fa-plus ml-1"></i></button>
+            <button class="btn btn-darkblue px-1 ml-1" onclick="resetImageView()"><i class="fas fa-expand"></i></button>
+            <button class="btn btn-danger px-1 ml-1" onclick="closeImageView()"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+    <div class="image-view-main">
+        <div id="image-view-drag" draggable="false" class="img-container">
+            <img id="image-view-image" class="width:100%" draggable="false" src="/static/img/no-image.png" alt="no-image named no-image here">
+        </div>
+    </div>
+</div>

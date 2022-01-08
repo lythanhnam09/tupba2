@@ -51,8 +51,16 @@ a {
     column-gap: .5rem;
     row-gap: .5rem;
 
+    &.thread-image {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     @media (min-width: $size-small) {
         grid-template-columns: repeat(2, 1fr);
+
+        &.thread-image {
+            grid-template-columns: repeat(4, 1fr);
+        }
     }
 
     @media (min-width: $size-medium) {
@@ -61,6 +69,10 @@ a {
 
     @media (min-width: $size-large) {
         grid-template-columns: repeat(4, 1fr);
+
+        &.thread-image {
+            grid-template-columns: repeat(5, 1fr);
+        }
     }
 
     @media (min-width: $size-xlarge) {
@@ -116,6 +128,11 @@ a {
             }
         }
     }
+}
+
+.thread-image.card {
+    overflow: hidden;
+    background-color: $darkblue;
 }
 
 .thread.card {
@@ -544,4 +561,51 @@ $color-cyoa: linear-gradient(48deg, #95cc14, #35c63c);
             color: white !important;
         }
     }         
+}
+
+.image-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    overflow: hidden;
+
+    &-control {
+        position: absolute;
+        left: 40px;
+        top: 40px;
+        padding: 4px;
+        z-index: 1002;
+
+        button > i {
+            font-size: 12pt;
+        }
+
+        #image-control-zoom {
+            width: auto;
+
+            *:not(.value) {
+                position: relative;
+                z-index: 10;
+            }
+
+            
+        }
+    }
+
+    &-main {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        height: 100%;
+
+        .img-container {
+            position: relative;
+            width: unset;
+            min-height: 90vh;
+        }
+    }
 }

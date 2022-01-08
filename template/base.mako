@@ -13,8 +13,8 @@
         <%include file="component/navbar.mako"/>
         <%include file="component/sidebar.mako"/>
         ${self.body()}
-        <script src="/static/js/jquery-3.6.0.min.js"></script>
-        <script src="/static/js/socket.io.min.js"></script>
+        <script src="/static/js/lib/jquery-3.6.0.min.js"></script>
+        <script src="/static/js/lib/socket.io.min.js"></script>
         <script src="/static/js/script.js"></script>
         <%block name="extrajs" />
         <%block name="script" />

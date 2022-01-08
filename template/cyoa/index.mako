@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/static/css/cyoa.css">
 </%block>
 <%block name="extrajs">
-    <script src="/static/js/cyoa.js"></script>
+    <script src="/static/js/cyoa/cyoa.js"></script>
 </%block>
 
 <%def name="form_option(form, name, value, text)">

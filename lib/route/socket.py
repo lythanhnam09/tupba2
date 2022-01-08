@@ -13,7 +13,7 @@ log.setLevel(logging.WARNING)
 
 app = Flask('__main__')
 CORS(app, support_credentials=True)
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode="threading")
 
 @socketio.on('task_stat')
 def task_update(data = {}):
@@ -85,4 +85,6 @@ def get_image_page(data):
     cy = cyoa.Cyoa.find_id(data['cyoaId'])
     if (cy == None):
         return {'error':'Not found'}
-    return util.to_json_str(cy.get_image_list(True, 0, '=', page=data['page'], per_page=data['perpage']))
+    # page = await anonpone.img_loader.get(cy, data['q'], data['page'], data['perpage'])
+    page = anonpone.get_cyoa_image(cy, data['q'], data['page'], data['perpage'])
+    return util.to_json_str(page)

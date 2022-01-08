@@ -9,9 +9,15 @@ a {
        column-gap: 0.5rem;
   row-gap: 0.5rem;
 }
+.list-container.thread-image {
+  grid-template-columns: repeat(2, 1fr);
+}
 @media (min-width: 720px) {
   .list-container {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .list-container.thread-image {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 @media (min-width: 960px) {
@@ -22,6 +28,9 @@ a {
 @media (min-width: 1120px) {
   .list-container {
     grid-template-columns: repeat(4, 1fr);
+  }
+  .list-container.thread-image {
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 @media (min-width: 1440px) {
@@ -63,6 +72,11 @@ a {
 .cyoa.card-content > .status > .stat {
   color: white;
   font-size: 10pt;
+}
+
+.thread-image.card {
+  overflow: hidden;
+  background-color: #4b43b4;
 }
 
 .thread.card {
@@ -432,4 +446,43 @@ a {
 .nav-cyoa .nav-item:not(.disabled):hover:not(.disabled) {
   background: rgba(255, 255, 255, 0.2) !important;
   color: white !important;
+}
+
+.image-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  overflow: hidden;
+}
+.image-view-control {
+  position: absolute;
+  left: 40px;
+  top: 40px;
+  padding: 4px;
+  z-index: 1002;
+}
+.image-view-control button > i {
+  font-size: 12pt;
+}
+.image-view-control #image-control-zoom {
+  width: auto;
+}
+.image-view-control #image-control-zoom *:not(.value) {
+  position: relative;
+  z-index: 10;
+}
+.image-view-main {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  height: 100%;
+}
+.image-view-main .img-container {
+  position: relative;
+  width: unset;
+  min-height: 90vh;
 }/*# sourceMappingURL=cyoa.css.map */

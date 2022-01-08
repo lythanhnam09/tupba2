@@ -4,8 +4,9 @@
 </%block>
 ## <%block name="extracss">
 ## </%block>
-## <%block name="extrajs">
-## </%block>
+<%block name="extrajs">
+    <script src="/static/js/util/loader.js"></script>
+</%block>
 <%block name="script">
     <script>
         var loader = new PagePreLoader(20, function(page, perpage) {

@@ -17,12 +17,13 @@
 		"files.exclude": {
 			"**/__pycache__": true,
 			"**/.kdev4": true,
+			"**/.vscode": true,
+			"**/*.code-workspace": true,
 			"**/*.kdev4": true,
 			"**/config": true,
 			"**/data": true,
-            "**/lib": true,
-            "**/upload": true,
-			"**/*.code-workspace": true
+			"**/upload": true,
+			"lib": true
 		},
 		"explorer.compactFolders": false,
 		"liveSassCompile.settings.formats": [{
