@@ -1,164 +1,183 @@
-import threading
 import time
 import traceback
 import asyncio
+import threading
+import lib.util.util as util
 
-class WorkerTask:
-    def __init__(self, task, callback = None, error_callback = None, **kargs):
-        self.task = task
-        self.kargs = kargs
-        self.done = False
-        self.callback = callback
-        self.error_callback = error_callback
-
+class TaskItem:
+    def __init__(self, fn, *args, **kwargs):
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.on_done = util.CallBackList()
+        self.on_error = util.CallBackList()
+    
     def exec(self):
+        result = None
         try:
-            self.task(**self.kargs)
-            if (self.callback != None): self.callback(self)
+            result = self.fn(*self.args, **self.kwargs)
         except Exception as e:
-            if (self.callback != None): self.error_callback(self, e , traceback.format_exc())
-            else: 
-                print('Unhadled error: ')
-                print(traceback.format_exc())
-        self.done = True
+            self.on_error.fire(e, traceback.format_exc())
+        finally:
+            self.on_done.fire(self, result)
 
-class QueueWorker:
-    def __init__(self, limit = 4, name='<task>', dequeue_on_done = False, all_done_callback = None, task_done_callback = None, error_callback = None, meta = {}):
-        self.current = []
-        self.queue = []
-        self.limit = limit
-        self.started = False
-        self.done = False
-        self.total_task = 0
-        self.dequeue_on_done = dequeue_on_done
-        self.all_done_callback = all_done_callback
-        self.task_done_callback = task_done_callback
-        self.error_callback = error_callback
+    def __repr__(self):
+        return f'<TaskItem>({self.fn.__name__})'
+
+class Task:
+    def __init__(self, name):
+        self.name = name
+        self.item_count = 0
+        self.items = util.Queue()
+
+    def add(self, item):
+        self.item_count += 1
+        self.items.put(item)
+
+    def get(self):
+        return self.items.get()
+
+    def add_on_item_done(self, fn):
+        self.items.items[0].on_done.append(fn)
+
+    @classmethod
+    def from_single_item(cls, name, fn, *args, **kwargs):
+        item = TaskItem(fn, *args, **kwargs)
+        task = cls(name)
+        task.add(item)
+        return task
+
+class TaskWorker:
+    def __init__(self, name, limit = 4, meta = {}, error_action = 0):
+        """error_action: 0:continue 1:skip task 2:skip worker"""
         self.name = name
         self.meta = meta
+        self.on_task_item_done = util.CallBackList()
+        self.on_task_done = util.CallBackList()
+        self.on_task_start = util.CallBackList()
+        self.on_worker_done = util.CallBackList()
+        self.on_task_item_error = util.CallBackList()
+        self.limit = limit
+        self.task_count = 0
+        self.tasks = util.Queue()
+        self.current_items = []
+        self.current_task:Task = None
+        self.current_atasks = []
+        self.error_action = error_action
 
-    def taskdone(self, task):
-        self.current.remove(task)
-        self.dequeue()
-        if (self.task_done_callback != None): self.task_done_callback(self, task)
-        if (len(self.queue) == 0 and len(self.current) == 0):
-            self.done = True
-            if (self.all_done_callback != None): self.all_done_callback(self)
+    def get_processed_item_count(self):
+        if (self.current_task != None):
+            return self.current_task.item_count - (len(self.current_items) + len(self.current_task.items))
 
-    def taskerror(self, task, e, trc):
-        self.queue.clear()
-        self.current.clear()
-        self.done = True
-        if (self.error_callback != None): self.error_callback(self, e, trc)
+    def get_done_task_count(self):
+        """Note: Current processing task counted as done"""
+        return self.task_count - len(self.tasks)
+
+    def add(self, task):
+        self.task_count += 1
+        self.tasks.put(task)
+
+    def run_item(self, item):
+        self.current_items.append(item)
+        item.on_done.append(self.task_item_done)
+        item.on_error.append(self.task_item_error)
+        #asyncio.create_task(item.exec())
+        threading.Thread(target=item.exec, daemon=True).start()
+
+    def start_task(self):
+        self.current_task = self.tasks.get()
+        # print('task', self.current_task.name, 'started', len(self.current_task.items))
+        while (len(self.current_items) < self.limit and len(self.current_task.items) > 0):
+            self.run_item(self.current_task.get())
+        self.on_task_start.fire(self.current_task)
+        # print(self.current_items)
+
+    def task_item_error(self, exception, traceback_str):
+        self.on_task_item_error.fire(self, exception, traceback_str)
+        if (self.error_action == 1):
+            # print('Task canceled')
+            # self.current_items = []
+            self.current_task.items.clear()
+        elif (self.error_action == 2):
+            # self.current_items = []
+            self.current_task.items.clear()
+            self.tasks.clear()
+
+    def task_item_done(self, task_item, result):
+        self.current_items.remove(task_item)
+        self.on_task_item_done.fire(task_item, result)
+        # print('item done')
+        if (len(self.current_items) == 0):
+            # print('task done')
+            self.on_task_done.fire(self.current_task)
+            # print('next task')
+            if (len(self.tasks) > 0): self.start_task()
+            else: self.on_worker_done.fire(self)
+        if (len(self.current_task.items) > 0):
+            self.run_item(self.current_task.get())
+
+class TaskWorkerQueue:
+    def __init__(self, auto_start = True):
+        self.workers = util.Queue()
+        self.current_worker = None
+        self.auto_start = auto_start
+        self.on_task_update = util.CallBackList()
+        self.on_worker_done = util.CallBackList()
+        self.on_worker_error = util.CallBackList()
+
+    def get_worker_list(self):
+        if (self.current_worker != None):
+            return [self.current_worker] + self.workers
         else:
-            print(f'Unhandled error in task {self.name!r}:')
-            print(trc)
+            return self.workers
+    
+    def get_worker_count(self):
+        return len(self.workers) + (1 if self.current_worker != None else 0)
 
-    def dequeue(self):
-        if len(self.queue) > 0:
-            task = self.queue[0]
-            self.current.append(task)
-            self.queue.remove(task)
-            t = threading.Thread(target=task.exec, name='Worker Thread', daemon=True)
-            t.start()
-            return task
-        return None
+    def add(self, worker):
+        self.workers.put(worker)
+        if (self.auto_start):
+            self.start_worker()
 
-    def enqueue(self, task):
-        if (self.started):
-            raise Exception('Queue already started')
-        if (self.dequeue_on_done): task.callback = self.taskdone
-        task.error_callback = self.taskerror
-        self.queue.append(task)
+    def start_worker(self):
+        worker:TaskWorker = self.workers.get()
+        worker.on_worker_done.append(self.worker_done)
+        worker.on_task_item_done.append(self.task_item_done)
+        worker.on_task_item_error.append(self.worker_error)
+        self.current_worker = worker
+        worker.start_task()
 
-    def get_total_task(self):
-        if (self.started):
-            return self.total_task
-        self.total_task = len(self.queue)
-        return self.total_task
+    def task_item_done(self, item, result = None):
+        self.on_task_update.fire(self.current_worker, item, result)
 
-    def start(self):
-        if (self.started or len(self.queue) == 0):
-            return
-        self.started = True
-        self.total_task = len(self.queue)
-        while (len(self.current) != self.limit and len(self.queue) > 0):
-            self.dequeue()
-
-    def wait(self):
-        while (not self.done):
-            time.sleep(0.1)
-
-class TaskQueue:
-    def __init__(self, on_task_update = None, on_task_done = None, on_task_error = None):
-        self.queue = []
-        self.on_task_update = on_task_update
-        self.on_task_done = on_task_done
-        self.on_task_error = on_task_error
-
-    def enqueue(self, worker:QueueWorker):
-        print(f'[QueueWorker] {worker.name}: Enqueued')
-        self.queue.append(worker)
-        if (len(self.queue) == 1):
-            print(f'[QueueWorker] {self.queue[0].name}: Started')
-            # len == 1 because this one only wanted to startup the first one in queue if emty (otherwise it would call start on the first one again and fuck thing up) and the next one will start automatically
-            self.queue[0].all_done_callback = self.dequeue
-            self.queue[0].task_done_callback = self.task_done
-            self.queue[0].error_callback = self.task_error
-            self.queue[0].start()
-            if (self.on_task_update != None): self.on_task_update(worker)
-
-    def task_done(self, worker, task):
-        if (self.on_task_update != None): self.on_task_update(worker)
-
-    def task_error(self, worker, e, trace):
-        if (len(self.queue) > 0):
-            res = self.queue[0]
-            self.queue.remove(res)
-        print(f'[QueueWorker] {worker.name}: Error: {e}')
-        print(trace)
-        if (len(self.queue) > 0):
-            self.queue[0].all_done_callback = self.dequeue
-            self.queue[0].task_done_callback = self.task_done
-            self.queue[0].error_callback = self.task_error
-            self.queue[0].start()
-            print(f'[QueueWorker] {self.queue[0].name}: Started')
+    def worker_done(self, worker):
+        if (len(self.workers) > 0):
+            self.start_worker()
         else:
-            print(f'[QueueWorker]: All done')
-            if (self.on_task_update != None): self.on_task_update(worker)
-        if (self.on_task_error != None): self.on_task_error(worker, e, trace)
+            self.current_worker = None
+        self.on_worker_done.fire(worker)
 
+    def worker_error(self, worker, exception, traceback_str):
+        self.on_worker_error.fire(worker, exception, traceback_str)
 
-    def dequeue(self, worker = None):
-        if (len(self.queue) <= 0): return None
-        res = self.queue[0]
-        self.queue.remove(res)
-        print(f'[QueueWorker] {res.name}: Done')
-        if (len(self.queue) > 0):
-            self.queue[0].all_done_callback = self.dequeue
-            self.queue[0].task_done_callback = self.task_done
-            self.queue[0].start()
-            print(f'[QueueWorker] {self.queue[0].name}: Started')
-        else:
-            print(f'[QueueWorker]: All done')
-            if (self.on_task_update != None): self.on_task_update(worker)
-        if (self.on_task_done != None): self.on_task_done(worker)
-        return res
-
-task_queue = TaskQueue()
+worker_queue = TaskWorkerQueue()
 
 def get_queue_stat() -> dict:
     res = {}
-    res['count'] = len(task_queue.queue)
+    res['count'] = worker_queue.get_worker_count()
     res['tasks'] = []
-    for q in task_queue.queue:
+    ls = worker_queue.get_worker_list()
+    for q in ls:
         dt = {}
         dt['id'] = f'{q.meta["category"].lower()}-{q.meta["id"]}'
         if ('operation' in q.meta): dt['id'] += f'-{q.meta["operation"]}'
         dt['category'] = q.meta['category']
-        dt['name'] = q.name
-        dt['count'] = q.get_total_task()
-        dt['progress'] = dt['count'] - (len(q.queue) + len(q.current))
+        dt['name'] = q.current_task.name
+        dt['name_all'] = q.name
+        dt['count_all'] = q.task_count
+        dt['count'] = q.current_task.item_count
+        dt['progress_all'] = q.get_done_task_count()
+        dt['progress'] = q.get_processed_item_count()
         res['tasks'].append(dt)
 
     return res
@@ -184,8 +203,6 @@ class DQueue:
         if (len(self.data) > limit):
             count = len(self.data) - limit
             self.data = self.data[count:]
-
-    
 
 class PagePreLoader:
     def __init__(self, range:int = 1, cache:int = 4):

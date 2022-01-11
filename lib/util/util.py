@@ -153,3 +153,17 @@ class StopTimer:
         self.name = name or self.name
         print(f'{self.name} started')
         self.start = time.perf_counter()
+
+class CallBackList(list):
+    def fire(self, *args, **kwargs):
+        for listener in self:
+             listener(*args, **kwargs)
+
+class Queue(list):
+    def put(self, data):
+        self.append(data)
+
+    def get(self):
+        if (len(self) <= 0):
+            raise Exception('Queue is emty')
+        return self.pop(0)

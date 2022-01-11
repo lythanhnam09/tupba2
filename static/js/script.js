@@ -1,7 +1,7 @@
 var connected = false;
 var socket;
 
-var onSocketStatLoad = null;
+// var onSocketStatLoad = null;
 
 $(function() {
     $('.card-foldable>.card-header').append('<i class="fas fa-chevron-up foldbutton"></i>');
@@ -38,6 +38,9 @@ $(function() {
     });
 });
 
+var taskCallbacks = [];
+var taskStats = {};
+
 function setSocketStat(stat, color) {
     $('#socket-stat').html(`Socket: ${stat}`);
     $('#socket').attr('class', `${color} p-1`);
@@ -58,8 +61,12 @@ function connectSocket() {
     socket.on('task_data', function(data) {
         console.log(`Task data:`);
         console.log(data);
+        taskStats = data;
         updateTask(data);
-        if (onSocketStatLoad != null) onSocketStatLoad(data);
+        for (let callback of taskCallbacks) {
+            callback(data);
+        }
+        // if (onSocketStatLoad != null) onSocketStatLoad(data);
     });
 
     socket.on('refresh_page', function(data) {
@@ -95,18 +102,23 @@ function updateTask(data) {
         let cnt = 0;
         for (let task of data.tasks) {
             let per = (task.progress / task.count * 100).toFixed(2);
-            let prog = cnt == 0 ? `${per}% (${task.progress}/${task.count})`:`Awaiting (${task.count})`;
+            let perAll = (task.progress_all / task.count_all * 100).toFixed(2);
+            let prog = cnt == 0 ? `[${task.progress_all}/${task.count_all}] ${per}% (${task.progress}/${task.count})`:`Awaiting (${task.count})`;
             // if (`#task-${task.id}`) {
 
             // }
-            thtml += `
+            thtml +=`
             <div id="task-${task.id}" class="task-item card bg-l10-darkblue mb-1">
                 <div class="card-content">
                     <div class="task-stat">
-                        <div class="task-tag tag-${task.category.toLowerCase()}">${task.category}</div>
+                        <div class="task-tag tag-${task.category.toLowerCase()}"">${task.category}</div>
                         <div class="task-progress">${prog}</div>
                     </div>
                     
+                    <div class="task-name">${task.name_all}</div>
+                    <div class="progress-bar">
+                        <div class="value bg-warning" style="width:${perAll}%"></div>
+                    </div>
                     <div class="task-name">${task.name}</div>
                     <div class="progress-bar">
                         <div class="value bg-warning" style="width:${per}%"></div>
@@ -114,6 +126,21 @@ function updateTask(data) {
                 </div>
             </div>
             `;
+            // thtml += `
+            // <div id="task-${task.id}" class="task-item card bg-l10-darkblue mb-1">
+            //     <div class="card-content">
+            //         <div class="task-stat">
+            //             <div class="task-tag tag-${task.category.toLowerCase()}">${task.category}</div>
+            //             <div class="task-progress">${prog}</div>
+            //         </div>
+                    
+            //         <div class="task-name">${task.name}</div>
+            //         <div class="progress-bar">
+            //             <div class="value bg-warning" style="width:${per}%"></div>
+            //         </div>
+            //     </div>
+            // </div>
+            // `;
             cnt++;
         }
         $('#task-list').html(thtml);

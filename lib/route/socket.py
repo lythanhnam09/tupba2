@@ -13,7 +13,7 @@ log.setLevel(logging.WARNING)
 
 app = Flask('__main__')
 CORS(app, support_credentials=True)
-socketio = SocketIO(app, async_mode="threading")
+socketio = SocketIO(app)
 
 @socketio.on('task_stat')
 def task_update(data = {}):
@@ -23,7 +23,7 @@ def task_update(data = {}):
     emit('task_data', res)
 
     @copy_current_request_context
-    def update_task(worker):
+    def update_task(worker, task_item, result):
         emit('task_data', task_util.get_queue_stat())
     @copy_current_request_context
     def done_task(worker):
@@ -36,9 +36,10 @@ def task_update(data = {}):
     def error_task(worker, e, trace):
         emit('task_data', task_util.get_queue_stat())
         emit('throw_error', {'exception': f'{e}', 'trace': trace, 'name': worker.name})
-    task_util.task_queue.on_task_update = update_task
-    task_util.task_queue.on_task_done = done_task
-    task_util.task_queue.on_task_error = error_task
+        
+    task_util.worker_queue.on_task_update.append(update_task)
+    task_util.worker_queue.on_worker_done.append(done_task)
+    task_util.worker_queue.on_worker_error.append(error_task)
 
 @socketio.on('name')
 def socket_name(data):
@@ -56,7 +57,7 @@ def cyoa_refresh_thread(data):
     print(f'socketio: Refresh CYOA Threads data')
     cy = cyoa.Cyoa.find_id(data['id'])
     @copy_current_request_context
-    def update_task(worker):
+    def update_task(worker, task_item, result):
         emit('task_data', task_util.get_queue_stat())
     @copy_current_request_context
     def done_task(worker):
@@ -71,10 +72,11 @@ def cyoa_refresh_thread(data):
         emit('throw_error', {'exception': f'{e}', 'trace': trace, 'name': worker.name})
     if (cy != None):
         anonpone.refresh_thread_list(cy, force_refresh_all=data.get('force', False), reparse_post=data.get('parse', False))
-        # emit('refresh_page', {})
-        task_util.task_queue.on_task_update = update_task
-        task_util.task_queue.on_task_done = done_task
-        task_util.task_queue.on_task_error = error_task
+
+        task_util.worker_queue.on_task_update.append(update_task)
+        task_util.worker_queue.on_worker_done.append(done_task)
+        task_util.worker_queue.on_worker_error.append(error_task)
+
         emit('task_data', task_util.get_queue_stat())
     else:
         emit('show_error',  {'message': f'Cyoa id {data["id"]} not found'})

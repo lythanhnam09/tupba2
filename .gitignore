@@ -5,3 +5,4 @@ __pycache__
 config/*
 git_note.txt
 tmp
+*.code-workspace

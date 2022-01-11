@@ -81,7 +81,7 @@ class Cyoa(SQLTable):
         return o
 
     @classmethod
-    def filter_tags(cls, query:str = '', page:int = 1, per_page:int = 20, order_by = ['last_post_time', 'desc']):
+    def filter_tags(cls, query:str = '', page:int = 1, per_page:int = 20, order_by = ['last_post_time', 'desc'], conn = None):
         lswhere = []
         if (query.strip(' ') == ''):
             lswhere = None
@@ -103,7 +103,7 @@ class Cyoa(SQLTable):
         if (page < 1): page = 1
         offset = (page-1) * per_page
         
-        batch = db_util.DBBatch(cls._dbfile)
+        batch = db_util.DBBatch(conn or cls._dbfile)
 
         if (per_page == 0):
             sql = sql_command.select(cls._table_name + ' c', where=lswhere, order_by=order_by)
@@ -125,9 +125,9 @@ class Cyoa(SQLTable):
 
         return page
 
-    def check_steath_lewd(self, save_tag_data = True):
+    def check_steath_lewd(self, save_tag_data = True, conn = None):
         have_lewd_tag = False
-        for t in self.get_ref('tags', order_by=['sort_index', 'asc'], save_result=save_tag_data):
+        for t in self.get_ref('tags', order_by=['sort_index', 'asc'], save_result=save_tag_data, conn = conn):
             if (t.cols['tag'].cols['name'] in ['lewd', 'lewd quest']):
                 have_lewd_tag = True
                 break
@@ -138,6 +138,10 @@ class Cyoa(SQLTable):
         ls = db_util.db_get_all(self._dbfile, sql, (self.cols['id'], ))
         result = [Thread(row=x) for x in ls]
         return result
+
+    def delete_all_thread(self):
+        sql = 'delete from thread where id in (select thread_id from cyoa_thread where cyoa_id=?)'
+        db_util.db_exec(self._dbfile, sql, (self.cols['id'], ), True)
 
     def get_image_list(self, is_qm:bool = None, alt_id:int = None, alt_op = None, thread_num:list = None, offline:bool = False, page:int = 1, per_page:int = 40):
         from lib.model.cyoa.post import PostImage

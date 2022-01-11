@@ -47,11 +47,13 @@ async function viewNext() {
 async function viewPrevious() {
     if (currentIndex - 1 >= 0) {
         currentIndex--;
-        if (currentIndex < 0) {
-            currentIndex = perPage - 1;
-            currentPage--;
-            currentData = await imgLoader.get(currentPage);
-        }
+        $('#image-view-image').attr('src', currentData.data[currentIndex].cols.link);
+        resetImageView()
+    } else if (currentPage >= 1) {
+        currentIndex = perPage - 1;
+        currentPage--;
+        currentData = await imgLoader.get(currentPage);
+
         $('#image-view-image').attr('src', currentData.data[currentIndex].cols.link);
         resetImageView()
     }

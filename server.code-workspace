@@ -4,13 +4,10 @@
 			"path": "."
 		},
 		{
-			"path": "../cyoa_downloader2"
-		},
-		{
 			"path": "../UPBA/server/tupba"
 		},
 		{
-			"path": "../PPageGen2"
+			"path": "../test_async"
 		}
 	],
 	"settings": {
@@ -20,7 +17,8 @@
 			"**/*.code-workspace": true,
 			"**/*.kdev4": true,
 			"**/static": true,
-			"**/template": true
+			"**/template": true,
+			"**/.vscode": true
 		},
 		"explorer.compactFolders": false
 	}

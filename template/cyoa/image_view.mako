@@ -86,7 +86,19 @@
         % if cyoa['save_status'] > 0:
             <form id="form-page" action="/cyoa/quest/${cyoa['short_name']}/images">
                 <div class="control-group mb-1">
-                    <input class="form-control ml-2" type="text" name="q" value="${form['q']}">
+                    <select class="form-control ml-2" name="exp_qm" id="select-qm">
+                        ${form_option(form, 'exp_qm', 'is_qm=1', 'QM')}
+                        ${form_option(form, 'exp_qm', 'is_qm=0', 'Anons')}
+                        ${form_option(form, 'exp_qm', '', 'QM & Anons')}
+                    </select>
+                    <select class="form-control ml-1" name="exp_alt" id="select-alt">
+                        ${form_option(form, 'exp_alt', 'alt_id=0', 'Safe')}
+                        ${form_option(form, 'exp_alt', 'alt_id=1', 'QM\'s Lewd')}
+                        ${form_option(form, 'exp_alt', 'alt_id>1', 'Links')}
+                        ${form_option(form, 'exp_alt', 'alt_id<=1', 'Safe & QM\'s Lewd')}
+                        ${form_option(form, 'exp_alt', 'alt_id>=1', 'QM\'s Lewd & Links')}
+                        ${form_option(form, 'exp_alt', '', 'All')}
+                    </select>
                     <button class="btn btn-success ml-1" type="submit"><i class="fas fa-filter"></i> Filter</button>
                 </div>
                 <input id="inp-page" type="hidden" name="page" value="1">
@@ -103,15 +115,15 @@
                     % endfor
                 </select>
                 <div id="page-stat" class="pl-2">Showing ${len(img_page.data)} of ${img_page.total_count}</div>
-                <div class="control-group ml-0 ml-md-1">
-                    % if cyoa['save_status'] > 0:
-                        <button id="btn-refresh-all" class="btn btn-danger reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']}, true)"><i class="fas fa-sync"></i> All</button>
-                    % endif
-                    <button id="btn-refresh" class="btn btn-primary reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']})"><i class="fas fa-sync"></i> Refresh thread</button>
-                    % if cyoa['save_status'] > 0:
-                        <button id="btn-refresh-all" class="btn btn-primary reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']}, false, true)"><i class="fas fa-sync"></i> Reparse</button>
-                    % endif
-                </div>
+                ## <div class="control-group ml-0 ml-md-1">
+                ##     % if cyoa['save_status'] > 0:
+                ##         <button id="btn-refresh-all" class="btn btn-danger reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']}, true)"><i class="fas fa-sync"></i> All</button>
+                ##     % endif
+                ##     <button id="btn-refresh" class="btn btn-primary reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']})"><i class="fas fa-sync"></i> Refresh thread</button>
+                ##     % if cyoa['save_status'] > 0:
+                ##         <button id="btn-refresh-all" class="btn btn-primary reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']}, false, true)"><i class="fas fa-sync"></i> Reparse</button>
+                ##     % endif
+                ## </div>
             </div>
             <hr class="my-1">
 
@@ -158,7 +170,7 @@
     </div>
     <div class="image-view-main">
         <div id="image-view-drag" draggable="false" class="img-container">
-            <img id="image-view-image" class="width:100%" draggable="false" src="/static/img/no-image.png" alt="no-image named no-image here">
+            <img id="image-view-image" style="width:100%" draggable="false" src="/static/img/no-image.png" alt="no-image named no-image here">
         </div>
     </div>
 </div>

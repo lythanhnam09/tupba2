@@ -10,9 +10,8 @@ def db_close(conn):
     conn.close()
 
 def make_conn(dbconn):
-    if (isinstance(dbconn, str)): conn = sqlite3.connect(dbconn)
-    else: conn = dbconn
-    return conn
+    if (isinstance(dbconn, str)): return sqlite3.connect(dbconn)
+    else: return dbconn
 
 def close_temp_conn(dbconn, conn):
     if (isinstance(dbconn, str)): conn.close()
