@@ -1,50 +1,50 @@
 var timer = null;
 
 $(function() {
-    $('#filter-select').change(function() {
-        let id = $('#filter-select').val();
-        $.post( "/booru/api/config/filter", {'filter_id':id}).done(function( data ) {
-            console.log('OK');
-            location.reload();
-        }).fail(function() {
-            console.log("Error");
-        });
-    });
+    // $('#filter-select').change(function() {
+    //     let id = $('#filter-select').val();
+    //     $.post( "/booru/api/config/filter", {'filter_id':id}).done(function( data ) {
+    //         console.log('OK');
+    //         location.reload();
+    //     }).fail(function() {
+    //         console.log("Error");
+    //     });
+    // });
 
-    $('#q').keyup(function() {
-        if ($('#tag-suggest').data('folded') == '1') return;
-        if (timer != null) {
-            clearTimeout(timer);
-        }
-        timer = setTimeout(function() {
-            let text = $('#q').val();
-            let name = getSearchTag(text).name;
-            //console.log();
-            $.getJSON(`http://${getBaseUrl()}/booru/api/tag/search?name=${name}`).done(function(data) {
-                console.log(data);
-                let suggestHtml = '';
-                for (let tag of data) {
-                    suggestHtml += `<span class="booru-tag tag-${tag.cols.color}" onclick="fillResult('${tag.cols.name}')">${tag.cols.name}</span> `;
-                }
-                $('#tag-result').html(suggestHtml);
-            }).fail(function() {
-                console.log("Error getting search data");
-            });
-            timer = null;
-        }, 500);
-    });
+    // $('#q').keyup(function() {
+    //     if ($('#tag-suggest').data('folded') == '1') return;
+    //     if (timer != null) {
+    //         clearTimeout(timer);
+    //     }
+    //     timer = setTimeout(function() {
+    //         let text = $('#q').val();
+    //         let name = getSearchTag(text).name;
+    //         //console.log();
+    //         $.getJSON(`http://${getBaseUrl()}/booru/api/tag/search?name=${name}`).done(function(data) {
+    //             console.log(data);
+    //             let suggestHtml = '';
+    //             for (let tag of data) {
+    //                 suggestHtml += `<span class="booru-tag tag-${tag.cols.color}" onclick="fillResult('${tag.cols.name}')">${tag.cols.name}</span> `;
+    //             }
+    //             $('#tag-result').html(suggestHtml);
+    //         }).fail(function() {
+    //             console.log("Error getting search data");
+    //         });
+    //         timer = null;
+    //     }, 500);
+    // });
 
-    $('.mdropdown').click(function() {
-        let id = $(this).data('id');
-        let show = $(this).data('show');
-        if (show == 0) {
-            $(this).data('show', 1);
-            $(`#dropdown-${id}`).slideDown();
-        } else {
-            $(this).data('show', 0);
-            $(`#dropdown-${id}`).slideUp();
-        }
-    });
+    // $('.mdropdown').click(function() {
+    //     let id = $(this).data('id');
+    //     let show = $(this).data('show');
+    //     if (show == 0) {
+    //         $(this).data('show', 1);
+    //         $(`#dropdown-${id}`).slideDown();
+    //     } else {
+    //         $(this).data('show', 0);
+    //         $(`#dropdown-${id}`).slideUp();
+    //     }
+    // });
 });
 
 function getSearchTag(text) {
@@ -183,4 +183,41 @@ function deleteImage(id, reload = true) {
     }).fail((e) => {
         console.log('Error');
     });
+}
+
+function showPageDialog(page, pagecount, formid='form-filter') {
+    $('#btn-goto-page').prop('disabled', true);
+    let dialog = new Dialog(
+        '<h3>Goto page</h3>', 
+        `<label>Page (max ${pagecount}): </label><input class="form-control" type="number" id="inp-goto-page" max="${pagecount}" min="1" value="${page}">`,
+        [
+            {
+                html: '<button id="btn-dialog-ok" class="btn btn-primary">OK</button>',
+                selector: '#btn-dialog-ok',
+                onclick: function(dialog, button) {
+                    $('#btn-goto-page').prop('disabled', false);
+                    $('input[name=page]').val($('#inp-goto-page').val());
+                    $(`#${formid}`).submit();
+                }
+            },
+            {
+                html: '<button id="btn-dialog-cancel" class="btn btn-secondary">Cancel</button>',
+                selector: '#btn-dialog-cancel',
+                onclick: function(dialog, button) {
+                    $('#btn-goto-page').prop('disabled', false);
+                }
+            }
+        ]);
+    dialog.show();
+}
+
+function changePerpage(formid = 'form-filter', id='select-perpage') {
+    $('input[name=perpage]').val($(`#${id}`).val());
+    $('input[name=page]').val('1');
+    $(`#${formid}`).submit();
+}
+
+function gotoPage(num, formid = 'form-filter') {
+    $('input[name=page]').val(num);
+    $(`#${formid}`).submit();
 }

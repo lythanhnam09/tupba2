@@ -31,3 +31,15 @@ class SimplePageNav:
     def html(self):
         child = [x.html() for x in self.button]
         return WebElement('div', {'class': f'control-group-round {self.extra_cls}'}, child)
+
+# class WindowPageNav:
+#     def __init__(self, page_data, form_id, color='primary', extra_cls=''):
+#         self.page_data = page_data
+#         self.color = color
+#         self.extra_cls = extra_cls
+#         self.form_id = form_id
+#         self.button = []
+
+#     def html(self):
+#         child = [x.html() for x in self.button]
+#         return WebElement('div', {'class': f'control-group-round {self.extra_cls}'}, child)

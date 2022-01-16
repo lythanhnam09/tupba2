@@ -26,22 +26,26 @@ def from_json_str(txt):
     return js
 
 def read_text_file_line(dir):
-    f = open(dir)
-    txt = f.readlines()
-    f.close()
+    with open(dir) as f:
+        txt = f.readlines()
     return txt
 
 def read_text_file(dir):
-    f = open(dir)
-    txt = f.read()
-    f.close()
+    with open(dir) as f:
+        txt = f.read()
     return txt
 
 def write_text_file(dir, txt):
-    f = open(dir, 'wt')
-    txt = f.write(txt)
-    f.close()
-    return txt
+    with open(dir, 'wt') as f:
+        f.write(txt)
+
+def write_json(dir:str, js):
+    txt = to_json_str(js)
+    write_text_file(dir, txt)
+
+def read_json(dir:str):
+    txt = read_text_file(dir)
+    return from_json_str(txt)
 
 def check_file_exists(path):
     return Path(path).exists()
@@ -72,53 +76,11 @@ def download_file(link, path):
     with open(path, 'wb') as f:
         f.write(res)
 
-class PageButton:
-    def __init__(self, text='0', link='', disabled=False, num=0):
-        self.text = text
-        self.num = num
-        self.disabled = disabled
-        self.link = link
+def get_file_size_str(path):
+    sz = Path(path).stat().st_size
+    return get_size_str(sz)
 
-def get_page_link(page, page_count, template):
-    ls = []
-    scroll = 5
-    if (page_count < 10):
-        start = 1
-        end = page_count
-    else:
-        start = page - 5
-        end = page + 5
-        if (start < 1):
-            end -= start - 1
-            start = 1
-        if (end > page_count):
-            start -= page_count - end
-            if (start < 1): start = 1
-            end = page_count
-    #print(f'start={start} end={end}')
-    if (page <= 1):
-        ls.append(PageButton('<<', '', True))
-        ls.append(PageButton('<', '', True))
-    else:
-        ls.append(PageButton('<<', template.format(1), num=1))
-        ls.append(PageButton('<', template.format(page - 1), num=page-1))
-
-    for p in range(start, end+1):
-        if (p == page):
-            ls.append(PageButton(f'{p}', template.format(p), True))
-        else:
-            ls.append(PageButton(f'{p}', template.format(p), num=p))
-
-    if (page >= page_count):
-        ls.append(PageButton('>', '', True))
-        ls.append(PageButton('>>', '', True))
-    else:
-        ls.append(PageButton('>', template.format(page + 1), num=page+1))
-        ls.append(PageButton('>>', template.format(page_count), num=page_count))
-
-    return ls
-
-def get_file_size_str(num, round = 2, threshold = 1024):
+def get_size_str(num, round = 2, threshold = 1024):
     lsu = ['B', 'KB', 'MB', 'GB', 'TB']
     ui = 0
     while (num >= threshold) and (ui < len(lsu)):
@@ -167,3 +129,18 @@ class Queue(list):
         if (len(self) <= 0):
             raise Exception('Queue is emty')
         return self.pop(0)
+
+class JsonConfig:
+    def __init__(self, path):
+        self.path = path
+        self.data = {}
+
+    def save(self):
+        write_json(self.path, self.data)
+    
+    def load(self):
+        if (check_file_exists(self.path)):
+            self.data = read_json(self.path)
+        else:
+            write_json(self.path, self.data)
+        return self

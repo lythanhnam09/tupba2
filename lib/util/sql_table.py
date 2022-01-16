@@ -279,12 +279,6 @@ class SQLTable:
             cnt += 1
 
     @classmethod
-    def get_raw(cls, sql:str, param:tuple = tuple(), conn = None):
-        result = db_util.db_get_all(conn or cls._dbfile, sql, param)
-        ls = [cls(row=o) for o in result]
-        return ls
-
-    @classmethod
     def get_props_name(cls, no_id = False, id_last = False, blacklist:list = None) -> list:
         lsprop = list(cls._props.keys())
         if (blacklist != None):
@@ -325,6 +319,12 @@ class SQLTable:
         return tuple([self.cols[n] for n in col])
 
     @classmethod
+    def get_raw(cls, sql:str, param:tuple = tuple(), conn = None):
+        result = db_util.db_get_all(conn or cls._dbfile, sql, param)
+        ls = [cls(row=o) for o in result]
+        return ls
+
+    @classmethod
     def find_id(cls, id, conn = None):
         id_val = id
         if (len(cls._primary) == 1 and type(id_val) != tuple):
@@ -336,6 +336,19 @@ class SQLTable:
         return None
 
     @classmethod
+    def find_or_insert(cls, o, where = None, order_by = None, offset = None, conn = None):
+        conn = db_util.make_conn(conn)
+        sql = sql_command.select(cls._table_name, where=where, order_by=order_by, limit=1, offset=offset)
+        result = db_util.db_get_single_row(conn, sql)
+        if (result == None):
+            sql = sql_command.insert(cls._table_name, cls.get_props_name(no_id=cls._auto_primary))
+            id = db_util.db_exec(conn, sql, o.to_tuple(no_id=cls._auto_primary))
+            o.cols[cls._primary[0]] = id
+            return o
+        o = cls(row=result)
+        return o
+
+    @classmethod
     def select(cls, where = None, order_by = None, limit = None, offset = None, conn = None):
         sqlresult = db_util.db_get_all(conn or cls._dbfile, sql_command.select(cls._table_name, where=where, order_by=order_by, limit=limit, offset=offset))
 
@@ -344,8 +357,8 @@ class SQLTable:
         return result
 
     @classmethod
-    def select_one(cls, where = None, order_by = None, limit = None, offset = None, conn = None):
-        sqlresult = db_util.db_get_all(conn or cls._dbfile, sql_command.select(cls._table_name, where=where, order_by=order_by, limit=limit, offset=offset))
+    def select_one(cls, where = None, order_by = None, offset = None, conn = None):
+        sqlresult = db_util.db_get_all(conn or cls._dbfile, sql_command.select(cls._table_name, where=where, order_by=order_by, limit=1, offset=offset))
 
         return None if len(sqlresult) == 0 else cls(row=sqlresult[0])
 

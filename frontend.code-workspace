@@ -7,10 +7,10 @@
 			"path": "../UPBA/server/tupba/static"
 		},
 		{
-			"path": "../PPageGen2/template"
+			"path": "../../Javascript/NodeJs/tupbajs/views/test"
 		},
 		{
-			"path": "../../Javascript/NodeJs/tupbajs/views/test"
+			"path": "../UPBA/server/tupba/templates"
 		}
 	],
 	"settings": {

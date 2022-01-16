@@ -204,6 +204,80 @@ class DQueue:
             count = len(self.data) - limit
             self.data = self.data[count:]
 
+class Preloader:
+    def __init__(self, range:int = 1, cache:int = 4):
+        self.meta = {}
+        self.cache = cache
+        self.range = range
+        self.enum = 0
+        self.data = util.Queue()
+
+    # need override
+    def is_loaded(self, page, enum) -> bool:
+        return False
+    
+    def check_page_loaded(self, enum):
+        for page in self.data:
+            if (self.is_loaded(page, enum)): return page
+        return None
+
+    def do_limit(self):
+        if (len(self.data) > self.cache):
+            count = len(self.data) - self.cache
+            self.data = util.Queue(self.data[count:])
+
+    # optional override
+    def on_receive_data(self, data):
+        self.data.put(data)
+        self.do_limit()
+
+    async def do_request(self, enum):
+        # print(f'request {enum}')
+        pg = self.check_page_loaded(enum)
+        if (pg == None):
+            data = await self.run_request(enum)
+            self.on_receive_data(data)
+            # print(f'add request {enum}')
+            return data
+        # print(f'request {enum} cached')
+        return pg
+
+    # optional override (default to check all meta keys)
+    def is_meta_diff(self, mt):
+        return self.meta != mt
+
+    # need override
+    async def do_next(self, enum, i):
+        pass
+    
+    # need override
+    async def do_previous(self, enum, i):
+        pass
+    
+    # need override
+    def has_next(self, enum, i):
+        return False
+
+    # need override
+    def has_previous(self, enum, i):
+        return False
+
+    # need override (the main funtion to run)
+    async def run_request(self, enum):
+        return None
+
+    # (optionally) need to be called from your real get function (or you just call this with the right meta data)
+    async def do_get(self, enum, meta):
+        if (self.is_meta_diff(meta)):
+            self.meta = meta
+            self.data.clear()
+        result = await self.do_request(enum)
+        for i in range(1, self.range + 1):
+            # print('has range')
+            if (self.has_next(enum, i)): asyncio.create_task(self.do_next(enum, i))
+            if (self.has_previous(enum, i)): asyncio.create_task(self.do_previous(enum, i))
+        return result
+
 class PagePreLoader:
     def __init__(self, range:int = 1, cache:int = 4):
         self.per_page = 0
@@ -237,7 +311,7 @@ class PagePreLoader:
         self.per_page = per_page
         result = await self.do_request(page, self.per_page)
         for i in range(1,self.range + 1):
-            if (self.page + 1 <= self.page_count): self.do_request(self.page + 1, self.per_page)
-            if (self.page - 1 >= 1): self.do_request(self.page - 1, self.per_page)
+            if (self.page + i <= self.page_count): self.do_request(self.page + i, self.per_page)
+            if (self.page - i >= 1): self.do_request(self.page - i, self.per_page)
         return result
 

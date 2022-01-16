@@ -1,9 +1,11 @@
 from flask import *
 import os
+import sqlite3
 import lib.route.socket as socket
 import lib.util.db_util as db_util
 from lib.util.util import *
 from lib.route.cyoa import cyoa
+from lib.route.booru import booru
 from lib.model.web.navbar import NavOption, NavButton
 from lib.route.socket import app, socketio
 
@@ -12,6 +14,7 @@ from lib.route.socket import app, socketio
 #app.register_blueprint(rewatch)
 #app.register_blueprint(booru)
 app.register_blueprint(cyoa, url_prefix='/cyoa')
+app.register_blueprint(booru, url_prefix='/booru')
 
 #@app.errorhandler(404)
 #def page_not_found(e):
@@ -55,7 +58,23 @@ def init():
     print('Static path:', app.static_url_path)
     if (not check_file_exists('data/cyoa.db')):
         print('Creating cyoa.db')
-        db_util.db_exec_script('data/cyoa.db', 'data/script/cyoa.sql')
+        try:
+            db_util.db_exec_script('data/cyoa.db', 'data/script/cyoa.sql')
+        except sqlite3.OperationalError as e:
+            print(e)
+            os.system('rm -f data/cyoa.db')
+            raise Exception('Can not create database cyoa.db')
+    if (not check_file_exists('data/booru.db')):
+        print('Creating booru.db')
+        try:
+            db_util.db_exec_script('data/booru.db', 'data/script/booru.sql')
+        except sqlite3.OperationalError as e:
+            print(e)
+            os.system('rm -f data/booru.db')
+            raise Exception('Can not create database booru.db')
+    print('Current database file size:')
+    print(f' - cyoa.db: {get_file_size_str("data/cyoa.db")}')
+    print(f' - booru.db: {get_file_size_str("data/booru.db")}')
 
 if __name__ == '__main__':
     init()

@@ -39,9 +39,3 @@ $dev-size: (
     "lg": $size-large, 
     "xlg": $size-xlarge
 );
-
-:root {
-    @each $name, $color in $colors {
-        --#{$name}: #{$color};
-    }
-}

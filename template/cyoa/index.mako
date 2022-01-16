@@ -1,6 +1,6 @@
 <%inherit file="../base.mako"/>
 <%block name="title">
-    CYOA Browser - Index
+    CYOA Browser - Main page
 </%block>
 <%block name="extracss">
     <link rel="stylesheet" href="/static/css/cyoa.css">

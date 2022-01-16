@@ -56,6 +56,12 @@ $dev-size: (
     "xlg": $size-xlarge
 );
 
+:root {
+    @each $name, $color in $colors {
+        --#{$name}: #{$color};
+    }
+}
+
 @function highlight-overlay($color) {
     @if (lightness($color) < $lightness-threshold) {
         @return fade-out(white, 0.8);
@@ -166,6 +172,12 @@ body {
     flex-grow: 1;
 }
 
+@for $i from 1 through 5 {
+    .gap-#{$i} {
+        gap: $i * 0.5rem;
+    }
+}
+
 .col {
     display: flex;
     flex-flow: column wrap ;
@@ -174,7 +186,7 @@ body {
 @for $i from 1 through 12 {
     .col-#{$i} {
         flex-basis: $i/12*100%;
-}
+    }
 
     @each $name, $size in $dev-size {
         @media (min-width: $size) {
@@ -498,6 +510,7 @@ body {
 }//btn-hover-color($color)
 
 // Form input stuff
+
 .form-control {
     border: 2px $secondary solid;
     padding: 0.4rem 0.5rem;
@@ -522,6 +535,11 @@ body {
         outline: transparentize($primary, 0.5) solid 0.2rem;
         z-index: 2;
     }
+
+    &.dark {
+        background-color: #444 !important;
+        color: white !important;
+    }
 }
 
 select.form-control {
@@ -537,6 +555,7 @@ input[type=file].form-control {
     color: black !important;
     background-color: white !important;
 }
+
 
 // Container
 .container {

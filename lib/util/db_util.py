@@ -39,6 +39,7 @@ def db_exec(dbfile, sql, param:tuple = (), constraint = False):
     cur.execute(sql, param)
     conn.commit()
     close_temp_conn(dbfile, conn)
+    return cur.lastrowid
 
 def db_exec_multi(dbfile, sql, param:list = None, constraint = False):
     logging.info(f'{dbfile}: {sql}')
