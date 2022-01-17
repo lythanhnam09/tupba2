@@ -10,6 +10,7 @@ class BooruFeed(SQLTable):
         'show_count': 0,
         'spoiler_count': 0,
         'hide_count': 0,
+        'spoiler_list': '',
         'filter_text': ''
     }
     _primary = ['id']

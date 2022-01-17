@@ -41,6 +41,8 @@ create table image (
 	height integer,
 	link_view text,
 	link_source text,
+	duration text,
+	delete_reason text,
 	created_at text,
 	updated_at text
 );
@@ -49,6 +51,7 @@ create table image_size (
 	image_id integer,
 	link text,
 	name text,
+	size_index integer,
 	primary key (image_id, link),
 	foreign key (image_id) references image(id) on delete cascade
 );
@@ -75,6 +78,7 @@ create table booru_filter (
 	show_count integer,
 	spoiler_count integer,
 	hide_count integer,
+	spoiler_list text,
 	filter_text text,
 	sort_index integer
 );
@@ -86,6 +90,7 @@ create table feed (
 	show_count integer,
 	spoiler_count integer,
 	hide_count integer,
+	spoiler_list text,
 	filter_text text
 );
 

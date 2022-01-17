@@ -6,6 +6,7 @@ import lib.util.util as util
 import logging
 import lib.provider.anonpone as anonpone
 import lib.model.cyoa.cyoa as cyoa
+import lib.model.booru.tag as btag
 
 
 log = logging.getLogger('werkzeug')
@@ -90,3 +91,8 @@ def get_image_page(data):
     # page = await anonpone.img_loader.get(cy, data['q'], data['page'], data['perpage'])
     page = anonpone.get_cyoa_image(cy, data['q'], data['page'], data['perpage'])
     return util.to_json_str(page)
+
+@socketio.on('search_tag')
+def search_tag(data):
+    ls_tag = btag.BooruTag.select(where=[['name', 'like', f'%{data["name"]}%']], order_by=['name', 'asc'], limit=20)
+    return util.to_json_str(ls_tag)

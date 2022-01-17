@@ -21,8 +21,15 @@
         <hr class="my-1">
         <div class="px-1">
             <h2 class="">Search</h2>
+            <div class="card my-1">
+                <div class="card-content p-1 bg-dark">
+                    <div class="control-group gap-1" id="tag-suggestion">
+                        Tag suggestion...
+                    </div>
+                </div>
+            </div>
             <form id="form-filter" action="/booru/search" method="get">
-                <input name="q" type="text" class="form-control dark w-100 mb-1" placeholder="Enter search tags" value="${form['q']}">
+                <input id="q" name="q" type="text" class="form-control dark w-100 mb-1" placeholder="Enter search tags" value="${form['q']}">
                 <div class="control-group gap-1">
                     <button class="btn btn-pink"><i class="fas fa-search"></i> Search</button>
                     <select class="form-control dark" name="sf">
@@ -75,6 +82,11 @@
                             <span class="d-iblock fg-light fg-l25-darkblue">${img['comment_count']} <i class="fas fa-comment"></i></span>
                         </div>
                         <a href="/booru/view/${img['id']}?${form.get_form_query()}">
+                            % if img['extension'] == 'webm':
+                                <div class="webm-bar">
+                                    <i class="fas fa-play mr-1"></i> WebM
+                                </div>
+                            % endif
                             <div class="img-container image-square">
                                 <img class="w-100" src="${img.get_image('thumb')['link']}" alt="">
                             </div>

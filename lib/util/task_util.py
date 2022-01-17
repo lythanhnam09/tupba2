@@ -267,15 +267,16 @@ class Preloader:
         return None
 
     # (optionally) need to be called from your real get function (or you just call this with the right meta data)
-    async def do_get(self, enum, meta):
+    async def do_get(self, enum, meta, preload_other = True):
         if (self.is_meta_diff(meta)):
             self.meta = meta
             self.data.clear()
         result = await self.do_request(enum)
-        for i in range(1, self.range + 1):
-            # print('has range')
-            if (self.has_next(enum, i)): asyncio.create_task(self.do_next(enum, i))
-            if (self.has_previous(enum, i)): asyncio.create_task(self.do_previous(enum, i))
+        if (preload_other):
+            for i in range(1, self.range + 1):
+                # print('has range')
+                if (self.has_next(enum, i)): asyncio.create_task(self.do_next(enum, i))
+                if (self.has_previous(enum, i)): asyncio.create_task(self.do_previous(enum, i))
         return result
 
 class PagePreLoader:

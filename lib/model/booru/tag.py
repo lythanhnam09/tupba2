@@ -1,4 +1,5 @@
 from lib.util.sql_table import *
+import lib.util.sql_command as sql_command 
 
 class BooruTag(SQLTable):
     _dbfile = 'data/booru.db'
@@ -26,7 +27,7 @@ class BooruTag(SQLTable):
         if (name in ['explicit', 'safe', 'questionable', 'suggestive']):
             rdict['color'] = 'tag-type'
             rdict['sort_index'] = 10
-        if (name.find(':') != -1):
+        if (name.find(':') != -1 and len([s.strip() for s in name.split(':') if s != '']) > 1):
             rdict['color'] = 'tag-category'
             rdict['sort_index'] = 50
         if (name.startswith('artist:')):
@@ -34,10 +35,10 @@ class BooruTag(SQLTable):
             rdict['sort_index'] = 30
         if (name.startswith('comic:')):
             rdict['color'] = 'tag-comic'
-            rdict['sort_index'] = 40
+            rdict['sort_index'] = 45
         if (name.startswith('art pack:')):
             rdict['color'] = 'tag-artpack'
-            rdict['sort_index'] = 45
+            rdict['sort_index'] = 40
         if (name.startswith('oc:')):
             rdict['color'] = 'tag-oc'
             rdict['sort_index'] = 47

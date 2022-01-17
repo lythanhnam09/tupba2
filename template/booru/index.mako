@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/static/css/booru.css">
 </%block>
 <%block name="extrajs">
-    ## <script src="/static/js/cyoa/cyoa.js"></script>
+    <script src="/static/js/booru.js"></script>
 </%block>
 
 <%def name="form_option(form, name, value, text)">

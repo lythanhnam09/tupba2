@@ -23,6 +23,8 @@ class BooruImage(SQLTable):
         'height': 0,
         'link_view': '',
         'link_source': '',
+        'duration': 0,
+        'delete_reason': '',
         'created_at': '',
         'updated_at': ''
     }
@@ -55,6 +57,8 @@ class BooruImage(SQLTable):
             'height': js['height'],
             'link_view': js['view_url'],
             'link_source': js['source_url'],
+            'duration': js['duration'],
+            'delete_reason': js['deletion_reason'],
             'created_at': js['created_at'],
             'updated_at': js['updated_at']
         }
@@ -64,6 +68,18 @@ class BooruImage(SQLTable):
 
     def get_image(self, size_name):
         ls = self['sizes']
+        ls_name = {
+            'full': 'Full',
+            'tall': 'Tall',
+            'large': 'Large',
+            'medium': 'Medium',
+            'small': 'Small',
+            'thumb': 'Thumbnail',
+            'thumb_small': 'Small Thumbnail',
+            'thumb_tiny': 'Tiny Thumbnail',
+        }
+        if (size_name in ls_name):
+            size_name = ls_name[size_name]
         for sz in ls:
             if (sz.cols['name'] == size_name):
                 return sz
@@ -75,7 +91,8 @@ class BooruImageSize(SQLTable):
     _props = {
         'image_id': 0,
         'link': '',
-        'name': ''
+        'name': '',
+        'size_index': 0
     }
     _primary = ['image_id', 'link']
     _auto_primary = False
@@ -83,13 +100,35 @@ class BooruImageSize(SQLTable):
 
     @classmethod
     def from_key_pair(cls, name, link, id, ext = ''):
+        ls_size_index = {
+            'full': 8,
+            'tall': 7,
+            'large': 6,
+            'medium': 5,
+            'small': 4,
+            'thumb': 3,
+            'thumb_small': 2,
+            'thumb_tiny': 1,
+        }
+        ls_name = {
+            'full': 'Full',
+            'tall': 'Tall',
+            'large': 'Large',
+            'medium': 'Medium',
+            'small': 'Small',
+            'thumb': 'Thumbnail',
+            'thumb_small': 'Small Thumbnail',
+            'thumb_tiny': 'Tiny Thumbnail',
+        }
         rdict = {
             'image_id': id,
             'link': link,
-            'name': name
+            'name': ls_name[name] if (name in ls_name) else name,
+            'size_index': ls_size_index[name] if (name in ls_size_index) else 0
         }
         if (ext == 'webm' and (name.find('thumb') != -1)):
             rdict['link'] = rdict['link'].replace('.webm', '.gif')
+        
         o = cls(data=rdict)
         return o
 

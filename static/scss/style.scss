@@ -926,6 +926,10 @@ img {
     flex-wrap: wrap;
     align-items: stretch;
 
+    &.inline {
+        display: inline-flex;
+    }
+
     &-round {
         display: flex;
         flex-direction: row;

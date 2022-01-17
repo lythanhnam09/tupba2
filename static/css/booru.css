@@ -1,5 +1,9 @@
+a {
+  color: #2b83e7;
+}
+
 .nav-booru {
-  background: linear-gradient(48deg, #e12eae, #c718d6);
+  background: linear-gradient(48deg, #e12eae, #a618d6);
   color: white !important;
 }
 @media (max-width: 720px) {
@@ -85,4 +89,84 @@
   .grow-xsm {
     flex-grow: 1;
   }
+}
+
+.booru-tag {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  color: white;
+  border: 2px gray solid;
+  background-color: #242424;
+  font-weight: bold;
+  text-decoration: none;
+}
+.booru-tag:hover {
+  text-decoration: underline;
+}
+.booru-tag.tag-type {
+  border: 2px #30b656 solid;
+  background-color: #2e8711;
+}
+.booru-tag.tag-artist {
+  border: 2px #307cb6 solid;
+  background-color: #0e2570;
+}
+.booru-tag.tag-artpack {
+  border: 2px #7a30b6 solid;
+  background-color: #541076;
+}
+.booru-tag.tag-comic {
+  border: 2px #b230b6 solid;
+  background-color: #761068;
+}
+.booru-tag.tag-oc {
+  border: 2px #b6307e solid;
+  background-color: #871134;
+}
+.booru-tag.tag-category {
+  border: 2px #a9a8a8 solid;
+  background-color: #4f4e4e;
+}
+
+.img-display {
+  max-width: 100%;
+}
+
+.markup .quote {
+  color: #1cbf1c;
+}
+.markup .quote .spoiler:hover, .markup .quote .spoiler:focus {
+  color: #209d20;
+}
+.markup .spoiler {
+  background-color: black;
+  color: black;
+}
+.markup .spoiler a {
+  background-color: #176ac8;
+  color: #176ac8;
+}
+.markup .spoiler a:hover, .markup .spoiler a:focus {
+  color: white;
+}
+.markup .spoiler:hover, .markup .spoiler:focus {
+  color: white;
+}
+
+.galery-image > a {
+  position: relative;
+  display: block;
+}
+.galery-image > a > .webm-bar {
+  position: absolute;
+  z-index: 15;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 0.25rem;
 }/*# sourceMappingURL=booru.css.map */

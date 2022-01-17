@@ -40,7 +40,11 @@ $dev-size: (
     "xlg": $size-xlarge
 );
 
-$color-booru: linear-gradient(48deg, #e12eae, #c718d6);
+$color-booru: linear-gradient(48deg, #e12eae, #a618d6);
+
+a {
+    color: $primary;
+}
 
 .nav-booru {
     background: $color-booru;
@@ -127,5 +131,104 @@ $color-booru: linear-gradient(48deg, #e12eae, #c718d6);
 .grow-xsm {
     @media (max-width: $size-portrait) {
         flex-grow: 1;
+    }
+}
+
+.booru-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    color: white;
+    border: 2px gray solid;
+    background-color: rgb(36, 36, 36);
+    font-weight: bold;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &.tag-type {
+        border: 2px rgb(48, 182, 86) solid;
+        background-color: rgb(46, 135, 17);
+    }
+
+    &.tag-artist {
+        border: 2px rgb(48, 124, 182) solid;
+        background-color: rgb(14, 37, 112);
+    }
+
+    &.tag-artpack {
+        border: 2px rgb(122, 48, 182) solid;
+        background-color: rgb(84, 16, 118);
+    }
+
+    &.tag-comic {
+        border: 2px rgb(178, 48, 182) solid;
+        background-color: rgb(118, 16, 104);
+    }
+
+    &.tag-oc {
+        border: 2px rgb(182, 48, 126) solid;
+        background-color: rgb(135, 17, 52);
+    }
+
+    &.tag-category {
+        border: 2px rgb(169, 168, 168) solid;
+        background-color: rgb(79, 78, 78);
+    }
+}
+
+.img-display {
+    max-width: 100%;
+}
+
+.markup {
+    .quote {
+        color: #1cbf1c;
+
+        .spoiler {
+            &:hover, &:focus {
+                color: rgb(32, 157, 32);
+            }
+        }
+    }
+
+    .spoiler {
+        background-color: black;
+        color: black;
+
+        a {
+            background-color: darken($primary, 10%);
+            color: darken($primary, 10%);
+
+            &:hover, &:focus {
+                color: white;
+            }
+        }
+
+        &:hover, &:focus {
+            color: white;
+        }
+    }
+}
+
+.galery-image {
+    > a {
+        position: relative;
+        display: block;
+
+        > .webm-bar {
+            position: absolute;
+            z-index: 15;
+            left: 0px;
+            right: 0px;
+            top: 0px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 0.25rem;
+        }
     }
 }
