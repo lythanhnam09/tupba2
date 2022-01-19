@@ -7,7 +7,6 @@
 </%block>
 <%block name="extrajs">
     <script src="/static/js/booru/booru.js"></script>
-    ## <script>changeImageSize(5);</script>
 </%block>
 
 <%def name="form_option(form, name, value, text)">
@@ -68,7 +67,7 @@
             <div class="control-group-round">
                 % for sz in img['sizes']:
                     <% if sz['name'].find('Thumb') != -1: continue %>
-                    % if sz['name'] == prefer_size['name']:
+                    % if sz['name'].lower() == prefer_size['name'].lower():
                         <button id="btn-size-${sz['size_index']}" class="btn btn-primary btn-size" data-mode="0" onclick="changeImageSize(${sz['size_index']}, '${sz['link']}', '${sz.get_extension()}')" disabled>${sz['name']}</button>
                     % else:
                         <button id="btn-size-${sz['size_index']}" class="btn btn-primary btn-size" data-mode="0" onclick="changeImageSize(${sz['size_index']}, '${sz['link']}', '${sz.get_extension()}')">${sz['name']}</button>
@@ -86,8 +85,8 @@
         <div id="img-display-container" class="px-1" data-ext="${prefer_size.get_extension()}">
             % if img['extension'] in ['webm', 'mp4']:
                 <video class="img-display" id="video-display" controls autoplay loop muted>
-                    <source src="${prefer_size.get_mp4_link()}" type="video/mp4">
-                    <source id="img-display" src="${prefer_size['link']}" type="${img['mime_type']}">
+                    <source id="img-display" src="${prefer_size.get_mp4_link()}" type="video/mp4">
+                    <source src="${prefer_size['link']}" type="${img['mime_type']}">
                     HTML Video tag not supported (PLEASE UPGRADE YOUR SHITTY BROWSER !!!)
                 </video>
             % else:
