@@ -62,11 +62,11 @@ $dev-size: (
     }
 }
 
-@function highlight-overlay($color) {
+@function highlight-overlay($color, $amount: 0.8) {
     @if (lightness($color) < $lightness-threshold) {
-        @return fade-out(white, 0.8);
+        @return fade-out(white, $amount);
     } @else {
-        @return fade-out(black, 0.8);
+        @return fade-out(black, $amount);
     }
 }
 
@@ -141,31 +141,31 @@ body {
 }
 
 .vflex-center {
-    align-items: center;
+    align-items: center !important;
 }
 
 .vflex-stretch {
-    align-items: stretch;
+    align-items: stretch !important;
 }
 
 .vflex-self-center {
-    align-self: center;
+    align-self: center !important;
 }
 
 .vflex-self-stretch {
-    align-self: stretch;
+    align-self: stretch !important;
 }
 
 .flex-center {
-    justify-content: center;
+    justify-content: center !important;
 }
 
 .flex-left {
-    justify-content: start;
+    justify-content: start !important;
 }
 
 .flex-right {
-    justify-content: end;
+    justify-content: end !important;
 }
 
 .flex-grow {
@@ -363,7 +363,8 @@ body {
 @for $i from 1 through 10 {
     .w-#{$i * 10} {
         width: $i * 10% !important;
-}}
+    }
+}
 .w-25 {
     width: 25% !important;
 }
@@ -468,6 +469,33 @@ body {
         cursor: pointer;
         border: 2px $secondary solid;
         border-radius: $btn-round;
+    }
+
+    &-transparent {
+        display: inline-block;
+        padding: 0.25rem;
+        background: none;
+        color: $secondary;
+        cursor: pointer;
+        border: none;
+        border-radius: $btn-round;
+
+        &:disabled {
+            color: darken($secondary, 20%);
+            cursor: default;
+        }
+
+        &:hover:not(:disabled) {
+            background-color: highlight-overlay($secondary);
+        }
+
+        @each $name, $color in $colors {
+            &-#{$name}:not(:disabled):not(.btn-disabled) {
+                &:hover:not(:disabled):not(.btn-disabled), &:focus:not(:disabled):not(.btn-disabled), &:focus-visible:not(:disabled):not(.btn-disabled) {
+                    background-color: highlight-overlay($color);
+                }
+            }
+        }
     }
 
     &:hover:not(:disabled) {
@@ -1044,7 +1072,6 @@ img {
         //margin: 0.25rem;
         box-shadow: 0 0 2rem opacify($shadow, 0.4);
         background-color: white;
-        color: black;
         border-radius: $card-round;
         overflow: hidden;
         margin: 0.5rem;
@@ -1052,6 +1079,7 @@ img {
         min-width: 50%;
 
         > .content {
+            // color: inherit;
             padding: 0.5rem 0;
         }
             

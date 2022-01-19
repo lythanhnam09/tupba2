@@ -14,11 +14,12 @@ from lib.util.util import serve_template,StopTimer
 import asyncio
 import lib.provider.derpibooru as derpibooru
 
+
 booru = Blueprint('booru', __name__, template_folder='template', root_path='.')
 CORS(booru, support_credentials=True)
 
 def booru_nav(backlink='/'):
-    right_btn = [NavButton('Filters', 'fas fa-filter'), NavButton('Feeds', 'fas fa-rss'), NavButton('Albums', 'fas fa-images'), NavButton('History', 'fas fa-history')]
+    right_btn = [NavButton('Filters', 'fas fa-filter', href='/booru/filters'), NavButton('Feeds', 'fas fa-rss'), NavButton('Albums', 'fas fa-images', href='booru/albums'), NavButton('History', 'fas fa-history', href='booru/history')]
 
     left_btn = [NavButton('Back', 'fas fa-arrow-left', href=backlink), NavButton('Previous', 'fas fa-chevron-left', on_click='history.back()'), NavButton('Next', 'fas fa-chevron-right', on_click='history.forward()')]
     nav_item = NavOption('Booru Browser', title_link='/booru', theme='nav-booru', left_buttons=left_btn, right_buttons=right_btn)
@@ -27,7 +28,8 @@ def booru_nav(backlink='/'):
 
 @booru.route('/')
 def root():
-    return serve_template('booru/index.mako', nav=booru_nav())
+    ls_img = derpibooru.get_main_page_indexed(5)
+    return serve_template('booru/index.mako', nav=booru_nav(), ls_img=ls_img)
 
 @booru.route('/search')
 async def search():
@@ -77,3 +79,8 @@ async def view(id):
             abort(404)
 
     return serve_template('booru/view.mako', nav=booru_nav(back_link), form=form, img=img, next_link=next_link, prev_link=prev_link)
+
+@booru.route('/filters')
+def filter_list():
+    ls_filter = derpibooru.get_filter_list()
+    return serve_template('booru/filter.mako', nav=booru_nav('/booru'), ls_filter=ls_filter)

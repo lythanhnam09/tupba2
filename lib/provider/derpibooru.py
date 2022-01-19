@@ -1,8 +1,11 @@
 import lib.util.util as util
 import lib.util.task_util as task_util
 import lib.util.booru_util as booru_util
-from lib.model.booru.image import BooruImage, BooruImageSize
-from lib.model.booru.tag import BooruTag, BooruImageTag
+from lib.model.booru.image import *
+from lib.model.booru.tag import *
+from lib.model.booru.filter import *
+from lib.model.booru.album import *
+from lib.model.booru.feed import *
 from lib.model.booru.config import booru_config
 from lib.util.sql_table import ResultPage
 import asyncio
@@ -58,7 +61,9 @@ class BooruSearchPreloader(task_util.Preloader):
     async def run_request(self, enum):
         qp = booru_util.QueryProcessor()
         qp.set_query(self.meta['q'])
-        qp.add_filter('explicit, -anthro, -eqg, -equestria girls, -human, -humanized, -scat, -fart, -vore, -diaper,  -artist:pony_dreaming, -artist:wildviolet-m')
+        for f in booru_config.filters:
+            qp.add_filter(f['filter_text'])
+        # qp.add_filter('explicit, -anthro, -eqg, -equestria girls, -human, -humanized, -scat, -fart, -vore, -diaper,  -artist:pony_dreaming, -artist:wildviolet-m')
         link = f'https://derpibooru.org/api/v1/json/search/images?q={qp.export_query()}&filter_id={booru_config.data["booru_filter_id"]}&page={enum}&per_page={self.meta["perpage"]}&sf={self.meta["sf"]}&sd={self.meta["sd"]}'
         print(link)
         js = util.get_json_api(link)
@@ -121,3 +126,13 @@ def get_image_by_id(id, refresh = False):
     img.get_ref('sizes', order_by=['size_index', 'asc'], save_result=True, conn=conn)
     conn.close()
     return img
+
+def get_main_page_indexed(limit = 15):
+    return BooruImage.select(order_by=['id', 'desc'], limit=limit)
+
+def get_filter_list():
+    ls = BooruFilter.select(order_by=['sort_index', 'asc'])
+    # print(booru_config)
+    for f in ls:
+        f.cols['checked'] = f['id'] in booru_config.data['filters']
+    return ls

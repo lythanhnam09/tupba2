@@ -1,4 +1,5 @@
 <%inherit file="../base.mako"/>
+<%namespace name="misc" file="misc.mako"/>
 <%block name="title">
     Booru Browser - Main page
 </%block>
@@ -6,7 +7,7 @@
     <link rel="stylesheet" href="/static/css/booru.css">
 </%block>
 <%block name="extrajs">
-    <script src="/static/js/booru.js"></script>
+    <script src="/static/js/booru/booru.js"></script>
 </%block>
 
 <%def name="form_option(form, name, value, text)">
@@ -25,8 +26,15 @@
         <hr class="my-1">
         <div class="px-1">
             <h2 class="">Search</h2>
+            <div class="card my-1 bg-dark">
+                <div class="card-content p-1 bg-dark">
+                    <div class="control-group gap-1" id="tag-suggestion">
+                        Tag suggestion...
+                    </div>
+                </div>
+            </div>
             <form id="form-filter" action="/booru/search" method="get">
-                <input name="q" type="text" class="form-control dark w-100 mb-1" placeholder="Enter search tags">
+                <input id="q" name="q" type="text" class="form-control dark w-100 mb-1" placeholder="Enter search tags">
                 <div class="control-group gap-1">
                     <button class="btn btn-pink"><i class="fas fa-search"></i> Search</button>
                     <select class="form-control dark" name="sf">
@@ -64,21 +72,9 @@
                     <h3><i class="fas fa-history"></i> Last indexed</h3>
                 </div>
                 <div class="card-content list-container p-1">
-                    % for i in range(20):
-                        <div class="galery-image card bg-l10-dark">
-                            <div class="card-header bg-d20-pink text-center pos-relative">
-                                <span class="d-iblock "><i class="fas fa-arrow-up fg-l10-success"></i> 99999 <i class="fas fa-arrow-down fg-l10-danger"></i></span>
-                                <span class="d-iblock fg-warning">9999 <i class="fas fa-star fg-warning"></i></span>
-                                <span class="d-iblock fg-light fg-l25-darkblue">999 <i class="fas fa-comment"></i></span>
-                            </div>
-                            <a href="">
-                                <div class="img-container image-square">
-                                    <img src="https://derpicdn.net/img/2022/1/13/2784104/thumb.jpg" alt="">
-                                </div>
-                            </a>
-                        </div>
+                    % for img in ls_img:
+                        ${misc.booru_image(img, f'/booru/view/{img["id"]}')}
                     % endfor
-                    
                 </div>
             </div>
         </div>

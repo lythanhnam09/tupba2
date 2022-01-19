@@ -221,13 +221,14 @@ class Dialog {
                     console.log('Dialog ok');
                 }
             }
-        ], dismissOutside = true, dismissButton = true) {
+        ], bg = '', dismissOutside = true, dismissButton = true) {
         
         this.title = title;
         this.content = content;
         this.buttons = buttons;
         this.dismissOutside = dismissOutside;
         this.dismissButton = dismissButton;
+        this.bg = bg;
     }
 
     show() {
@@ -237,10 +238,11 @@ class Dialog {
         }
         $(`
         <div class="dialog-container">
-            <div class="dialog">
+            <div class="dialog ${this.bg}">
                 <div class="title">
                     ${this.title}
                 </div>
+                <hr>
                 <div class="content">
                     ${this.content}
                 </div>

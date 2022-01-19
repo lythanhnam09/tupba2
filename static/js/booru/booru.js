@@ -28,7 +28,11 @@ $(function() {
             for (let tag of data) {
                 suggestHtml += `<span class="booru-tag ${tag.cols.color}" onclick="fillResult('${tag.cols.name}')">${tag.cols.name}</span> `;
             }
-            $('#tag-suggestion').html(suggestHtml);
+            if (data.length > 0) {
+                $('#tag-suggestion').html(suggestHtml);
+            } else {
+                $('#tag-suggestion').html('No tag found');
+            }
             
         }, 500);
     });
@@ -197,7 +201,7 @@ function showPageDialog(page, pagecount, formid='form-filter') {
     // <label>Page (max ${pagecount}): </label><input class="form-control" type="number" id="inp-goto-page" max="${pagecount}" min="1" value="${page}">
     let dialog = new Dialog(
         '<h3>Goto page</h3>', 
-        `<select id="select-goto-page" class="form-control w-100">${selectHtml}</select>`,
+        `<select id="select-goto-page" class="form-control dark w-100">${selectHtml}</select>`,
         [
             {
                 html: '<button id="btn-dialog-ok" class="btn btn-primary">OK</button>',
@@ -215,7 +219,7 @@ function showPageDialog(page, pagecount, formid='form-filter') {
                     $('#btn-goto-page').prop('disabled', false);
                 }
             }
-        ]);
+        ], 'bg-dark');
     dialog.show();
 }
 
@@ -245,9 +249,25 @@ function setVideoMode(mode) {
 }
 
 function changeImageSize(index, link = null, extension = 'png') {
+    let currentExt = $('#img-display-container').data('ext');
     let btn = $('#btn-size-' + index);
     $('.btn-size').prop('disabled', false);
     btn.prop('disabled', true);
+    if (['mp4', 'webm'].includes(extension) && ['png', 'jpg', 'gif'].includes(currentExt)) {
+        currentExt = extension;
+        $('#img-display-container').html(`
+            <video class="img-display" id="video-display" controls autoplay loop muted>
+                <source src="${link.replaceAll('.webm', '.mp4')}" type="video/mp4">
+                <source id="img-display" src="${link}" type="video/webm">
+                HTML Video tag not supported (PLEASE UPGRADE YOUR SHITTY BROWSER !!!)
+            </video>
+        `);
+    } else {
+        currentExt = extension;
+        $('#img-display-container').html(`
+            <img id="img-display" class="img-display" src="${link}">
+        `);
+    }
     if (link != null) {
         if (! ['webm', 'mp4'].includes(extension)) {
             let lastText = btn.text();

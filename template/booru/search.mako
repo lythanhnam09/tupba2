@@ -1,4 +1,5 @@
 <%inherit file="../base.mako"/>
+<%namespace name="misc" file="misc.mako"/>
 <%block name="title">
     Booru Browser - Search result
 </%block>
@@ -6,7 +7,7 @@
     <link rel="stylesheet" href="/static/css/booru.css">
 </%block>
 <%block name="extrajs">
-    <script src="/static/js/booru.js"></script>
+    <script src="/static/js/booru/booru.js"></script>
 </%block>
 
 <%def name="form_option(form, name, value, text)">
@@ -21,7 +22,7 @@
         <hr class="my-1">
         <div class="px-1">
             <h2 class="">Search</h2>
-            <div class="card my-1">
+            <div class="card my-1 bg-dark">
                 <div class="card-content p-1 bg-dark">
                     <div class="control-group gap-1" id="tag-suggestion">
                         Tag suggestion...
@@ -75,23 +76,7 @@
         <div class="px-1">
             <div class="list-container p-1">
                 % for img in img_page.data:
-                    <div class="galery-image card bg-l10-dark">
-                        <div class="card-header bg-d20-pink text-center pos-relative">
-                            <span class="d-iblock "><i class="fas fa-arrow-up fg-l10-success"></i> ${img['score']} <i class="fas fa-arrow-down fg-l10-danger"></i></span>
-                            <span class="d-iblock fg-warning">${img['fave']} <i class="fas fa-star fg-warning"></i></span>
-                            <span class="d-iblock fg-light fg-l25-darkblue">${img['comment_count']} <i class="fas fa-comment"></i></span>
-                        </div>
-                        <a href="/booru/view/${img['id']}?${form.get_form_query()}">
-                            % if img['extension'] == 'webm':
-                                <div class="webm-bar">
-                                    <i class="fas fa-play mr-1"></i> WebM
-                                </div>
-                            % endif
-                            <div class="img-container image-square">
-                                <img class="w-100" src="${img.get_image('thumb')['link']}" alt="">
-                            </div>
-                        </a>
-                    </div>
+                    ${misc.booru_image(img, f'/booru/view/{img["id"]}?{form.get_form_query()}')}
                 % endfor
             </div>
         </div>

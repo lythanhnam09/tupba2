@@ -7,10 +7,12 @@ import logging
 import lib.provider.anonpone as anonpone
 import lib.model.cyoa.cyoa as cyoa
 import lib.model.booru.tag as btag
+import lib.model.booru.filter as bfilter
+from lib.model.booru.config import booru_config
 
 
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.WARNING)
+log.setLevel(logging.ERROR)
 
 app = Flask('__main__')
 CORS(app, support_credentials=True)
@@ -96,3 +98,36 @@ def get_image_page(data):
 def search_tag(data):
     ls_tag = btag.BooruTag.select(where=[['name', 'like', f'%{data["name"]}%']], order_by=['name', 'asc'], limit=20)
     return util.to_json_str(ls_tag)
+
+@socketio.on('new_filter')
+def new_filter(data):
+    print(f'socketio: Create new filter {data=}')
+    bfilter.BooruFilter.add_filter(data['name'], data['text'])
+    emit('refresh_page', {'context': '/booru/filters'})
+
+@socketio.on('edit_filter')
+def edit_filter(data):
+    print(f'socketio: Edit filter {data=}')
+    ft = bfilter.BooruFilter.find_id(data['id'])
+    if (ft == None): return
+    ft.update_filter(data['name'], data['text'])
+    booru_config.update_filter()
+    emit('refresh_page', {'context': '/booru/filters'})
+
+@socketio.on('swap_filter')
+def swap_filter(data):
+    print(f'socketio: Swap filter {data=}')
+    bfilter.BooruFilter.swap_filter_order(data['id1'], data['id2'])
+    emit('refresh_page', {'context': '/booru/filters'})
+
+@socketio.on('delete_filter')
+def delete_filter(data):
+    print(f'socketio: Delete filter {data=}')
+    bfilter.BooruFilter.delete(where=[['id', data['id']]])
+    emit('refresh_page', {'context': '/booru/filters'})
+
+@socketio.on('save_filter')
+def delete_filter(data):
+    print(f'socketio: Save filter {data=}')
+    booru_config.set_filters(data['filters'])
+    emit('refresh_page', {'context': '/booru/filters'})

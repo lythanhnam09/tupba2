@@ -1,4 +1,5 @@
 from lib.util.sql_table import *
+import lib.util.util as util
 
 class BooruImage(SQLTable):
     _dbfile = 'data/booru.db'
@@ -33,7 +34,7 @@ class BooruImage(SQLTable):
     _reference = {}
 
     def extra_col(self):
-        pass
+        self.cols['image_size_str'] = util.get_size_str(self.cols['image_size'])
 
     @classmethod
     def from_json(cls, js):
@@ -66,7 +67,7 @@ class BooruImage(SQLTable):
         o = cls(data=rdict)
         return o
 
-    def get_image(self, size_name):
+    def get_image(self, size_name, referred = False):
         ls = self['sizes']
         ls_name = {
             'full': 'Full',
@@ -78,12 +79,26 @@ class BooruImage(SQLTable):
             'thumb_small': 'Small Thumbnail',
             'thumb_tiny': 'Tiny Thumbnail',
         }
+        ls_size_index = {
+            'Full': 8,
+            'Tall': 7,
+            'Large': 6,
+            'Medium': 5,
+            'Small': 4,
+            'Thumbnail': 3,
+            'Small Thumbnail': 2,
+            'Tiny Thumbnail': 1,
+        }
         if (size_name in ls_name):
             size_name = ls_name[size_name]
+        last_sz = None
+        sz_index = ls_size_index[size_name]
         for sz in ls:
             if (sz.cols['name'] == size_name):
                 return sz
-        return None
+            if (sz.cols['size_index'] <= sz_index and referred):
+                last_sz = sz
+        return last_sz
 
 class BooruImageSize(SQLTable):
     _dbfile = 'data/booru.db'
@@ -131,6 +146,17 @@ class BooruImageSize(SQLTable):
         
         o = cls(data=rdict)
         return o
+
+    def get_extension(self):
+        lk:str = self.cols['link']
+        pos = lk.rfind('.')
+        if (pos != -1):
+            return lk[pos + 1:]
+        return ''
+
+    def get_mp4_link(self):
+        return self.cols['link'].replace('.webm', '.mp4')
+            
 
 class BooruImageHistory(SQLTable):
     _dbfile = 'data/booru.db'
