@@ -106,6 +106,7 @@ class BooruImageSize(SQLTable):
     _props = {
         'image_id': 0,
         'link': '',
+        'link_save': None,
         'name': '',
         'size_index': 0
     }
@@ -138,6 +139,7 @@ class BooruImageSize(SQLTable):
         rdict = {
             'image_id': id,
             'link': link,
+            'link_save': None,
             'name': ls_name[name] if (name in ls_name) else name,
             'size_index': ls_size_index[name] if (name in ls_size_index) else 0
         }

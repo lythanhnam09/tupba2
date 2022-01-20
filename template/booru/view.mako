@@ -28,7 +28,7 @@
                     <div><b class="fg-l15-pink">Uploader:</b> ${img['uploader'] or '<i class="fg-secondary">Anonymous</i>'}</div>
                     <div><b class="fg-l15-pink">Date created:</b> ${img['created_at']}</div>
                     <div><b class="fg-l15-pink">Last updated:</b> ${img['updated_at']}</div>
-                    <div><b class="fg-l15-pink">Source:</b> ${f'<a href="{img["link_source"]}">{img["link_source"]}</a>' or '<i class="fg-secondary">Not provided</i>'}</div>
+                    <div><b class="fg-l15-pink">Source:</b> ${f'<a href="{img["link_source"]}">{img["link_source"]}</a>' if (img["link_source"] != None) else '<i class="fg-secondary">Not provided</i>'}</div>
                     <div><b class="fg-l15-pink">Booru link:</b> <a href="https://derpibooru.org/images/${img['id']}">https://derpibooru.org/images/${img['id']}</a></div>
                     % if img['delete_reason'] != None:
                         <div><b class="fg-danger">Image is deleted: ${img['delete_reason']}</div>
@@ -111,7 +111,7 @@
                     <h3>Description</h3>
                 </div>
                 ## Must not breakline for easier parsing
-                <div id="text-description" class="card-content bg-dark">${img['description']}</div>
+                <div id="text-description" class="card-content bg-dark markup">${img['description']}</div>
             </div>
         </div>
     </div>

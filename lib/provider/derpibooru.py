@@ -33,12 +33,12 @@ class BooruSearchPreloader(task_util.Preloader):
         self.meta['pagecount'] = data.page_count
 
     # need override
-    async def do_next(self, enum, i):
-        await self.do_request(enum + i) 
+    def do_next(self, enum, i):
+        self.do_request(enum + i) 
     
     # need override
-    async def do_previous(self, enum, i):
-        await self.do_request(enum - i) 
+    def do_previous(self, enum, i):
+        self.do_request(enum - i) 
     
     # need override
     def has_next(self, enum, i):
@@ -55,12 +55,9 @@ class BooruSearchPreloader(task_util.Preloader):
         return tmpmt != mt
 
     # need override (the main funtion to run)
-    async def run_request(self, enum):
-        qp = booru_util.QueryProcessor()
-        qp.set_query(self.meta['q'])
-        for f in booru_config.filters:
-            qp.add_filter(f['filter_text'])
-        link = f'https://derpibooru.org/api/v1/json/search/images?q={qp.export_query()}&filter_id={booru_config.data["booru_filter_id"]}&page={enum}&per_page={self.meta["perpage"]}&sf={self.meta["sf"]}&sd={self.meta["sd"]}'
+    def run_request(self, enum):
+        booru_config.ensure_loaded()
+        link = f'https://derpibooru.org/api/v1/json/search/images?q={self.meta["q"]}&filter_id={booru_config.data["booru_filter_id"]}&page={enum}&per_page={self.meta["perpage"]}&sf={self.meta["sf"]}&sd={self.meta["sd"]}'
         print(link)
         js = util.get_json_api(link)
         page_count = math.ceil(js['total'] / self.meta['perpage']) if self.meta['perpage'] > 0 and math.ceil(js['total'] / self.meta['perpage']) > 0 else 1
@@ -92,6 +89,14 @@ class BooruSearchPreloader(task_util.Preloader):
         return page_data
 
 search_loader = BooruSearchPreloader(range=1)
+
+def get_search(q = '', sf = 'id', sd = 'asc', page = 1, perpage = 20, preload = True):
+    booru_config.ensure_loaded()
+    qp = booru_util.QueryProcessor()
+    qp.set_query(q)
+    for f in booru_config.filters:
+        qp.add_filter(f['filter_text'])
+    return search_loader.do_get(page, {'q':qp.export_query(), 'sf':sf, 'sd':sd, 'perpage':perpage}, preload_other=preload)
 
 def get_image_by_id(id, refresh = False):
     conn = sqlite3.connect(BooruImage._dbfile)

@@ -231,15 +231,12 @@ class Preloader:
         self.data.put(data)
         self.do_limit()
 
-    async def do_request(self, enum):
-        # print(f'request {enum}')
+    def do_request(self, enum):
         pg = self.check_page_loaded(enum)
         if (pg == None):
-            data = await self.run_request(enum)
+            data = self.run_request(enum)
             self.on_receive_data(data)
-            # print(f'add request {enum}')
             return data
-        # print(f'request {enum} cached')
         return pg
 
     # optional override (default to check all meta keys)
@@ -247,11 +244,11 @@ class Preloader:
         return self.meta != mt
 
     # need override
-    async def do_next(self, enum, i):
+    def do_next(self, enum, i):
         pass
     
     # need override
-    async def do_previous(self, enum, i):
+    def do_previous(self, enum, i):
         pass
     
     # need override
@@ -263,20 +260,19 @@ class Preloader:
         return False
 
     # need override (the main funtion to run)
-    async def run_request(self, enum):
+    def run_request(self, enum):
         return None
 
     # (optionally) need to be called from your real get function (or you just call this with the right meta data)
-    async def do_get(self, enum, meta, preload_other = True):
+    def do_get(self, enum, meta, preload_other = True):
         if (self.is_meta_diff(meta)):
             self.meta = meta
             self.data.clear()
-        result = await self.do_request(enum)
+        result = self.do_request(enum)
         if (preload_other):
             for i in range(1, self.range + 1):
-                # print('has range')
-                if (self.has_next(enum, i)): asyncio.create_task(self.do_next(enum, i))
-                if (self.has_previous(enum, i)): asyncio.create_task(self.do_previous(enum, i))
+                if (self.has_next(enum, i)): threading.Thread(target=self.do_next, args=(enum, i), daemon=True).start()
+                if (self.has_previous(enum, i)): threading.Thread(target=self.do_previous, args=(enum, i), daemon=True).start()
         return result
 
 class PagePreLoader:

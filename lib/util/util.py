@@ -146,3 +146,6 @@ class JsonConfig:
             write_json(self.path, self.data)
         self.is_loaded = True
         return self
+    
+    def ensure_loaded(self):
+        if (not self.is_loaded): self.load()

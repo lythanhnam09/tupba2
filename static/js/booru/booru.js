@@ -303,15 +303,17 @@ function parseMarkup(selector) {
     let e = $(selector);
     if (e.length <= 0) return;
     let txt = e.text().trim();
-    txt = txt.replaceAll(/\[(.*?)\]\((.*?)\)/gm, '<a href="$2">$1</a>'); // Link
+    txt = txt.replaceAll(/\!\[(.*?)\]\((.*?)\)/gm, '<div class="img-container img-$1"><img src="$2"></div>'); // Image
+    txt = txt.replaceAll(/\[(.*?)\]\((.*?)\)/gm, '<a href="$2" target="_blank">$1</a>'); // Link
     txt = txt.replaceAll(/>>(\d+)[stp]?/gm, '<a href="/booru/view/$1">&gt;&gt;$1</a>'); // Booru Link
+    txt = txt.replaceAll(/https?:\/\/derpibooru.org\/images\/(\d+)/gm, '<a href="/booru/view/$1">$&</a>'); // Booru Link
     txt = txt.replaceAll(/\*\*(.*?)\*\*/gm, '<b>$1</b>'); // Bold
     txt = txt.replaceAll(/~~(.*?)~~/gm, '<span class="spoiler">$1</span>'); // Spoiler
     txt = txt.replaceAll(/__(.*?)__/gm, '<u>$1</u>'); // Underline
     txt = txt.replaceAll(/[\*_](.*?)[\*_]/gm, '<i>$1</i>'); // Italic
     txt = txt.replaceAll(/\^(.*?)\^/gm, '<sup>$1</sup>'); // Super script
     txt = txt.replaceAll(/\%(.*?)\%/gm, '<sub>$1</sub>'); // Sub script
-    txt = txt.replaceAll(/^> (.*)/gm, '<span class="quote">$1</span>'); // Quote
+    txt = txt.replaceAll(/^> (.*)/gm, '<span class="quote">&gt; $1</span>'); // Quote
     txt = txt.replaceAll('\n', '<br>');
     e.html(txt);
 }

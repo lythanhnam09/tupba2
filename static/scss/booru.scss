@@ -212,6 +212,32 @@ a {
             color: white;
         }
     }
+    .img {
+        &-container {
+            display: inline-flex;
+            width: unset;
+        }
+
+        &-tiny {
+            width: 64px;
+            height: 64px;
+        }
+
+        &-small {
+            width: 64px;
+            height: 64px;
+        }
+
+        &-medium {
+            width: 64px;
+            height: 64px;
+        }
+
+        &-large {
+            width: 64px;
+            height: 64px;
+        }
+    }
 }
 
 .galery-image {

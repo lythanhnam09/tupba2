@@ -3,9 +3,7 @@
 
 drop table if exists album_image;
 drop table if exists album;
-drop table if exists feed_tag;
 drop table if exists feed;
-drop table if exists booru_filter_tag;
 drop table if exists booru_filter;
 drop table if exists history;
 drop table if exists image_tag;
@@ -14,7 +12,7 @@ drop table if exists image;
 drop table if exists tag;
 
 create table tag (
-	id integer primary key, --auto
+	id integer primary key,
 	name text unique,
 	color text,
 	sort_index integer,
@@ -50,6 +48,7 @@ create table image (
 create table image_size (
 	image_id integer,
 	link text,
+	link_save text,
 	name text,
 	size_index integer,
 	primary key (image_id, link),
@@ -84,7 +83,7 @@ create table booru_filter (
 );
 
 create table feed (
-	id integer primary key, --auto
+	id integer primary key,
 	name text,
 	color text,
 	show_count integer,
@@ -95,7 +94,7 @@ create table feed (
 );
 
 create table album (
-	id integer primary key, --auto
+	id integer primary key,
 	thumbnail_id integer,
 	name text,
 	color text,

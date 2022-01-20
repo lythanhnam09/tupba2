@@ -26,19 +26,19 @@ class QueryProcessor:
     def add_filter(self, filter_str):
         self.parse_query(filter_str, self.filter_tags)
 
-    def to_booru_query(self, ls:dict):
-        lst = [ls[k] + k for k in ls]
+    def to_booru_query(self, ls:dict, include_spoiler = False):
+        lst = [ls[k] + k for k in ls if (include_spoiler or ls[k] != '`')]
         return ','.join(lst)
 
-    def export_query(self):
+    def export_query(self, include_spoiler = False):
         tmp_f = self.filter_tags.copy()
         tmp_tag = self.tags.copy()
         for t in tmp_tag:
             if (t in tmp_f): tmp_f.pop(t)
         result = []
         
-        if (len(tmp_f.keys()) > 0): result.append(f'({self.to_booru_query(tmp_f)})')
-        if (len(tmp_tag.keys()) > 0): result.append(f'({self.to_booru_query(tmp_tag)})')
+        if (len(tmp_f.keys()) > 0): result.append(f'({self.to_booru_query(tmp_f, include_spoiler)})')
+        if (len(tmp_tag.keys()) > 0): result.append(f'({self.to_booru_query(tmp_tag, include_spoiler)})')
         if (len(result) == 0): return '*'
 
         return ', '.join(result)

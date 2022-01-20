@@ -154,6 +154,26 @@ a {
 .markup .spoiler:hover, .markup .spoiler:focus {
   color: white;
 }
+.markup .img-container {
+  display: inline-flex;
+  width: unset;
+}
+.markup .img-tiny {
+  width: 64px;
+  height: 64px;
+}
+.markup .img-small {
+  width: 64px;
+  height: 64px;
+}
+.markup .img-medium {
+  width: 64px;
+  height: 64px;
+}
+.markup .img-large {
+  width: 64px;
+  height: 64px;
+}
 
 .galery-image > a {
   position: relative;

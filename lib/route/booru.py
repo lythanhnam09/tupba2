@@ -32,16 +32,16 @@ def root():
     return serve_template('booru/index.mako', nav=booru_nav(), ls_img=ls_img)
 
 @booru.route('/search')
-async def search():
+def search():
     form = WebForm({'q': '', 'sf': 'id', 'sd': 'desc', 'page': 1, 'perpage':20})
     form.get_arg_value(request.args)
     t = StopTimer('Fetching booru data')
-    res = await derpibooru.search_loader.do_get(form['page'], {'q':form['q'], 'sf':form['sf'], 'sd':form['sd'], 'perpage':form['perpage']})
+    res = derpibooru.get_search(form['q'], form['sf'], form['sd'], form['page'], form['perpage'])
     t.measure()
     return serve_template('booru/search.mako', nav=booru_nav('/booru'), form=form, img_page=res, page_nav=SimplePageNav(res, 'form-filter'))
 
 @booru.route('/view/<id>')
-async def view(id):
+def view(id):
     try:
         id = int(id)
     except Exception as e:
@@ -54,7 +54,7 @@ async def view(id):
     
     if ('q' in request.args):
         form.get_arg_value(request.args)
-        res = await derpibooru.search_loader.do_get(form['page'], {'q':form['q'], 'sf':form['sf'], 'sd':form['sd'], 'perpage':form['perpage']})
+        res = derpibooru.get_search(form['q'], form['sf'], form['sd'], form['page'], form['perpage'])
 
         ls_index = [i for i,x in enumerate(res.data) if x['id'] == id]
         if (len(ls_index) <= 0): abort(404)
@@ -63,12 +63,12 @@ async def view(id):
         if (index > 0):
             prev_link = f'/booru/view/{res.data[index - 1]["id"]}?{form.get_form_query()}'
         elif res.page_num > 1:
-            prev_res = await derpibooru.search_loader.do_get(form['page'] - 1, {'q':form['q'], 'sf':form['sf'], 'sd':form['sd'], 'perpage':form['perpage']}, preload_other=False)
+            prev_res = derpibooru.get_search(form['q'], form['sf'], form['sd'], form['page'] - 1, form['perpage'], False)
             prev_link = f'/booru/view/{prev_res.data[-1]["id"]}?{form.get_form_query({"page": form["page"] - 1})}'
         if (index < len(res.data) - 1):
             next_link = f'/booru/view/{res.data[index + 1]["id"]}?{form.get_form_query()}'
         elif res.page_num < res.page_count:
-            next_res = await derpibooru.search_loader.do_get(form['page'] + 1, {'q':form['q'], 'sf':form['sf'], 'sd':form['sd'], 'perpage':form['perpage']}, preload_other=False)
+            next_res = derpibooru.get_search(form['q'], form['sf'], form['sd'], form['page'] + 1, form['perpage'], False)
             next_link = f'/booru/view/{next_res.data[0]["id"]}?{form.get_form_query({"page": form["page"] + 1})}'
 
         img = res.data[index]
