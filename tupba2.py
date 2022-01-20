@@ -8,6 +8,7 @@ from lib.route.cyoa import cyoa
 from lib.route.booru import booru
 from lib.model.web.navbar import NavOption, NavButton
 from lib.route.socket import app, socketio
+from lib.model.booru.config import booru_config
 
 #app.config['UPLOAD_FOLDER'] = 'upload'
 
@@ -80,3 +81,5 @@ if __name__ == '__main__':
     init()
     #app.run(host='0.0.0.0', port=8080, debug=True)
     socketio.run(app, host='0.0.0.0', port=8080, debug=True)
+
+    booru_config.load()

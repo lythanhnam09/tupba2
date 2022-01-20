@@ -31,7 +31,6 @@ class BooruSearchPreloader(task_util.Preloader):
     def on_receive_data(self, data):
         super().on_receive_data(data)
         self.meta['pagecount'] = data.page_count
-        # print(self.meta)
 
     # need override
     async def do_next(self, enum, i):
@@ -43,12 +42,10 @@ class BooruSearchPreloader(task_util.Preloader):
     
     # need override
     def has_next(self, enum, i):
-        # print(f'has next: {enum + i=} {self.meta["pagecount"]=} {(enum + i <= self.meta["pagecount"])=}')
         return enum + i <= self.meta['pagecount']
 
     # need override
     def has_previous(self, enum, i):
-        # print(f'has prev: {enum - i=} {self.meta["pagecount"]=} {(enum + i <= self.meta["pagecount"])=}')
         return enum - i >= 1
 
     # optional override
@@ -63,7 +60,6 @@ class BooruSearchPreloader(task_util.Preloader):
         qp.set_query(self.meta['q'])
         for f in booru_config.filters:
             qp.add_filter(f['filter_text'])
-        # qp.add_filter('explicit, -anthro, -eqg, -equestria girls, -human, -humanized, -scat, -fart, -vore, -diaper,  -artist:pony_dreaming, -artist:wildviolet-m')
         link = f'https://derpibooru.org/api/v1/json/search/images?q={qp.export_query()}&filter_id={booru_config.data["booru_filter_id"]}&page={enum}&per_page={self.meta["perpage"]}&sf={self.meta["sf"]}&sd={self.meta["sd"]}'
         print(link)
         js = util.get_json_api(link)

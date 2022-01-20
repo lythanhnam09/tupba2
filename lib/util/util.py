@@ -134,6 +134,7 @@ class JsonConfig:
     def __init__(self, path):
         self.path = path
         self.data = {}
+        self.is_loaded = False
 
     def save(self):
         write_json(self.path, self.data)
@@ -143,4 +144,5 @@ class JsonConfig:
             self.data = read_json(self.path)
         else:
             write_json(self.path, self.data)
+        self.is_loaded = True
         return self

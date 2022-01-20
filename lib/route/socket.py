@@ -1,6 +1,6 @@
 from flask import *
 from flask_socketio import emit, SocketIO
-from flask_cors import CORS, cross_origin
+# from flask_cors import CORS, cross_origin
 import lib.util.task_util as task_util
 import lib.util.util as util
 import logging
@@ -12,11 +12,13 @@ from lib.model.booru.config import booru_config
 
 
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+log.setLevel(logging.WARNING)
 
 app = Flask('__main__')
-CORS(app, support_credentials=True)
+# CORS(app, support_credentials=True)
 socketio = SocketIO(app)
+
+# booru_config.load()
 
 @socketio.on('task_stat')
 def task_update(data = {}):

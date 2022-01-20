@@ -23,11 +23,10 @@ class BooruConfig(JsonConfig):
         super().load()
         self.update_filter()
         return self
-        
 
     def set_filters(self, ls:list):
         self.data['filters'] = ls
         self.update_filter()
         self.save()
 
-booru_config = BooruConfig('config/booru.json').load()
+booru_config = BooruConfig('config/booru.json')
