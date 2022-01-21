@@ -67,16 +67,16 @@
         </div>
         <hr class="my-1">
         <div class="px-1">
-            <div class="card bg-dark">
-                <div class="card-header bg-d5-pink">
-                    <h3><i class="fas fa-history"></i> Last indexed</h3>
-                </div>
-                <div class="card-content list-container p-1">
-                    % for img in ls_img:
-                        ${misc.booru_image(img, f'/booru/view/{img["id"]}')}
-                    % endfor
-                </div>
-            </div>
+            ## <div class="card bg-dark">
+            ##     <div class="card-header bg-d5-pink">
+            ##         <h3><i class="fas fa-history"></i> Last indexed</h3>
+            ##     </div>
+            ##     <div class="card-content list-container p-1">
+            ##         % for img in ls_img:
+            ##             ${misc.booru_image(img, f'/booru/view/{img["id"]}')}
+            ##         % endfor
+            ##     </div>
+            ## </div>
         </div>
     </div>
 </div>

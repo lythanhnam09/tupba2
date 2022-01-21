@@ -94,9 +94,11 @@ def get_search(q = '', sf = 'id', sd = 'asc', page = 1, perpage = 20, preload = 
     booru_config.ensure_loaded()
     qp = booru_util.QueryProcessor()
     qp.set_query(q)
-    for f in booru_config.filters:
-        qp.add_filter(f['filter_text'])
-    return search_loader.do_get(page, {'q':qp.export_query(), 'sf':sf, 'sd':sd, 'perpage':perpage}, preload_other=preload)
+    qp.set_filters(booru_config.filters)
+    img_page = search_loader.do_get(page, {'q':qp.export_query(), 'sf':sf, 'sd':sd, 'perpage':perpage}, preload_other=preload)
+    for img in img_page.data:
+        qp.apply_spoiler(img)
+    return img_page
 
 def get_image_by_id(id, refresh = False):
     conn = sqlite3.connect(BooruImage._dbfile)
@@ -129,7 +131,13 @@ def get_image_by_id(id, refresh = False):
     return img
 
 def get_main_page_indexed(limit = 15):
-    return BooruImage.select(order_by=['id', 'desc'], limit=limit)
+    booru_config.ensure_loaded()
+    qp = booru_util.QueryProcessor()
+    qp.set_filters(booru_config.filters)
+    ls = BooruImage.select(order_by=['id', 'desc'], limit=limit)
+    for img in ls:
+        qp.apply_spoiler(img)
+    return ls
 
 def get_filter_list():
     ls = BooruFilter.select(order_by=['sort_index', 'asc'])

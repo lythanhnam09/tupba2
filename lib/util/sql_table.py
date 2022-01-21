@@ -48,7 +48,7 @@ class SQLRefMany(SQLRef):
         if (where == None):
             where = []
         where.append([self.ref_col, table.cols[self.col]])
-        return self.ref_table.select_one(where=where, order_by=order_by, limit=1, offset=offset, conn = conn)
+        return self.ref_table.select_one(where=where, order_by=order_by, offset=offset, conn = conn)
 
     def get_page(self, table, page, per_page, where = None, order_by = None, conn = None):
         if (where == None):

@@ -18,6 +18,9 @@ class BooruFilter(SQLTable):
     _primary = ['id']
     _auto_primary = True
     _reference = {}
+
+    def extra_col(self):
+        self.cols['spoilers'] = self.cols['spoiler_list'].split(',')
     
     def parse_query(self, text):
         text = text.strip(' \n')

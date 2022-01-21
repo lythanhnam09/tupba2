@@ -245,17 +245,30 @@ a {
         position: relative;
         display: block;
 
-        > .webm-bar {
+        > .overlay-bar {
             position: absolute;
             z-index: 15;
             left: 0px;
             right: 0px;
             top: 0px;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            font-weight: bold;
-            text-decoration: none;
-            padding: 0.25rem;
+            
+            > .webm-bar {
+                background-color: rgba(0, 0, 0, 0.5);
+                color: white;
+                font-weight: bold;
+                text-decoration: none;
+                padding: 0.25rem;
+                display: block;
+            }
+
+            > .spoiler-bar {
+                background-color: rgba(162, 36, 36, 0.5);
+                color: white;
+                font-weight: bold;
+                text-decoration: none;
+                padding: 0.25rem;
+                display: block;
+            }
         }
     }
 }

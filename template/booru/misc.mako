@@ -6,13 +6,24 @@
             <span class="d-iblock fg-light fg-l25-darkblue">${img['comment_count']} <i class="fas fa-comment"></i></span>
         </div>
         <a href="${link}">
-            % if img['extension'] == 'webm':
-                <div class="webm-bar">
-                    <i class="fas fa-play mr-1"></i> WebM
-                </div>
-            % endif
-            <div class="img-container image-square">
-                <img class="w-100" src="${img.get_image('thumb')['link']}" alt="">
+            <div class="overlay-bar">
+                % if img['extension'] == 'webm':
+                    <div class="webm-bar">
+                        <i class="fas fa-play mr-1"></i> WebM
+                    </div>
+                % endif
+                % if img['spoiler_tag'] != '':
+                    <div class="spoiler-bar" onclick="return toggleSpoiler(${img['id']}, '${img.get_image('thumb')['link']}')">
+                        <i class="fas fa-eye-slash mr-1"></i>${img['spoiler_tag']}
+                    </div>
+                % endif
+            </div>
+            <div id="img-thumb-${img['id']}" data-spoilered="${0 if img['spoiler_tag'] == '' else 1}" class="img-container image-square">
+                % if img['spoiler_tag'] != '':
+                    <img class="w-100" src="/static/img/no-image.png" alt="">
+                % else:
+                    <img class="w-100" src="${img.get_image('thumb')['link']}" alt="">
+                % endif
             </div>
         </a>
     </div>

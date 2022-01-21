@@ -21,4 +21,4 @@ The second one which *hopefully* to be finished
 * Feeds
 * Image option
 * Tag option
-* Spoiler
+* ~~Spoiler~~

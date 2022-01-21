@@ -2,15 +2,6 @@ var timer = null;
 
 $(function () {
     parseMarkup('#text-description');
-    // $('#filter-select').change(function() {
-    //     let id = $('#filter-select').val();
-    //     $.post( "/booru/api/config/filter", {'filter_id':id}).done(function( data ) {
-    //         console.log('OK');
-    //         location.reload();
-    //     }).fail(function() {
-    //         console.log("Error");
-    //     });
-    // });
 
     $('#q').keyup(function () {
         if ($('#tag-suggest').data('folded') == '1') return;
@@ -59,7 +50,7 @@ function getSearchTag(text) {
     }
     let res = text.substring(start, end).trim();
     let type = '';
-    if (res.length > 0 && ['-', '`', '+'].includes(res[0])) {
+    if (res.length > 0 && ['-', '`', '+', '^'].includes(res[0])) {
         type = res[0];
         res = res.substring(1, res.length);
     }
@@ -279,9 +270,8 @@ function changeImageSize(index, link = null, extension = 'png') {
                 btn.text(lastText);
             }
         }
-        if (btn.data('mode') == 1) {
-            link = link.replaceAll('.webm', '.mp4');
-        }
+        $('#img-display-alt').attr('src', link);
+        link = link.replaceAll('.webm', '.mp4');
         $('#img-display').attr('src', link);
     } else {
         link = $('#img-display').attr('src');
@@ -316,4 +306,16 @@ function parseMarkup(selector) {
     txt = txt.replaceAll(/^> (.*)/gm, '<span class="quote">&gt; $1</span>'); // Quote
     txt = txt.replaceAll('\n', '<br>');
     e.html(txt);
+}
+
+function toggleSpoiler(id, link) {
+    let e = $('#img-thumb-' + id);
+    if (e.data('spoilered') == 0) {
+        e.data('spoilered', 1);
+        e.children('img')[0].src = '/static/img/no-image.png';
+    } else {
+        e.data('spoilered', 0);
+        e.children('img')[0].src = link;
+    }
+    return false;
 }

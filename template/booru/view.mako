@@ -86,7 +86,7 @@
             % if img['extension'] in ['webm', 'mp4']:
                 <video class="img-display" id="video-display" controls autoplay loop muted>
                     <source id="img-display" src="${prefer_size.get_mp4_link()}" type="video/mp4">
-                    <source src="${prefer_size['link']}" type="${img['mime_type']}">
+                    <source id="img-display-alt" src="${prefer_size['link']}" type="${img['mime_type']}">
                     HTML Video tag not supported (PLEASE UPGRADE YOUR SHITTY BROWSER !!!)
                 </video>
             % else:
