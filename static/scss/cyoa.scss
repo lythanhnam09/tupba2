@@ -398,7 +398,7 @@ a {
 
             > .image-filename {
                 display: block;
-                word-break: break-all;
+                overflow-wrap: anywhere;
                 background-color: $darkblue;
                 color: white;
                 padding: 0.25rem;
@@ -425,6 +425,9 @@ a {
         }
 
         > .card-text {
+            overflow-wrap: anywhere;
+            width: 100%;
+
             .quote {
                 color: #20ff20;
 

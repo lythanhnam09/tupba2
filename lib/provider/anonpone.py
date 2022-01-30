@@ -89,6 +89,16 @@ def refresh_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
     cyoa_thread.Thread.update(th, set_col=['thread_image', 'total_post', 'op_name'], conn=conn)
     conn.close()
 
+def parse_thread(id:int):
+    th = cyoa_thread.Thread.find_id(id)
+    if (th == None): return False
+    ls_post = th['posts']
+    for post in ls_post:
+        post.process_html()
+    cyoa_post.Post.update(ls_post, set_col=['comment_html'])
+    threadpost_loader.clear_data()
+    return True
+
 def parse_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
     ls_post = th['posts']
     for post in ls_post:
@@ -109,6 +119,7 @@ def refresh_thread_list(cy:cyoa.Cyoa, refresh_post = True, force_refresh_all = F
     cyoa_thread.Thread.insert(result, update_conflict=True, set_col=cyoa_thread.Thread.get_props_name(no_id=True, blacklist=['thread_image', 'op_name', 'total_op_post', 'total_post']), conn=conn)
     cyoa_thread.CyoaThread.insert(lsct, or_ignore=True, conn=conn)
     conn.close()
+    threadpost_loader.clear_data()
     if (refresh_post):
         if (force_refresh_all):
             wk = task_util.TaskWorker(f'Refresh cyoa thread data (force): {cy["name"]}', meta={'id':cy['short_name'], 'category':'CYOA', 'short_name': cy['short_name'], 'cyoa_id': cy['id']})
@@ -302,6 +313,9 @@ class ThreadPostLoader():
     def receive_data(self, thread):
         self.thread_data.enqueue(thread)
         self.thread_data.limit(self.cache)
+
+    def clear_data(self):
+        self.thread_data.data.clear()
 
     async def get(self, cyoa, thread, num=None, count=None):
         # print(f'CyoaImageLoader: Requesting page {page}')

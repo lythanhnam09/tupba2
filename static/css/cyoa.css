@@ -315,7 +315,7 @@ a {
 }
 .post.card-inline > .card-content > .card-image > .image-filename {
   display: block;
-  word-break: break-all;
+  overflow-wrap: anywhere;
   background-color: #4b43b4;
   color: white;
   padding: 0.25rem;
@@ -335,6 +335,10 @@ a {
 }
 .post.card-inline > .card-content > .card-image > .image-alt > .alt-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
+}
+.post.card-inline > .card-content > .card-text {
+  overflow-wrap: anywhere;
+  width: 100%;
 }
 .post.card-inline > .card-content > .card-text .quote {
   color: #20ff20;

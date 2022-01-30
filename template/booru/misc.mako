@@ -22,7 +22,7 @@
                 % if img['spoiler_tag'] != '':
                     <img class="w-100" src="/static/img/no-image.png" alt="">
                 % else:
-                    <img class="w-100" src="${img.get_image('thumb')['link']}" alt="">
+                    <img class="w-100" src="${img.get_image('thumb', True)['link']}" alt="">
                 % endif
             </div>
         </a>

@@ -15,6 +15,10 @@
 
 <div class="bg-darkblue">
     <div class="container-lg bg-d25-darkblue py-2">
+        <div class="thread-control px-1">
+            <button id="btn-reparse" class="btn-primary btn" onclick="reparseThread(${thread['id']})"><i class="fas fa-sync"></i> Reparse thread</button>
+        </div>
+        <hr class="my-1 mx-1">
         % for post in thread['posts']:
             <%
                 lsimg = post['images']

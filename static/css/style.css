@@ -1,4 +1,3 @@
-@charset "UTF-8";
 :root {
   --primary: #2b83e7;
   --secondary: #818181;
@@ -5116,7 +5115,7 @@ input[type=file].form-control {
 
 .nav-item.dropdown::after, .nav-item.dropdown::after {
   font-family: "Font Awesome 5 Pro";
-  content: "";
+  content: "\f078";
   margin-left: 0.5rem;
   position: relative;
 }

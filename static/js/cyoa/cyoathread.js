@@ -118,3 +118,8 @@ function showPostReply(button, postId) {
     }
     
 }
+
+function reparseThread(id) {
+    socket.emit('cyoa_thread_reparse', {id:id});
+    $('#btn-reparse').prop('disabled', true);
+}

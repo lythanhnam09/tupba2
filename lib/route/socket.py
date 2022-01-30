@@ -86,6 +86,13 @@ def cyoa_refresh_thread(data):
     else:
         emit('show_error',  {'message': f'Cyoa id {data["id"]} not found'})
 
+@socketio.on('cyoa_thread_reparse')
+def cyoa_thread_reparse(data):
+    print(f'socketio: Reparse CYOA thread {data["id"]} posts')
+    res = anonpone.parse_thread(data['id'])
+    print('Done')
+    if (res): emit('refresh_page', {'context': None})
+
 @socketio.on('cyoa_image_data')
 def get_image_page(data):
     print(f'socketio: Get CYOA image data {data=}')

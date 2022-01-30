@@ -247,6 +247,7 @@ function changeImageSize(index, link = null, extension = 'png') {
     btn.prop('disabled', true);
     if (['mp4', 'webm'].includes(extension) && ['png', 'jpg', 'gif'].includes(currentExt)) {
         currentExt = extension;
+        $('#img-display-container').data('ext', currentExt);
         $('#img-display-container').html(`
             <video class="img-display" id="video-display" controls autoplay loop muted>
                 <source src="${link.replaceAll('.webm', '.mp4')}" type="video/mp4">
@@ -256,6 +257,7 @@ function changeImageSize(index, link = null, extension = 'png') {
         `);
     } else if (['mp4', 'webm'].includes(currentExt) && ['png', 'jpg', 'gif'].includes(extension)) {
         currentExt = extension;
+        $('#img-display-container').data('ext', currentExt);
         $('#img-display-container').html(`
             <img id="img-display" class="img-display" src="${link}">
         `);
