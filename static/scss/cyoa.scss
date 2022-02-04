@@ -604,15 +604,16 @@ $color-cyoa: linear-gradient(48deg, #95cc14, #35c63c);
     }
 
     &-main {
-        display: flex;
-        align-content: center;
-        justify-content: center;
+        // display: flex;
+        // align-content: center;
+        // justify-content: center;
         height: 100%;
 
         .img-container {
             position: relative;
             width: unset;
-            min-height: 90vh;
+            min-height: 75vh;
+            height: 100%;
         }
     }
 }

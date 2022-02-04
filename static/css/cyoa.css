@@ -483,13 +483,11 @@ a {
   z-index: 10;
 }
 .image-view-main {
-  display: flex;
-  align-content: center;
-  justify-content: center;
   height: 100%;
 }
 .image-view-main .img-container {
   position: relative;
   width: unset;
-  min-height: 90vh;
+  min-height: 75vh;
+  height: 100%;
 }/*# sourceMappingURL=cyoa.css.map */

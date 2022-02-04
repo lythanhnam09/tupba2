@@ -1,6 +1,6 @@
 <%inherit file="../base.mako"/>
 <%block name="title">
-    Image view - ${cyoa['name']}
+    Fanart view - ${cyoa['name']}
 </%block>
 <%block name="extracss">
     <link rel="stylesheet" href="/static/css/cyoa.css">
@@ -88,7 +88,6 @@
                 <input id="inp-page" type="hidden" name="page" value="1">
                 <input id="inp-perpage" type="hidden" name="perpage" value="${form['perpage']}">
             </form>
-            <hr class="mb-1">
             
             <div class="control-group px-2">
                 <button id="btn-refresh" class="btn btn-primary mr-1" title="Refresh" onclick="refreshCyoaFanart(${cyoa['id']})"><i class="fas fa-sync"></i></button>

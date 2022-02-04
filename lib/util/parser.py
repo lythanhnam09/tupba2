@@ -200,7 +200,8 @@ class MediaLinkParser(LinkParser):
         index = 1
         lsimg = []
         for x in self.links:
-            if (x.get_file_ext() != None):
+            ext = x.get_file_ext()
+            if (ext != None and ext in ['webm', 'gif', 'png', 'jpg', 'jpeg', 'webp', 'mp4']):
                 filename = x.get_filename()
                 link = x.strip_query()
                 print(f'MediaLinkParser: [#{self.post["id"]}] found {link}')
