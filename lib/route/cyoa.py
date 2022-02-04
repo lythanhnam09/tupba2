@@ -102,7 +102,6 @@ async def thread_view(sname, thread_id):
 
 @cyoa.route('/quest/<sname>/images')
 async def cyoa_image(sname):
-    # qm: QM only ; link: Post with link only ; saved: Saved image ; thread: Thread num
     form = WebForm(data={'exp_qm':'is_qm=1', 'exp_alt': 'alt_id=0', 'page':1, 'perpage':40})
     form.get_arg_value(request.args)
     ls = []
@@ -117,4 +116,15 @@ async def cyoa_image(sname):
     page = await anonpone.img_loader.get(cy, q, form['page'], form['perpage'])
     t.measure()
     
-    return serve_template('cyoa/image_view.mako', nav=cyoa_nav(), form=form, cyoa=cy, img_page = page, page_nav=SimplePageNav(page, 'form-page'), worker_stat=get_queue_stat())
+    return serve_template('cyoa/image_view.mako', nav=cyoa_nav(), form=form, cyoa=cy, img_page = page, page_nav=SimplePageNav(page, 'form-page'))
+
+@cyoa.route('/quest/<sname>/fanarts')
+def cyoa_fanart(sname):
+    form = WebForm(data={'page':1, 'perpage':40})
+    form.get_arg_value(request.args)
+    cy = Cyoa.find_shortname(sname)
+    if (cy is None): abort(404)
+    cy.check_steath_lewd()
+    anonpone.get_cyoa_fanart(cy, form['page'], form['perpage'])
+    return serve_template('cyoa/fanart_view.mako', nav=cyoa_nav(), form=form, cyoa=cy, page_nav=SimplePageNav(cy['fanarts'], 'form-page'))
+

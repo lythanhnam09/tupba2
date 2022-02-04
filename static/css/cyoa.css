@@ -78,6 +78,9 @@ a {
   overflow: hidden;
   background-color: #4b43b4;
 }
+.thread-image.card.lim-h {
+  max-height: 300px;
+}
 
 .thread.card {
   display: grid;

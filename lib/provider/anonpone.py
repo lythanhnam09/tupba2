@@ -2,6 +2,7 @@ import lib.util.util as util
 import lib.model.cyoa.cyoa as cyoa
 import lib.model.cyoa.cyoa_thread as cyoa_thread
 import lib.model.cyoa.post as cyoa_post
+import lib.model.cyoa.fanart as fanart
 import lib.model.cyoa.cyoa_tag as tag
 import lib.util.task_util as task_util
 import lib.util.db_util as db_util
@@ -221,6 +222,22 @@ def get_cyoa_image(cyoa:cyoa.Cyoa, query, page = 1, perpage = 40):
                 thread = int(lsop[2]).split(';')
     
     return cyoa.get_image_list(is_qm, alt_id, alt_op, thread, offline, page, perpage)
+
+def refresh_cyoa_fanart(cyoa:cyoa.Cyoa):
+    link = f'https://www.anonpone.com/api/fanart/{cyoa["id"]}'
+    js = util.get_json_api(link)
+
+    ls = []
+
+    for rimg in js:
+        fimg = fanart.Fanart.from_json(rimg)
+        ls.append(fimg)
+    
+    fanart.Fanart.insert(ls, or_ignore=True)
+
+def get_cyoa_fanart(cyoa:cyoa.Cyoa, page = 1, per_page = 40):
+    return cyoa.get_ref_page('fanarts', page, per_page, save_result=True)
+
 
 class CyoaImageLoader(task_util.PagePreLoader):
     def __init__(self):

@@ -126,21 +126,6 @@ function updateTask(data) {
                 </div>
             </div>
             `;
-            // thtml += `
-            // <div id="task-${task.id}" class="task-item card bg-l10-darkblue mb-1">
-            //     <div class="card-content">
-            //         <div class="task-stat">
-            //             <div class="task-tag tag-${task.category.toLowerCase()}">${task.category}</div>
-            //             <div class="task-progress">${prog}</div>
-            //         </div>
-                    
-            //         <div class="task-name">${task.name}</div>
-            //         <div class="progress-bar">
-            //             <div class="value bg-warning" style="width:${per}%"></div>
-            //         </div>
-            //     </div>
-            // </div>
-            // `;
             cnt++;
         }
         $('#task-list').html(thtml);

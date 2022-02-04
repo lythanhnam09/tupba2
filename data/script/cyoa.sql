@@ -40,7 +40,8 @@ create table if not exists fanart (
 	cyoa_id integer,
 	title text,
 	artist text,
-	link text,
+	is_lewd integer,
+	link text unique,
 	offline_link text,
 	status_code integer,
 	foreign key (cyoa_id) references cyoa(id) on delete cascade

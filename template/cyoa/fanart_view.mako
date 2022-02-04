@@ -1,13 +1,16 @@
 <%inherit file="../base.mako"/>
 <%block name="title">
-    CYOA info - ${cyoa['name']}
+    Image view - ${cyoa['name']}
 </%block>
 <%block name="extracss">
     <link rel="stylesheet" href="/static/css/cyoa.css">
 </%block>
 <%block name="extrajs">
+    <script src="/static/js/util/loader.js"></script>
+    <script src="/static/js/util/gesture.js"></script>
     <script src="/static/js/cyoa/cyoa.js"></script>
     <script src="/static/js/cyoa/cyoainfo.js"></script>
+    <script src="/static/js/cyoa/fanartview.js"></script>
 </%block>
 
 <% ls_perpage = [40, 80, 100, 200, 0] %>
@@ -16,10 +19,6 @@
     <option value="${value}" ${form.option_selected(name, value)}>${text}</option>
 </%def>
 
-<form id="form-page" action="/cyoa/quest/${cyoa['short_name']}">
-    <input type="hidden" name="page" value="1">
-    <input type="hidden" name="perpage" value="${form['perpage']}">
-</form>
 <div class="bg-darkblue">
     <div class="container-lg bg-d25-darkblue py-2">
         <div class="cyoa-info">
@@ -36,12 +35,12 @@
                 <hr>
                 <div class="tag">
                     <% lsstat = [['error', 'bg-danger'], ['active', 'bg-d5-info'], ['complete', 'bg-d5-success'], ['hiatus', 'bg-d5-warning'], ['cancelled', 'bg-danger'], ['hidden', 'bg-d15-danger']] %>
-                    <a class="tag-item ${lsstat[cyoa['status']][1]}" href="/cyoa/?q=status=${cyoa['status']}">${lsstat[cyoa['status']][0]}</a>
+                    <a class="tag-item ${lsstat[cyoa['status']][1]}" href="?q=status=${cyoa['status']}">${lsstat[cyoa['status']][0]}</a>
                     % for tag in cyoa['tags']:
-                        <a class="tag-item ${tag['tag']['color']}" href="/cyoa/?${form.get_form_query({'q': tag['tag']['name']})}">${tag['tag']['name']}</a>
+                        <a class="tag-item ${tag['tag']['color']}" href="?${form.get_form_query({'q': tag['tag']['name']})}">${tag['tag']['name']}</a>
                     % endfor
                     % if cyoa['steath_lewd']:
-                        <a class="tag-item bg-pink" href="/cyoa/?q=lewd_exist=1">lewd exist</a>
+                        <a class="tag-item bg-pink" href="?q=lewd_exist=1">lewd exist</a>
                     % endif
                 </div>
                 <div class="ratio mt-1" title="Image / Text ratio">
@@ -75,9 +74,8 @@
                 % if cyoa['save_status'] > 0:
                     <hr class="mt-1">
                     <div class="control-group">
-                        <a href="/cyoa/quest/${cyoa['short_name']}/images" class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-image"></i> View images</a>
-                        <a href="/cyoa/quest/${cyoa['short_name']}/fanarts" class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-image"></i> View fanart</a>
-                        <a class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-file"></i> View by post</a>
+                        <a class="btn btn-success mr-1 mt-1 reload-disable" href="/cyoa/quest/${cyoa['short_name']}"><i class="fas fa-book"></i> View threads</a>
+                        <button class="btn btn-success mr-1 mt-1 reload-disable"><i class="fas fa-file"></i> View by post</button>
                     </div>
                 % endif
             </div>
@@ -85,58 +83,29 @@
         
         <hr class="mb-1">
 
-        % if cyoa['save_status'] > 0:
+        % if cyoa['fanarts'].total_count > 0:
+            <form id="form-page" action="/cyoa/quest/${cyoa['short_name']}/fanarts">
+                <input id="inp-page" type="hidden" name="page" value="1">
+                <input id="inp-perpage" type="hidden" name="perpage" value="${form['perpage']}">
+            </form>
+            <hr class="mb-1">
+            
             <div class="control-group px-2">
-                <button id="btn-bottom" class="btn btn-primary mr-1" title="To page bottom" onclick="scrollToEl('#btn-top', 1000)"><i class="fas fa-arrow-to-bottom"></i></button>
+                <button id="btn-refresh" class="btn btn-primary mr-1" title="Refresh" onclick="refreshCyoaFanart(${cyoa['id']})"><i class="fas fa-sync"></i></button>
                 ${page_nav.html().markup()}
                 <select id="select-perpage" class="form-control ml-1" name="perpage" id="perpage" onchange="changePerpage('form-page')">
                     % for p in ls_perpage:
                         ${form_option(form, 'perpage', p, 'Show all' if p == 0 else f'Show {p}')}
                     % endfor
                 </select>
-                <div id="page-stat" class="pl-2">Showing ${len(thread_page.data)} of ${thread_page.total_count}</div>
-                <div class="control-group ml-0 ml-md-1">
-                    % if cyoa['save_status'] > 0:
-                        <button id="btn-refresh-all" class="btn btn-danger reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']}, true)"><i class="fas fa-sync"></i> All</button>
-                    % endif
-                    <button id="btn-refresh" class="btn btn-primary reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']})"><i class="fas fa-sync"></i> Refresh thread</button>
-                    % if cyoa['save_status'] > 0:
-                        <button id="btn-refresh-all" class="btn btn-primary reload-disable mr-1 mt-1 mt-md-0" onclick="refreshThreadData(${cyoa['id']}, false, true)"><i class="fas fa-sync"></i> Reparse</button>
-                    % endif
-                </div>
+                <div id="page-stat" class="pl-2">Showing ${len(cyoa['fanarts'].data)} of ${cyoa['fanarts'].total_count}</div>
             </div>
             <hr class="my-1">
 
-            <div class="list-container m-1">
-                % for thread in thread_page.data:
-                    <div class="thread card bg-l15-darkblue">
-                        <a class="thread card-image img-container" href="/cyoa/quest/${cyoa['short_name']}/thread/${thread['id']}">
-                            <img src="${thread.get_op_image()}" alt="${thread['title']}">
-                        </a>
-                        <div class="thread card-content p-1">
-                            <h3 class="title mb-1">                         
-                                <a class="name" href="/cyoa/quest/${cyoa['short_name']}/thread/${thread['id']}">
-                                    % if thread['title'] in ['', None]:
-                                        <span class="fg-l15-success">[${loop.index + 1 + ((thread_page.page_num-1) * thread_page.per_page)}]</span> <i> ${cyoa['name']} #${loop.index + 1}</i>
-                                    % else:
-                                        <span class="fg-l15-success">[${loop.index + 1 + ((thread_page.page_num-1) * thread_page.per_page)}]</span> ${thread['title']}
-                                    % endif
-                                </a>
-                            </h3>
-                            <div class="status">
-                                <div class="stat">
-                                    <i class="fas fa-link fg-l10-warning"></i> ${thread['chan']} - ${thread['board']}
-                                    <i class="fas fa-hashtag fg-l10-warning ml-1"></i> ${thread['id']}</a>
-                                </div>
-                                <div class="date">
-                                    <i class="fas fa-calendar-alt fg-l10-warning"></i> ${thread['thread_date_str']}
-                                </div>
-                                <div class="stat">
-                                    <i class="fas fa-file fg-l10-warning"></i> ${thread.get('total_op_post', '??')} / ${thread['total_post']}
-                                    <i class="fas fa-align-left fg-l10-warning ml-1"></i> ${thread.get('total_word', '??')}
-                                </div>
-                            </div>
-                        </div>
+            <div class="thread-image list-container m-1">
+                % for img in cyoa['fanarts'].data:
+                    <div class="thread-image card bg-l15-darkblue img-container lim-h" onclick="showImageView(${cyoa['id']}, ${cyoa['fanarts'].page_num}, ${cyoa['fanarts'].page_count}, ${cyoa['fanarts'].total_count}, ${cyoa['fanarts'].per_page}, ${loop.index})">
+                        <img src="${img['link']}" title="${img['artist']} - ${img['title']}">
                     </div>
                 % endfor
             </div>
@@ -150,16 +119,33 @@
                         ${form_option(form, 'perpage', p, 'Show all' if p == 0 else f'Show {p}')}
                     % endfor
                 </select>
-                <div id="page-stat" class="pl-2">Showing ${len(thread_page.data)} of ${thread_page.total_count}</div>
+                <div id="page-stat" class="pl-2">Showing ${len(cyoa['fanarts'].data)} of ${cyoa['fanarts'].total_count}</div>
             </div>
             <hr>
         % else:
             <div class="emty-frame text-center h-100">
                 <h1 class="mt-3 fg-d25-light">Nothing here, lol</h1>
-                <button id="btn-refresh" class="btn btn-primary mt-1 reload-disable" onclick="refreshThreadData(${cyoa['id']})"><i class="fas fa-sync"></i> Fetch thread data</button>
+                <button id="btn-refresh" class="btn btn-primary mt-1 reload-disable" onclick="refreshCyoaFanart(${cyoa['id']})"><i class="fas fa-sync"></i> Refresh</button>
             </div>
         % endif
 
     </div>
 </div>
 
+<div id="image-view" class="image-view" style="display:none">
+    <div id="image-view-control" class="image-view-control card-inline bg-l20-darkblue">
+        <div class="control-group">
+            <div id="image-control-drag" class="d-iflex vflex-center fg-white"><i class="fas fa-bars px-2"></i></div>
+            <button class="btn btn-darkblue px-1 ml-1" onclick="viewPrevious()"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-darkblue px-1 ml-1" onclick="viewNext()"><i class="fas fa-chevron-right"></i></button>
+            <button id="image-control-zoom" class="btn btn-darkblue progress-bar px-1 ml-1"><div class="value bg-d10-primary"></div><i class="fas fa-minus mr-1"></i> <span id="zoom-per" class="text-bold">100%</span> <i class="fas fa-plus ml-1"></i></button>
+            <button class="btn btn-darkblue px-1 ml-1" onclick="resetImageView()"><i class="fas fa-expand"></i></button>
+            <button class="btn btn-danger px-1 ml-1" onclick="closeImageView()"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+    <div class="image-view-main">
+        <div id="image-view-drag" draggable="false" class="img-container">
+            <img id="image-view-image" style="width:100%" draggable="false" src="/static/img/no-image.png" alt="no-image named no-image here">
+        </div>
+    </div>
+</div>

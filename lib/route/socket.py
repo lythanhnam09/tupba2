@@ -76,7 +76,8 @@ def cyoa_refresh_thread(data):
         print(f'Worker {worker.name!r} throw an exception: {e}')
         print(trace)
         emit('task_data', task_util.get_queue_stat())
-        emit('throw_error', {'exception': f'{e}', 'trace': trace, 'name': worker.name})
+        # emit('throw_error', {'exception': f'{e}', 'trace': trace, 'name': worker.name})
+        emit('show_error',  {'message': f'Worker {worker.name!r} throw an exception: {e}'})
     if (cy != None):
         anonpone.refresh_thread_list(cy, force_refresh_all=data.get('force', False), reparse_post=data.get('parse', False))
 
@@ -104,6 +105,25 @@ def get_image_page(data):
     # page = await anonpone.img_loader.get(cy, data['q'], data['page'], data['perpage'])
     page = anonpone.get_cyoa_image(cy, data['q'], data['page'], data['perpage'])
     return util.to_json_str(page)
+
+@socketio.on('cyoa_fanart_data')
+def get_image_page(data):
+    print(f'socketio: Get CYOA fanart data {data=}')
+    cy = cyoa.Cyoa.find_id(data['cyoaId'])
+    if (cy == None):
+        return {'error':'Not found'}
+    # page = await anonpone.img_loader.get(cy, data['q'], data['page'], data['perpage'])
+    page = anonpone.get_cyoa_fanart(cy, data['page'], data['perpage'])
+    return util.to_json_str(page)
+
+@socketio.on('cyoa_fanart_refresh')
+def cyoa_refresh(data):
+    print(f'socketio: Refresh CYOA fanart {data=}')
+    cy = cyoa.Cyoa.find_id(data['id'])
+    if (cy == None):
+        return {'error':'Not found'}
+    anonpone.refresh_cyoa_fanart(cy)
+    emit('refresh_page', {'context': f'/cyoa/quest/{cy["short_name"]}/fanarts'})
 
 @socketio.on('search_tag')
 def search_tag(data):
@@ -142,3 +162,4 @@ def delete_filter(data):
     print(f'socketio: Save filter {data=}')
     booru_config.set_filters(data['filters'])
     emit('refresh_page', {'context': '/booru/filters'})
+    
