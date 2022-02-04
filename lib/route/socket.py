@@ -59,7 +59,7 @@ def cyoa_refresh(data):
 
 @socketio.on('cyoa_thread_refresh')
 def cyoa_refresh_thread(data):
-    print(f'socketio: Refresh CYOA Threads data')
+    print(f'socketio: Refresh CYOA Threads data ({data})')
     cy = cyoa.Cyoa.find_id(data['id'])
     @copy_current_request_context
     def update_task(worker, task_item, result):
@@ -73,6 +73,8 @@ def cyoa_refresh_thread(data):
         emit('refresh_page', {'context': f'/cyoa/quest/{worker.meta["short_name"]}'})
     @copy_current_request_context
     def error_task(worker, e, trace):
+        print(f'Worker {worker.name!r} throw an exception: {e}')
+        print(trace)
         emit('task_data', task_util.get_queue_stat())
         emit('throw_error', {'exception': f'{e}', 'trace': trace, 'name': worker.name})
     if (cy != None):

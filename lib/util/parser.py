@@ -67,6 +67,27 @@ class Link:
         self.port = port
         self.path = path
 
+    def strip_query(self):
+        qpos = self.path.rfind('?')
+        if (qpos != -1):
+            return f'{self.protocol}://{self.host}{self.port}{self.path[:qpos]}'
+        return f'{self.protocol}://{self.host}{self.port}{self.path}'
+
+    def get_file_ext(self):
+        extpos = self.path.rfind('.')
+        if (extpos != -1):
+            qpos = self.path.rfind('?')
+            if (qpos != -1):
+                return self.path[extpos + 1:qpos].lower()
+            return self.path[extpos + 1:].lower()
+        return None
+
+    def get_filename(self):
+        qpos = self.path.rfind('?')
+        if (qpos != -1):
+            return self.path[self.path.rfind('/') + 1:qpos]
+        return self.path[self.path.rfind('/')]
+
     def __str__(self):
         return f'{self.protocol}://{self.host}{self.port}{self.path}'
 
@@ -179,28 +200,26 @@ class MediaLinkParser(LinkParser):
         index = 1
         lsimg = []
         for x in self.links:
-            extpos = x.path.rfind('.')
-            if (extpos != -1):
-                ext = x.path[extpos + 1:]
-                if (ext in ['jpg', 'png', 'gif', 'webm', 'jpeg', 'mp4']):
-                    filename = x.path[x.path.rfind('/') + 1:]
-                    print(f'MediaLinkParser: [#{self.post["id"]}] found {x!s}')
-                    i = PostImage.select_one([['post_id', self.post['id']], ['link', str(x)]], conn = conn)
-                    if (i != None):
-                        print(f'MediaLinkParser: [#{self.post["id"]}] Ignored duplicate {str(x)}')
-                        continue
-                    img = PostImage(data={
-                        'post_id': self.post['id'],
-                        'alt_id': alt_index,
-                        'alt_name': f'Link {index}',
-                        'filename': filename,
-                        'link': str(x),
-                        'offline_link': None,
-                        'status_code': 0
-                    })
-                    lsimg.append(img)
-                    alt_index += 1
-                    index += 1
+            if (x.get_file_ext() != None):
+                filename = x.get_filename()
+                link = x.strip_query()
+                print(f'MediaLinkParser: [#{self.post["id"]}] found {link}')
+                i = PostImage.select_one([['post_id', self.post['id']], ['link', link]], conn = conn)
+                if (i != None):
+                    print(f'MediaLinkParser: [#{self.post["id"]}] Ignored duplicate {link}')
+                    continue
+                img = PostImage(data={
+                    'post_id': self.post['id'],
+                    'alt_id': alt_index,
+                    'alt_name': f'Link {index}',
+                    'filename': filename,
+                    'link': link,
+                    'offline_link': None,
+                    'status_code': 0
+                })
+                lsimg.append(img)
+                alt_index += 1
+                index += 1
         if (len(lsimg) > 0): PostImage.insert(lsimg, True, conn = conn)
         conn.close()
 

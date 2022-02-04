@@ -16,8 +16,8 @@
     <option value="${value}" ${form.option_selected(name, value)}>${text}</option>
 </%def>
 
-<form id="form-page" action="/cyoa/quest/${cyoa['short_name']}/images">
-    <input type="hidden" name="page" value="${form['page']}">
+<form id="form-page" action="/cyoa/quest/${cyoa['short_name']}">
+    <input type="hidden" name="page" value="1">
     <input type="hidden" name="perpage" value="${form['perpage']}">
 </form>
 <div class="bg-darkblue">
@@ -36,12 +36,12 @@
                 <hr>
                 <div class="tag">
                     <% lsstat = [['error', 'bg-danger'], ['active', 'bg-d5-info'], ['complete', 'bg-d5-success'], ['hiatus', 'bg-d5-warning'], ['cancelled', 'bg-danger'], ['hidden', 'bg-d15-danger']] %>
-                    <a class="tag-item ${lsstat[cyoa['status']][1]}" href="?q=status=${cyoa['status']}">${lsstat[cyoa['status']][0]}</a>
+                    <a class="tag-item ${lsstat[cyoa['status']][1]}" href="/cyoa/?q=status=${cyoa['status']}">${lsstat[cyoa['status']][0]}</a>
                     % for tag in cyoa['tags']:
-                        <a class="tag-item ${tag['tag']['color']}" href="?${form.get_form_query({'q': tag['tag']['name']})}">${tag['tag']['name']}</a>
+                        <a class="tag-item ${tag['tag']['color']}" href="/cyoa/?${form.get_form_query({'q': tag['tag']['name']})}">${tag['tag']['name']}</a>
                     % endfor
                     % if cyoa['steath_lewd']:
-                        <a class="tag-item bg-pink" href="?q=lewd_exist=1">lewd exist</a>
+                        <a class="tag-item bg-pink" href="/cyoa/?q=lewd_exist=1">lewd exist</a>
                     % endif
                 </div>
                 <div class="ratio mt-1" title="Image / Text ratio">
