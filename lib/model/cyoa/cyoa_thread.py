@@ -5,7 +5,6 @@ import lib.util.util as util
 class Thread(SQLTable):
     _dbfile = 'data/cyoa.db'
     _table_name = 'thread'
-    # TODO: Rewrte prop list
     _props = {
         'id': 0,
         'title': '',
@@ -61,6 +60,9 @@ class Thread(SQLTable):
         sql = f'select p.id from thread t join post p on t.id = p.thread_id where t.id in (select ct.thread_id from cyoa_thread ct where ct.cyoa_id = ?)'
         result = db_util.db_get_all(self._dbfile, sql, (self.cols['id'],))
         return [x[0] for x in result]
+
+    def __repr__(self):
+        return f'{self._table_name}[{self.cols["id"]}]'
 
 class CyoaThread(SQLTable):
     _dbfile = 'data/cyoa.db'

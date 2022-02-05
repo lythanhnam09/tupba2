@@ -84,6 +84,9 @@ class Post(SQLTable):
         batch.add_exec_multi(sql, ls_rb)
         batch.run()
 
+    def __repr__(self):
+        return f'{self._table_name}[{self.cols["id"]}]'
+
 class PostImage(SQLTable):
     _dbfile = 'data/cyoa.db'
     _table_name = 'post_image'

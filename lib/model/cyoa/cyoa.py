@@ -197,3 +197,6 @@ class Cyoa(SQLTable):
         page_res = ResultPage(page, page_count, per_page, count, ls)
 
         return page_res
+
+    def __repr__(self):
+        return f'{self._table_name}[{self.cols["id"]}, {self.cols["name"]!r}]'
