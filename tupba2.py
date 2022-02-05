@@ -42,21 +42,21 @@ def root():
 
 @app.route('/sockettest')
 def sockettest():
-    return serve_template('cyoa/socket.html')
+    return serve_template('test/test_socket.mako')
 
 @app.route('/csstest')
 def csstest():
     #name = request.args.get('name', 'anon', type=str)
-    return serve_template('test.html')
+    return serve_template('test/test_css.mako')
 
 @app.route('/preloader')
 def preloader_test():
     #name = request.args.get('name', 'anon', type=str)
-    return serve_template('test_preloader.mako', nav=NavOption('Preloader test', theme='nav-danger'))
+    return serve_template('test/test_preloader.mako', nav=NavOption('Preloader test', theme='nav-danger'))
 
 @app.route('/testjmobile')
 def jmobile_test():
-    return serve_template('test_jmobile.mako', nav=NavOption('Touch gesture test', theme='nav-danger'))
+    return serve_template('test/test_jmobile.mako', nav=NavOption('Touch gesture test', theme='nav-danger'))
 
 def init():
     print('Root dir:', app.root_path)

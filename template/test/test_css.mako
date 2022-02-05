@@ -1135,6 +1135,6 @@
     </div>
 
     <script src="/static/js/lib/jquery-3.6.0.min.js"></script>
-    <script src="/static/js/test/test.js"></script>
+    <script src="/static/js/test/test_css.js"></script>
 </body>
 </html>
