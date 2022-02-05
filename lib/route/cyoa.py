@@ -73,7 +73,7 @@ def cyoa_info(sname):
     return serve_template('cyoa/info.mako', nav=cyoa_nav(), form=form, cyoa=cy, thread_page=ls_th, page_nav=SimplePageNav(ls_th, 'form-page'), worker_stat=get_queue_stat())
 
 @cyoa.route('/quest/<sname>/thread/<thread_id>')
-async def thread_view(sname, thread_id):
+def thread_view(sname, thread_id):
     try:
         thread_id = int(thread_id)
     except Exception as e:
@@ -86,22 +86,13 @@ async def thread_view(sname, thread_id):
     if (th == None): abort(404)
     
     t = StopTimer('Fetching thread post')
-    if (anonpone.threadpost_loader.cyoa == None or anonpone.threadpost_loader.cyoa['id'] != cy['id']):
-        ls_th = cy.get_ref('threads', get_many=True, save_result=True)
-        num = [i for i,x in enumerate(ls_th) if x['id'] == th['id']][0]
-        count = len(ls_th)
-    else:
-        ls_th = anonpone.threadpost_loader.cyoa['threads']
-        num = [i for i,x in enumerate(ls_th) if x['id'] == th['id']][0]
-        count = anonpone.threadpost_loader.thread_count
-    # ls_post = anonpone.get_post_list(cy, th)
-    res_th = await anonpone.threadpost_loader.get(cy, th, num, count)
+    res_th, ls_th, num, count = anonpone.get_thread_post(cy, th)
     t.measure()
 
     return serve_template('cyoa/thread_view.mako', nav=thread_nav(cy, res_th, ls_th, num, count), cyoa=cy, thread=res_th, thread_num=num)
 
 @cyoa.route('/quest/<sname>/images')
-async def cyoa_image(sname):
+def cyoa_image(sname):
     form = WebForm(data={'exp_qm':'is_qm=1', 'exp_alt': 'alt_id=0', 'page':1, 'perpage':40})
     form.get_arg_value(request.args)
     ls = []
@@ -113,7 +104,8 @@ async def cyoa_image(sname):
     if (cy is None): abort(404)
     cy.check_steath_lewd()
     t = StopTimer('Fetching cyoa image')
-    page = await anonpone.img_loader.get(cy, q, form['page'], form['perpage'])
+    # page = await anonpone.img_loader.get(cy, q, form['page'], form['perpage'])
+    page = anonpone.get_cyoa_image(cy, q, form['page'], form['perpage'])
     t.measure()
     
     return serve_template('cyoa/image_view.mako', nav=cyoa_nav(), form=form, cyoa=cy, img_page = page, page_nav=SimplePageNav(page, 'form-page'))
