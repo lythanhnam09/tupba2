@@ -1,6 +1,8 @@
 from flask import *
 import os
+import sys
 import sqlite3
+import argparse
 import lib.route.socket as socket
 import lib.util.db_util as db_util
 from lib.util.util import *
@@ -10,10 +12,13 @@ from lib.model.web.navbar import NavOption, NavButton
 from lib.route.socket import app, socketio
 from lib.model.booru.config import booru_config
 
-#app.config['UPLOAD_FOLDER'] = 'upload'
+parser = argparse.ArgumentParser(description='LMS multi user stress test script')
+parser.add_argument('-H', '--host', help='Host name', type=str, default='0.0.0.0')
+parser.add_argument('-p', '--port', help='Port', type=int, default=8080)
+parser.add_argument('-d', '--debug', help='Debug mode', action='store_true')
+arg = parser.parse_args(sys.argv[1:])
 
 #app.register_blueprint(rewatch)
-#app.register_blueprint(booru)
 app.register_blueprint(cyoa, url_prefix='/cyoa')
 app.register_blueprint(booru, url_prefix='/booru')
 
@@ -80,4 +85,4 @@ def init():
 if __name__ == '__main__':
     init()
     #app.run(host='0.0.0.0', port=8080, debug=True)
-    socketio.run(app, host='0.0.0.0', port=8080, debug=True)
+    socketio.run(app, host=arg.host, port=arg.port, debug=arg.debug)
