@@ -90,6 +90,14 @@ a {
     //     text-decoration: none;
     // }
 
+    &.saved-1 {
+        border: 2px solid $warning;
+    }
+
+    &.saved-2 {
+        border: 2px solid $success;
+    }
+
     &-image {
         overflow: hidden;
         background-color: $darkblue;
@@ -107,6 +115,8 @@ a {
             > .name {
                 color: lighten($warning, 10%);
                 text-decoration: none;
+                display: inline-block;
+                min-width: 60%;
             }
         }
 

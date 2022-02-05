@@ -60,7 +60,7 @@
 
         <div class="list-container m-1">
             % for cyoa in ls_cyoa.data:
-                <div class="cyoa card bg-l15-darkblue">
+                <div class="cyoa card bg-l15-darkblue saved-${cyoa['save_status']}">
                     <a class="cyoa card-image img-container" href="/cyoa/quest/${cyoa['short_name']}">
                         <img src="${cyoa['image_link']}" alt="${cyoa['name']}">
                     </a>

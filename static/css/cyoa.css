@@ -44,6 +44,12 @@ a {
   grid-template-rows: 200px 1fr;
   align-items: stretch;
 }
+.cyoa.card.saved-1 {
+  border: 2px solid #e9a321;
+}
+.cyoa.card.saved-2 {
+  border: 2px solid #46b842;
+}
 .cyoa.card-image {
   overflow: hidden;
   background-color: #4b43b4;
@@ -60,6 +66,8 @@ a {
 .cyoa.card-content > .title > .name {
   color: #eeb64f;
   text-decoration: none;
+  display: inline-block;
+  min-width: 60%;
 }
 .cyoa.card-content > .description {
   font-size: 10pt;
