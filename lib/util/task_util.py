@@ -136,7 +136,7 @@ class TaskWorkerQueue:
 
     def add(self, worker):
         self.workers.put(worker)
-        if (self.auto_start):
+        if (self.auto_start and self.current_worker == None):
             self.start_worker()
 
     def start_worker(self):
@@ -172,12 +172,18 @@ def get_queue_stat() -> dict:
         dt['id'] = f'{q.meta["category"].lower()}-{q.meta["id"]}'
         if ('operation' in q.meta): dt['id'] += f'-{q.meta["operation"]}'
         dt['category'] = q.meta['category']
-        dt['name'] = q.current_task.name
+        if (q.current_task != None):
+            dt['name'] = q.current_task.name
+            dt['count'] = q.current_task.item_count
+            dt['progress_all'] = q.get_done_task_count()
+            dt['progress'] = q.get_processed_item_count()
+        else:
+            dt['name'] = 'Awating...'
+            dt['count'] = 1
+            dt['progress_all'] = 0
+            dt['progress'] = 0
         dt['name_all'] = q.name
         dt['count_all'] = q.task_count
-        dt['count'] = q.current_task.item_count
-        dt['progress_all'] = q.get_done_task_count()
-        dt['progress'] = q.get_processed_item_count()
         res['tasks'].append(dt)
 
     return res
@@ -262,6 +268,9 @@ class Preloader:
     # need override (the main funtion to run)
     def run_request(self, enum):
         return None
+
+    def clear_data(self):
+        self.data.clear()
 
     # (optionally) need to be called from your real get function (or you just call this with the right meta data)
     def do_get(self, enum, meta, preload_other = True):
