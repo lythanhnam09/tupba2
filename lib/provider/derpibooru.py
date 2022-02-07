@@ -125,7 +125,7 @@ def get_image_by_id(id, refresh = False):
         BooruImageSize.insert(lssz, or_ignore=True, conn=conn)
         BooruImageTag.insert(lstagimg, or_ignore=True, conn=conn)
 
-    img.get_ref('tags', order_by=['sort_index', 'asc'], save_result=True, conn=conn)
+    img.get_ref('tags', order_by=[['sort_index', 'asc'], ['name', 'asc']], save_result=True, conn=conn)
     img.get_ref('sizes', order_by=['size_index', 'asc'], save_result=True, conn=conn)
     conn.close()
     return img
@@ -135,8 +135,8 @@ def get_main_page_indexed(limit = 15):
     qp = booru_util.QueryProcessor()
     qp.set_filters(booru_config.filters)
     ls = BooruImage.select(order_by=['id', 'desc'], limit=limit)
-    for img in ls:
-        qp.apply_spoiler(img)
+    # for img in ls:
+    #     qp.apply_spoiler(img)
     return ls
 
 def get_filter_list():
@@ -145,3 +145,82 @@ def get_filter_list():
     for f in ls:
         f.cols['checked'] = f['id'] in booru_config.data['filters']
     return ls
+
+def add_pic_to_favorite(id):
+    conn = sqlite3.connect(BooruAlbum._dbfile)
+    album = BooruAlbum.select_one(where=[['name', 'Favorited']], conn=conn)
+    if (album == None):
+        album = BooruAlbum(data={'id': 0,'thumbnail_id': id,'name': 'Favorited','color': ''})
+        album.cols['id'] = BooruAlbum.insert(album, conn=conn)
+    max_sort = db_util.db_get_single_cell(conn, 'select max(sort_index) from album_image where album_id = ?', (album.cols['id'],))
+    if (max_sort == None): max_sort = 0
+    ali = BooruAlbumImage(data={'album_id': album.cols['id'],'image_id': id,'sort_index': max_sort + 1})
+    BooruAlbumImage.insert(ali, or_ignore=True, conn=conn)
+    conn.close()
+
+def add_to_album(pid, aid, conn = None):
+    if (conn == None): nconn = sqlite3.connect(BooruAlbum._dbfile)
+    else: nconn = conn
+    album = BooruAlbum.find_id(aid, conn=nconn)
+    if (album == None): return False
+
+    max_sort = db_util.db_get_single_cell(conn, 'select max(sort_index) from album_image where album_id = ?', (album.cols['id'],))
+    if (max_sort == None): max_sort = 0
+    ali = BooruAlbumImage(data={'album_id': aid,'image_id': pid,'sort_index': max_sort + 1})
+    BooruAlbumImage.insert(ali, or_ignore=True, conn=nconn)
+
+    if (conn == None): nconn.close()
+
+def get_album_list(preload = True):
+    conn = sqlite3.connect(BooruAlbum._dbfile)
+    ls = BooruAlbum.select(conn=conn)
+    for a in ls:
+        if (preload):
+            img = a.get_ref('thumbnail', save_result=True, conn=conn)
+            if (img != None):
+                img.get_ref('sizes', order_by=['size_index', 'asc'], save_result=True, conn=conn)
+        a.get_ref_count('images', save_result=True, save_name='image_count', conn=conn)
+    conn.close()
+    return ls
+
+def get_add_album_list(pid):
+    conn = sqlite3.connect(BooruAlbum._dbfile)
+    ls = BooruAlbum.select(conn=conn)
+    for a in ls:
+        a.get_ref_count('images', save_result=True, save_name='image_count', conn=conn)
+        ali = BooruAlbumImage.find_id((a.cols['id'], pid))
+        a.cols['is_added'] = (ali != None)
+    conn.close()
+    return ls
+
+def get_album_image(album, page, perpage):
+    conn = sqlite3.connect(BooruAlbum._dbfile)
+    ls_img = album.get_ref_page('images', page, perpage, order_by=['sort_index', 'asc'], get_many=True, save_result=True)
+    for img in ls_img.data:
+        img.get_ref('sizes', order_by=['size_index', 'asc'], save_result=True, conn=conn)
+        img.get_ref('tags', order_by=['sort_index', 'asc'], save_result=True, conn=conn)
+        img.cols['spoiler_tag'] = ''
+    conn.close()
+    return ls_img
+
+def add_album(name):
+    album = BooruAlbum(data={'id': 0,'thumbnail_id': None,'name': name,'color': ''})
+    BooruAlbum.insert(album)
+
+def edit_album(id, name):
+    album = BooruAlbum.find_id(id)
+    if (album == None): return False
+    album.cols['name'] = name
+    BooruAlbum.update(album)
+    return True
+
+def add_to_albums(pid, lsid):
+    conn = sqlite3.connect(BooruAlbum._dbfile)
+    ls = []
+    for aid in lsid:
+        max_sort = db_util.db_get_single_cell(conn, 'select max(sort_index) from album_image where album_id = ?', (aid,))
+        if (max_sort == None): max_sort = 0
+        ali = BooruAlbumImage(data={'album_id': aid,'image_id': pid,'sort_index': max_sort + 1})
+        ls.append(ali)
+    BooruAlbumImage.insert(ls, or_ignore=True, conn=conn)
+    conn.close()

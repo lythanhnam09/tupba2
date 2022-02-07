@@ -249,6 +249,7 @@ class Dialog {
                 return false;
             });
             $('.dialog-container').click(function(el) {
+                console.log('container');
                 dialog.hide();
             });
         }

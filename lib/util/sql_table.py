@@ -17,8 +17,12 @@ class SQLRef:
         return None
 
     def get_page(self, table, page, per_page, where = None, order_by = None, conn = None):
-        logging.warning(f'{self.__class__.__name__}.filter(): {self.__class__.__name__} does not have get_page()')
+        logging.warning(f'{self.__class__.__name__}.get_page(): {self.__class__.__name__} does not have get_page()')
         return None
+
+    def get_count(self, table, where = None, conn = None):
+        logging.warning(f'{self.__class__.__name__}.get_count(): {self.__class__.__name__} does not have get_count()')
+        return 0
 
     def filter(self, table, where = None, order_by = None, limit = None, offset = None, conn = None):
         logging.warning(f'{self.__class__.__name__}.filter(): {self.__class__.__name__} does not have filter()')
@@ -30,6 +34,11 @@ class SQLRefOne(SQLRef):
 
     def get(self, table, where = None, order_by = None, limit = None, offset = None, conn = None):
         return self.ref_table.find_id(table.cols[self.col], conn = conn)
+
+    def get_count(self, table, where = None, conn = None):
+        res = self.ref_table.find_id(table.cols[self.col], conn = conn)
+        if (res == None): return 0
+        return 1
 
     def get_one(self, table, where = None, order_by = None, offset = None, conn = None):
         return self.ref_table.find_id(table.cols[self.col], conn = conn)
@@ -55,6 +64,12 @@ class SQLRefMany(SQLRef):
             where = []
         where.append([self.ref_col, table.cols[self.col]])
         return self.ref_table.get_page(page, per_page, where=where, order_by=order_by, conn = conn)
+
+    def get_count(self, table, where = None, conn = None):
+        if (where == None):
+            where = []
+        where.append([self.ref_col, table.cols[self.col]])
+        return self.ref_table.get_count(where=where, conn = conn)
 
     # def filter(self, table, where = None, order_by = None, limit = None, offset = None):
     #     if (where == None):
@@ -214,6 +229,20 @@ class SQLRefPivot(SQLRef):
         page = ResultPage(page_num, page_count, per_page, total_count, data)
 
         return page
+
+    def get_count(self, table, where = None, conn = None):
+        name_t1 = 't1'
+        name_t2 = 't2'
+
+        ref_pivot:SQLRef = self.ref_table._reference[self.pivot_ref]
+        t1 = f'{self.ref_table._table_name} {name_t1}'
+        t2 = f'{ref_pivot.ref_table._table_name} {name_t2}'
+        join_on = f'{name_t1}.{ref_pivot.col} = {name_t2}.{ref_pivot.ref_col}'
+        if (where == None): where = []
+        where.append([f't1.{self.ref_col}', table.cols[self.col]])
+
+        sql = sql_command.select_join([t1, t2], join_on, columns=['count(*)'], where=where)
+        return db_util.db_get_single_cell(conn or table._dbfile, sql)
 
 class ResultPage:
     def __init__(self, page_num:int, page_count:int, per_page:int, total_count:int, data:list):
@@ -508,6 +537,19 @@ class SQLTable:
             raise Exception(f'Reference {ref_name!r} not found')
 
         result = self._reference[ref_name].get_one(self, where, order_by, offset, conn)
+
+        if (save_result):
+            if (save_name != None):
+                self.cols[save_name] = result
+            else:
+                self.cols[ref_name] = result
+        return result
+
+    def get_ref_count(self, ref_name:str, where = None, save_result = False, save_name = None, conn = None):
+        if (not ref_name in self._reference):
+            raise Exception(f'Reference {ref_name!r} not found')
+        
+        result = self._reference[ref_name].get_count(self, where, conn)
 
         if (save_result):
             if (save_name != None):

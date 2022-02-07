@@ -76,7 +76,7 @@
         <div class="px-1">
             <div class="list-container p-1">
                 % for img in img_page.data:
-                    ${misc.booru_image(img, f'/booru/view/{img["id"]}?{form.get_form_query()}')}
+                    ${misc.booru_search_image(img, f'/booru/view/{img["id"]}?{form.get_form_query()}')}
                 % endfor
             </div>
         </div>

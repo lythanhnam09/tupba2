@@ -7,6 +7,7 @@
 </%block>
 <%block name="extrajs">
     <script src="/static/js/booru/booru.js"></script>
+    <script src="/static/js/booru/view.js"></script>
 </%block>
 
 <%def name="form_option(form, name, value, text)">
@@ -28,7 +29,7 @@
                     <div><b class="fg-l15-pink">Uploader:</b> ${img['uploader'] or '<i class="fg-secondary">Anonymous</i>'}</div>
                     <div><b class="fg-l15-pink">Date created:</b> ${img['created_at']}</div>
                     <div><b class="fg-l15-pink">Last updated:</b> ${img['updated_at']}</div>
-                    <div><b class="fg-l15-pink">Source:</b> ${f'<a href="{img["link_source"]}">{img["link_source"]}</a>' if (img["link_source"] != None) else '<i class="fg-secondary">Not provided</i>'}</div>
+                    <div><b class="fg-l15-pink">Source:</b> ${f'<a href="{img["link_source"]}">{img["link_source"]}</a>' if (img["link_source"] not in [None, '']) else '<i class="fg-secondary">Not provided</i>'}</div>
                     <div><b class="fg-l15-pink">Booru link:</b> <a href="https://derpibooru.org/images/${img['id']}">https://derpibooru.org/images/${img['id']}</a></div>
                     % if img['delete_reason'] != None:
                         <div><b class="fg-danger">Image is deleted: ${img['delete_reason']}</div>
@@ -61,6 +62,8 @@
             % else:
                 <button class="btn btn-primary" disabled><i class="fas fa-chevron-right"></i></button>
             % endif
+            <button class="btn btn-primary" onclick="favorite(${img['id']})"><i class="fas fa-star"></i> Add to favortie</button>
+            <button class="btn btn-primary" onclick="showAlbumDialog(${img['id']})"><i class="fas fa-plus"></i> Add to album</button>
         </div>
         <hr class="my-1">
         <div class="control-group gap-1 px-1">

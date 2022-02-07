@@ -5,9 +5,11 @@ import lib.util.task_util as task_util
 import lib.util.util as util
 import logging
 import lib.provider.anonpone as anonpone
+import lib.provider.derpibooru as derpibooru
 import lib.model.cyoa.cyoa as cyoa
 import lib.model.booru.tag as btag
 import lib.model.booru.filter as bfilter
+import lib.model.booru.album as balbum
 from lib.model.booru.config import booru_config
 
 
@@ -162,4 +164,38 @@ def delete_filter(data):
     print(f'socketio: Save filter {data=}')
     booru_config.set_filters(data['filters'])
     emit('refresh_page', {'context': '/booru/filters'})
-    
+
+@socketio.on('fav_booru_pic')
+def fav_booru_pic(data):
+    print(f'socketio: Add booru pic to favorite {data=}')
+    derpibooru.add_pic_to_favorite(data['id'])
+    # emit('refresh_page', {'context': '/booru/filters'})
+
+@socketio.on('add_album_list')
+def add_album_list(data):
+    print(f'socketio: Get album list to add {data=}')
+    ls = derpibooru.get_add_album_list(data['id'])
+    return util.to_json_str(ls)
+
+@socketio.on('add_album')
+def add_album(data):
+    print(f'socketio: Create new album {data=}')
+    ls = derpibooru.add_album(data['name'])
+    emit('refresh_page', {'context': '/booru/albums'})
+
+@socketio.on('edit_album')
+def add_album(data):
+    print(f'socketio: Edit album {data=}')
+    derpibooru.edit_album(data['id'], data['name'])
+    emit('refresh_page', {'context': '/booru/albums'})
+
+@socketio.on('add_to_albums')
+def add_pic_to_albums(data):
+    print(f'socketio: Add pic to albums {data=}')
+    derpibooru.add_to_albums(data['pid'], data['lsid'])
+
+@socketio.on('delete_album')
+def delete_filter(data):
+    print(f'socketio: Delete album {data=}')
+    balbum.BooruAlbum.delete(where=[['id', data['id']]])
+    emit('refresh_page', {'context': '/booru/albums'})

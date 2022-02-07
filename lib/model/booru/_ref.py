@@ -28,6 +28,7 @@ BooruImageTag._reference = {
 
 BooruAlbum._reference = {
     'images': SQLRefPivot('id', BooruAlbumImage, 'album_id', 'image'),
+    'thumbnail': SQLRefOne('thumbnail_id', BooruImage, 'id'),
 }
 BooruAlbumImage._reference = {
     'album': SQLRefOne('album_id', BooruAlbum, 'id'),

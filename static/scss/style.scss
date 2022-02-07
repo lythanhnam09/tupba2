@@ -140,6 +140,11 @@ body {
     flex-flow: row wrap;
 }
 
+.col {
+    display: flex;
+    flex-flow: col wrap;
+}
+
 .vflex-center {
     align-items: center !important;
 }
@@ -158,6 +163,14 @@ body {
 
 .flex-center {
     justify-content: center !important;
+}
+
+.flex-space-around {
+    justify-content: space-around !important;
+}
+
+.flex-space-between {
+    justify-content: space-between !important;
 }
 
 .flex-left {
@@ -185,13 +198,13 @@ body {
 // Column 12
 @for $i from 1 through 12 {
     .col-#{$i} {
-        flex-basis: $i/12*100%;
+        flex-basis: calc($i/ 12 * 100%);
     }
 
     @each $name, $size in $dev-size {
         @media (min-width: $size) {
             .col-#{$name}-#{$i} {
-                flex-basis: $i/12*100%;
+                flex-basis: calc($i / 12 * 100%);
             }   
         }
     }
@@ -200,13 +213,13 @@ body {
 // Column 10
 @for $i from 1 through 10 {
     .col-10-#{$i} {
-        flex-basis: $i/10*100%;
+        flex-basis: calc($i/10*100%);
 }
 
     @each $name, $size in $dev-size {
         @media (min-width: $size) {
             .col-#{$name}-10-#{$i} {
-                flex-basis: $i/10*100%;
+                flex-basis: calc($i/10*100%);
             }
         }
     }
@@ -268,6 +281,30 @@ body {
 .mx-auto {
     margin-left: auto;
     margin-right: auto;
+}
+
+.m-05 {
+    margin: 0.5 * $space-gap;
+}
+.ml-05 {
+    margin-left: 0.5 * $space-gap;
+}
+.mr-05 {
+    margin-right: 0.5 * $space-gap;
+}
+.mt-05 {
+    margin-top: 0.5 * $space-gap;
+}
+.mb-05 {
+    margin-bottom: 0.5 * $space-gap;
+}
+.mx-05 {
+    margin-left: 0.5 * $space-gap;
+    margin-right: 0.5 * $space-gap;
+}
+.my-05 {
+    margin-top: 0.5 * $space-gap;
+    margin-bottom: 0.5 * $space-gap;
 }
 
 @for $i from 0 through $space-step-count {
@@ -1068,19 +1105,24 @@ img {
     z-index: 1000;
 
     > .dialog {
-        display: inline-block;
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-rows: auto auto 1fr auto;
         //margin: 0.25rem;
         box-shadow: 0 0 2rem opacify($shadow, 0.4);
         background-color: white;
         border-radius: $card-round;
-        overflow: hidden;
         margin: 0.5rem;
         padding: 0.5rem;
         min-width: 50%;
+        max-width: 100%;
+        max-height: 80%;
 
         > .content {
             // color: inherit;
-            padding: 0.5rem 0;
+            padding: 0.5rem 0.125rem;
+            overflow-y: scroll;
+            height: 100%;
         }
             
         > .dialog-button {

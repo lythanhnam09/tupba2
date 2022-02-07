@@ -63,6 +63,11 @@ body {
   flex-flow: row wrap;
 }
 
+.col {
+  display: flex;
+  flex-flow: col wrap;
+}
+
 .vflex-center {
   align-items: center !important;
 }
@@ -81,6 +86,14 @@ body {
 
 .flex-center {
   justify-content: center !important;
+}
+
+.flex-space-around {
+  justify-content: space-around !important;
+}
+
+.flex-space-between {
+  justify-content: space-between !important;
 }
 
 .flex-left {
@@ -814,6 +827,36 @@ body {
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
+}
+
+.m-05 {
+  margin: 0.25rem;
+}
+
+.ml-05 {
+  margin-left: 0.25rem;
+}
+
+.mr-05 {
+  margin-right: 0.25rem;
+}
+
+.mt-05 {
+  margin-top: 0.25rem;
+}
+
+.mb-05 {
+  margin-bottom: 0.25rem;
+}
+
+.mx-05 {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+.my-05 {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .m-0 {
@@ -5818,17 +5861,22 @@ img {
   z-index: 1000;
 }
 .dialog-container > .dialog {
-  display: inline-block;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-rows: auto auto 1fr auto;
   box-shadow: 0 0 2rem rgba(0, 0, 0, 0.8117647059);
   background-color: white;
   border-radius: 0.25rem;
-  overflow: hidden;
   margin: 0.5rem;
   padding: 0.5rem;
   min-width: 50%;
+  max-width: 100%;
+  max-height: 80%;
 }
 .dialog-container > .dialog > .content {
-  padding: 0.5rem 0;
+  padding: 0.5rem 0.125rem;
+  overflow-y: scroll;
+  height: 100%;
 }
 .dialog-container > .dialog > .dialog-button {
   display: flex;

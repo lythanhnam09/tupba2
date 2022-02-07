@@ -13,13 +13,14 @@ from lib.util.task_util import get_queue_stat
 from lib.util.util import serve_template,StopTimer
 import asyncio
 import lib.provider.derpibooru as derpibooru
+import lib.model.booru.album as balbum
 
 
 booru = Blueprint('booru', __name__, template_folder='template', root_path='.')
 CORS(booru, support_credentials=True)
 
 def booru_nav(backlink='/'):
-    right_btn = [NavButton('Filters', 'fas fa-filter', href='/booru/filters'), NavButton('Feeds', 'fas fa-rss'), NavButton('Albums', 'fas fa-images', href='booru/albums'), NavButton('History', 'fas fa-history', href='booru/history')]
+    right_btn = [NavButton('Filters', 'fas fa-filter', href='/booru/filters'), NavButton('Feeds', 'fas fa-rss'), NavButton('Albums', 'fas fa-images', href='/booru/albums'), NavButton('History', 'fas fa-history', href='/booru/history')]
 
     left_btn = [NavButton('Back', 'fas fa-arrow-left', href=backlink), NavButton('Previous', 'fas fa-chevron-left', on_click='history.back()'), NavButton('Next', 'fas fa-chevron-right', on_click='history.forward()')]
     nav_item = NavOption('Booru Browser', title_link='/booru', theme='nav-booru', left_buttons=left_btn, right_buttons=right_btn)
@@ -47,7 +48,7 @@ def view(id):
     except Exception as e:
         abort(404)
 
-    form = WebForm({'q': '', 'sf': 'id', 'sd': 'desc', 'page': 1, 'perpage':20})
+    form = WebForm({'q': '', 'sf': 'id', 'sd': 'desc', 'page': 1, 'perpage':20, 'mode': 'search'})
     next_link = None
     prev_link = None
     back_link = '/booru'
@@ -72,7 +73,7 @@ def view(id):
             next_link = f'/booru/view/{next_res.data[0]["id"]}?{form.get_form_query({"page": form["page"] + 1})}'
 
         img = res.data[index]
-        back_link = f'/booru/search?{form.get_form_query()}'
+        back_link = f'/booru/{form["mode"]}?{form.get_form_query()}'
     else:
         img = derpibooru.get_image_by_id(id)
         if (img == None):
@@ -84,3 +85,21 @@ def view(id):
 def filter_list():
     ls_filter = derpibooru.get_filter_list()
     return serve_template('booru/filter.mako', nav=booru_nav('/booru'), ls_filter=ls_filter)
+
+@booru.route('/albums')
+def album_list():
+    ls_album = derpibooru.get_album_list()
+    return serve_template('booru/album.mako', nav=booru_nav('/booru'), ls_album=ls_album)
+
+@booru.route('/albums/<id>')
+def album_image(id):
+    try:
+        id = int(id)
+    except Exception as e:
+        abort(404)
+    form = WebForm({'page': 1, 'perpage':20})
+    form.get_arg_value(request.args)
+    album = balbum.BooruAlbum.find_id(id)
+    if (album == None): abort(404)
+    ls_img = derpibooru.get_album_image(album, form['page'], form['perpage'])
+    return serve_template('booru/album_image.mako', nav=booru_nav('/booru'), form=form, album=album, img_page=ls_img, page_nav=SimplePageNav(ls_img, 'form-filter'))
