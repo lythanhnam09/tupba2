@@ -35,7 +35,7 @@
                 <div data-id="${post['id']}" class="post card-inline bg-dark${' border-warning border-2 op' if post['is_qm'] == 1 else ''}${' border-success border-2 op-maybe' if post['is_qm'] != 1 and post['username'] == thread['op_name'] and thread['op_name'] != 'Anonymous' else ''} ${f'lewd-{lewd_post}' if (lewd_post > 0) else ''}">
                     <div class="card-header bg-d10-darkblue">
                         <div class="info">
-                            <span class="username">${post['username']}</span>
+                            <span class="username">${post['username'] if post['username'] != None else 'Anonymous'}</span>
                             % if post['tripcode'] != None:
                                 <span class="trip">${post['tripcode']}</span> 
                             % endif
