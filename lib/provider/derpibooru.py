@@ -81,7 +81,7 @@ class BooruSearchPreloader(task_util.Preloader):
         BooruImageTag.insert(lstagimg, or_ignore=True, conn=conn)
 
         for img in page_data.data:
-            img.get_ref('tags', order_by=['sort_index', 'asc'], save_result=True, conn=conn)
+            img.get_ref('tags', order_by=[['sort_index', 'asc'], ['name', 'asc']], save_result=True, conn=conn)
             img.get_ref('sizes', order_by=['size_index', 'asc'], save_result=True, conn=conn)
 
         conn.close()
@@ -140,6 +140,7 @@ def get_main_page_indexed(limit = 15):
     return ls
 
 def get_filter_list():
+    booru_config.ensure_loaded()
     ls = BooruFilter.select(order_by=['sort_index', 'asc'])
     # print(booru_config)
     for f in ls:

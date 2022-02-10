@@ -1,5 +1,6 @@
 # TUPBA II
 The second one which *hopefully* to be finished
+Note: Project is under hiatus due to... stuff. Will come back after a few month... *hopefully* - Nam (10-Feb-2022)
 # To do list
 ## CYOA
 * ~~CYOA Thread list~~
@@ -17,7 +18,7 @@ The second one which *hopefully* to be finished
 * ~~Description parsing~~
 * Load comment
 * ~~Filters~~
-* Albums
+* ~~Albums~~
 * Feeds
 * Image option
 * Tag option

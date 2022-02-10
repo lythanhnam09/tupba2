@@ -50,7 +50,8 @@ class Thread(SQLTable):
     def get_op_image(self, save = True):
         post = self.get_ref_one('posts', save_result=save, save_name='op_post')
         if (post != None):
-            return post.get_ref_one('images', save_result=save, save_name='op_image')['link']
+            img = post.get_ref_one('images', save_result=save, save_name='op_image')
+            if (img != None): return img.cols['link']
         return self.cols['thread_image']
 
     def get_title(self, alt_name, index = 0):

@@ -80,7 +80,7 @@ def refresh_thread_post(cy:cyoa.Cyoa = None, th:cyoa_thread.Thread = None):
                         lsimg.append(img)
         ls_post.append(post)
         index += 1
-    th['thread_image'] = image_link(lsimg[0]['link'])
+    th['thread_image'] = lsimg[0]['link']
     th['total_post'] = len(ls_post)
     th['op_name'] = ls_post[0]['username']
     conn = db_util.make_conn(cyoa.Cyoa._dbfile)
