@@ -29,7 +29,7 @@
                             lewd_post = img['alt_id']
                             break
                     if (lsimg[0]['alt_id'] >= 1):
-                        lsimg.insert(0, {'alt_id':0, 'link':'/static/img/lewd.png', 'alt_name':'Spoiler', 'filename':lsimg[0]['filename']})
+                        lsimg.insert(0, {'alt_id':0, 'link':'/static/img/lewd.png', 'alt_name':'Spoiler', 'filename':lsimg[0]['filename'], 'fext':'png'})
             %>
             <div class="px-1 pb-1" id="p${post['id']}">
                 <div data-id="${post['id']}" class="post card-inline bg-dark${' border-warning border-2 op' if post['is_qm'] == 1 else ''}${' border-success border-2 op-maybe' if post['is_qm'] != 1 and post['username'] == thread['op_name'] and thread['op_name'] != 'Anonymous' else ''} ${f'lewd-{lewd_post}' if (lewd_post > 0) else ''}">
@@ -59,7 +59,14 @@
                             <div class="card-image" data-id="${post['id']}">
                                 <div class="img-container" data-id="${post['id']}" onclick="toggleExpandImage(${post['id']}, this)">
                                     % for img in lsimg:
-                                        <img src="${img['link']}" data-altid="${img['alt_id']}" alt="${post['images'][0]['filename']} (${img['alt_name']})" title="${post['images'][0]['filename']}" style="display:${'block' if loop.index == 0 else 'none'}">
+                                        % if img['fext'] in ['webm', 'mp4']:
+                                            <video data-altid="${img['alt_id']}" class="img-display" controls loop muted style="display:${'block' if loop.index == 0 else 'none'}" title="${post['images'][0]['filename']}">
+                                                <source src="${img['link']}" type="video/${img['fext']}">
+                                                ${post['images'][0]['filename']} (${img['alt_name']})" title="${post['images'][0]['filename']}
+                                            </video>
+                                        % else:
+                                            <img src="${img['link']}" data-altid="${img['alt_id']}" alt="${post['images'][0]['filename']} (${img['alt_name']})" title="${post['images'][0]['filename']}" style="display:${'block' if loop.index == 0 else 'none'}" onclick="restartGif(this, '${img['link'] if (img['fext'] == 'gif') else ''}')">
+                                        % endif
                                     % endfor
                                 </div>
                                 % if len(lsimg) > 1:

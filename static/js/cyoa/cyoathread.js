@@ -1,26 +1,34 @@
 $(document).ready(function() {
     // $('.nav-progress').hide();
-});
 
-$(window).on("load", function() {
     if ($('.nav-progress').length > 0) {
         $('.nav-progress').show();
+        $('.nav-progress > .value').addClass('loading');
+
+        showQMMark();
+
         $(window).scroll(function() {
             updateThreadProgress();
         });
-
-        updateThreadProgress();
-        showQMMark();
-
+    
         $(window).resize(function() {
             showQMMark();
             updateThreadProgress();
         });
-
+    
         $(document).resize(function() {
             showQMMark();
             updateThreadProgress();
         });
+    }
+});
+
+$(window).on("load", function() {
+    if ($('.nav-progress').length > 0) {
+        $('.nav-progress > .value').removeClass('loading');
+
+        updateThreadProgress();
+        showQMMark();
     }
 });
 
@@ -35,7 +43,7 @@ function showQMMark() {
     let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     let width = $('#mark-container').width();
     let left = $('#mark-container').offset().left;
-    let markWidth = 4;
+    let markWidth = 6;
     let offset = 48;
 
     $('#mark-container').html('');
@@ -94,6 +102,12 @@ function toggleExpandImage(postId, image = null) {
     } else {
         img.addClass('expand');
     }
+}
+
+function restartGif(img, link) {
+    if (link == '') return;
+    img.src = '';
+    img.src = link;
 }
 
 function showPostReply(button, postId) {

@@ -103,6 +103,19 @@ class PostImage(SQLTable):
     _auto_primary = False
     _reference = {}
 
+    def get_file_ext(self):
+        if (self.cols['link'] == None): return None
+        extpos = self.cols['link'].rfind('.')
+        if (extpos != -1):
+            qpos = self.cols['link'].rfind('?')
+            if (qpos != -1):
+                return self.cols['link'][extpos + 1:qpos].lower()
+            return self.cols['link'][extpos + 1:].lower()
+        return None
+
+    def extra_col(self):
+        self.cols['fext'] = self.get_file_ext()
+
     @classmethod
     def from_json(cls, json:dict):
         rdict = {

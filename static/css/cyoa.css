@@ -320,6 +320,9 @@ a {
     margin-bottom: 0.5rem;
   }
 }
+.post.card-inline > .card-content > .card-image > .img-container > video {
+  width: 100%;
+}
 .post.card-inline > .card-content > .card-image.expand {
   max-width: 100%;
   display: block;
@@ -386,6 +389,9 @@ a {
   height: 10px;
   width: 0%;
   background: rgba(4, 248, 236, 0.6);
+}
+.nav-progress > .value.loading {
+  background: rgba(37, 4, 248, 0.6);
 }
 .nav-progress > .mark-container {
   position: absolute;
@@ -498,4 +504,7 @@ a {
   width: unset;
   min-height: 75vh;
   height: 100%;
+}
+.image-view-main .img-container > video {
+  width: 100%;
 }/*# sourceMappingURL=cyoa.css.map */

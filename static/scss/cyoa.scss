@@ -405,6 +405,12 @@ a {
                 margin-bottom: 0.5rem;
             }
 
+            > .img-container {
+                > video {
+                    width: 100%;
+                }
+            }
+
             &.expand {
                 max-width: 100%;
                 display: block;
@@ -486,6 +492,10 @@ a {
         height: 10px;
         width: 0%;
         background: rgba(4, 248, 236, 0.6);
+
+        &.loading {
+            background: rgba(37, 4, 248, 0.6);
+        }
     }
 
     >.mark-container {
@@ -624,6 +634,10 @@ $color-cyoa: linear-gradient(48deg, #95cc14, #35c63c);
             width: unset;
             min-height: 75vh;
             height: 100%;
+
+            > video {
+                width: 100%;
+            }
         }
     }
 }
